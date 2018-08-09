@@ -1,7 +1,17 @@
 package org.invertthepyramid.involved;
 
 public class LoggerAdapter {
-    public void error(String s, Object ... objects) {
+
+    public void tryError(String prefix, Getter<String> message) {
+
+        try {
+            error(message.get());
+        } catch (Exception ex) {
+            error(prefix + " problem and problem logging to Alert", ex);
+        }
+    }
+
+    public void error(String s, Object... objects) {
 
     }
 

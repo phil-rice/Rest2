@@ -16,15 +16,24 @@ import java.util.List;
 
 public class InvolvedImpl implements Involved {
     @Value("${Alert.alert.dtapstage}")
-    private String AlertAlertDtapStage;
+    private String AlertDtapStage;
     @Autowired
     Service<RequestChain, ResponseChain> mdmService;
 
+    @Autowired
+    AlertReporter report;
+
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
+
+    <T> T wrap(Getter<T> getter) {
+        try {
+            return getter.get();
+        } catch (MDMServiceException e) {throw handleMdmException(e);}
+    }
+
 
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-
         try {
             Future<PartyAddress> responseFuture = mdmService.apply(partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser))
                     .map(new AbstractFunction1<ResponseChain, PartyAddress>() {
@@ -35,17 +44,14 @@ public class InvolvedImpl implements Involved {
                     });
             return Function.getResponse(responseFuture);
 
-        } catch (MDMServiceException mdmec) {
-            log.error("Exception Message : ", mdmec);
-            if (checkConnectionResetError(mdmec)) {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
-            } else {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-            }
-            throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
-        }
+        } catch (MDMServiceException mdmec) { throw handleMdmException(mdmec); }
     }
 
+    private InvolvedException handleMdmException(MDMServiceException mdmec) {
+        log.error("Exception Message : ", mdmec);
+        report.reportAlert(mdmec);
+        return new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
+    }
 
     @Override
     public PartyAddress getAddress(String partyAddressIdPK, List<String> userRoles) {
@@ -69,14 +75,7 @@ public class InvolvedImpl implements Involved {
             return Function.getResponse(responseFutureSecondCall);
 
         } catch (MDMServiceException mdmec) {
-            log.error("Exception Message : ", mdmec);
-            if (checkConnectionResetError(mdmec)) {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
-            } else {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-            }
-            throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST,
-                    Status.INTERNAL_SERVER_ERROR);
+            throw handleMdmException(mdmec);
         }
     }
 
@@ -103,13 +102,7 @@ public class InvolvedImpl implements Involved {
             return Function.getResponse(responseFuture);
 
         } catch (MDMServiceException mdmec) {
-            log.error("Exception Message : ", mdmec);
-            if (checkConnectionResetError(mdmec)) {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
-            } else {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-            }
-            throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
+    throw        handleMdmException(mdmec);
         }
     }
 
@@ -129,13 +122,7 @@ public class InvolvedImpl implements Involved {
             return Function.getResponse(responseFuture);
 
         } catch (MDMServiceException mdmec) {
-            log.error("Exception Message : ", mdmec);
-            if (checkConnectionResetError(mdmec)) {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
-            } else {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-            }
-            throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
+         throw   handleMdmException(mdmec);
         }
     }
 
@@ -194,11 +181,8 @@ public class InvolvedImpl implements Involved {
             return Function.getResponse(responseFuture);
 
         } catch (MDMServiceException mdmec) {
-            log.error("Exception Message : ", mdmec); if (checkConnectionResetError(mdmec)) {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
-            } else {
-                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-            } reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+            log.error("Exception Message : ", mdmec);
+            report.reportAlert(mdmec);
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
         }
 
@@ -299,23 +283,9 @@ public class InvolvedImpl implements Involved {
         }
     }
 
-    private boolean checkConnectionResetError(MDMServiceException mdmec) {
-        return mdmec.getErrorId() == 0 && mdmec.getMessage() != null && mdmec.getMessage().contains("Connection reset by peer at remote address");
-    }
 
     private void logAlertException(MDMServiceException mdmec) {
-        if (checkConnectionResetError(mdmec)) {
-            reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
-        } else {
-            reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-        }
+        report.reportAlert(mdmec);
     }
 
-    private void reportAlert(MDMServiceException mdmec, EventType eventType, Severity severity, String level) {
-        try {
-            log.error(Alert.builder().eventType(eventType).severity(severity).dtapStage(AlertAlertDtapStage).level(level).message(mdmec.getMessage()).build().getLogMessage());
-        } catch (Exception ex) {
-            log.error("MDM problem and problem logging to Alert", ex);
-        }
-    }
 }
