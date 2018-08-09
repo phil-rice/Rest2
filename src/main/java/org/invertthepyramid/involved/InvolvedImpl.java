@@ -38,9 +38,9 @@ public class InvolvedImpl implements Involved {
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : ", mdmec);
             if (checkConnectionResetError(mdmec)) {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
             } else {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
             }
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
         }
@@ -71,9 +71,9 @@ public class InvolvedImpl implements Involved {
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : ", mdmec);
             if (checkConnectionResetError(mdmec)) {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
             } else {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
             }
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST,
                     Status.INTERNAL_SERVER_ERROR);
@@ -105,9 +105,9 @@ public class InvolvedImpl implements Involved {
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : ", mdmec);
             if (checkConnectionResetError(mdmec)) {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
             } else {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
             }
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
         }
@@ -131,9 +131,9 @@ public class InvolvedImpl implements Involved {
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : ", mdmec);
             if (checkConnectionResetError(mdmec)) {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
             } else {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
             }
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
         }
@@ -195,10 +195,10 @@ public class InvolvedImpl implements Involved {
 
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : ", mdmec); if (checkConnectionResetError(mdmec)) {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
             } else {
-                reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
-            } reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+                reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
+            } reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
         }
 
@@ -305,13 +305,13 @@ public class InvolvedImpl implements Involved {
 
     private void logAlertException(MDMServiceException mdmec) {
         if (checkConnectionResetError(mdmec)) {
-            reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
+            reportAlert(mdmec, EventType.TECHNICAL, Severity.CRITICAL, "IP001");
         } else {
-            reportAlertAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
+            reportAlert(mdmec, EventType.TECHNICAL, Severity.FATAL, "IP002");
         }
     }
 
-    private void reportAlertAlert(MDMServiceException mdmec, EventType eventType, Severity severity, String level) {
+    private void reportAlert(MDMServiceException mdmec, EventType eventType, Severity severity, String level) {
         try {
             log.error(Alert.builder().eventType(eventType).severity(severity).dtapStage(AlertAlertDtapStage).level(level).message(mdmec.getMessage()).build().getLogMessage());
         } catch (Exception ex) {
