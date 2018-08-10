@@ -25,25 +25,24 @@ public class InvolvedImpl implements Involved {
 
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
 
-    <T> T wrap(Getter<T> getter) {
+    <T> T wrap(Getter<Future<T>> getter) {
         try {
-            return getter.get();
+            return Function.destroyMyPerformance(getter.get());
         } catch (MDMServiceException e) {throw handleMdmException(e);}
     }
 
 
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        return wrap(() -> {
-            Future<PartyAddress> responseFuture = mdmService.apply(partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser))
-                    .map(new AbstractFunction1<ResponseChain, PartyAddress>() {
-                        public PartyAddress apply(ResponseChain responseChain) {
-                            CommonBObjType commonBObjType = responseChain.getSafeResponse(0).getObject(0);
-                            return PartyAddress.fromResponse(commonBObjType);
-                        }
-                    });
-            return Function.getResponse(responseFuture);
-        });
+        return wrap(() ->
+                mdmService.apply(partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser))
+                        .map(new AbstractFunction1<ResponseChain, PartyAddress>() {
+                                 public PartyAddress apply(ResponseChain responseChain) {
+                                     CommonBObjType commonBObjType = responseChain.getSafeResponse(0).getObject(0);
+                                     return PartyAddress.fromResponse(commonBObjType);
+                                 }
+                             }
+                        ));
     }
 
     private InvolvedException handleMdmException(MDMServiceException mdmec) {
@@ -71,7 +70,7 @@ public class InvolvedImpl implements Involved {
             });
 
 
-            return Function.getResponse(responseFutureSecondCall);
+            return Function.destroyMyPerformance(responseFutureSecondCall);
 
         } catch (MDMServiceException mdmec) {
             throw handleMdmException(mdmec);
@@ -79,7 +78,8 @@ public class InvolvedImpl implements Involved {
     }
 
     @Override
-    public ContactMethod getContactMethod(String partyContactMethodIdPK, boolean keepObjectAlive, List<String> userRoles) {
+    public ContactMethod getContactMethod(String partyContactMethodIdPK, boolean keepObjectAlive, List<
+            String> userRoles) {
         try {
             Future<ContactMethod> responseFuture = null;
             final GetPartyContactMethodByIdPK getPartyContactMethodByIdPK = ContactMethod.getPartyContactMethodByIdPK(partyContactMethodIdPK);
@@ -98,7 +98,7 @@ public class InvolvedImpl implements Involved {
                         }
                     });
 
-            return Function.getResponse(responseFuture);
+            return Function.destroyMyPerformance(responseFuture);
 
         } catch (MDMServiceException mdmec) {
             throw handleMdmException(mdmec);
@@ -107,7 +107,8 @@ public class InvolvedImpl implements Involved {
 
 
     @Override
-    public ContactMethod updateContactMethod(ContactMethod contactMehod, String lastUpdateUser, List<String> userRoles) {
+    public ContactMethod updateContactMethod(ContactMethod contactMehod, String
+            lastUpdateUser, List<String> userRoles) {
         try {
 
             Future<ContactMethod> responseFuture = mdmService.apply(contactMehod.toCommand().toChain("updatePartyContactMethod").withRequesterName(lastUpdateUser).withRole(userRoles))
@@ -118,7 +119,7 @@ public class InvolvedImpl implements Involved {
                         }
                     });
 
-            return Function.getResponse(responseFuture);
+            return Function.destroyMyPerformance(responseFuture);
 
         } catch (MDMServiceException mdmec) {
             throw handleMdmException(mdmec);
@@ -143,7 +144,7 @@ public class InvolvedImpl implements Involved {
                             }
                         }
                     });
-            return Function.getResponse(responseFuture);
+            return Function.destroyMyPerformance(responseFuture);
         } catch (MDMServiceException mdmec) {
             throw new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
         }
@@ -177,7 +178,7 @@ public class InvolvedImpl implements Involved {
                             }
                         }
                     });
-            return Function.getResponse(responseFuture);
+            return Function.destroyMyPerformance(responseFuture);
 
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : ", mdmec);
@@ -188,7 +189,8 @@ public class InvolvedImpl implements Involved {
     }
 
     @Override
-    public PartySearchResponse searchParty(SearchIndividualRequest individualSearch, SearchOrganisationRequest organisationSearch, List<String> userRoles) {
+    public PartySearchResponse searchParty(SearchIndividualRequest individualSearch, SearchOrganisationRequest
+            organisationSearch, List<String> userRoles) {
         try {
             RequestChain requestChain = new RequestChain();
             if (individualSearch != null) {
@@ -243,7 +245,7 @@ public class InvolvedImpl implements Involved {
                             }
                         }
                     });
-            return Function.getResponse(responseFuture);
+            return Function.destroyMyPerformance(responseFuture);
 
         } catch (MDMServiceException mdmec) {
 
@@ -253,7 +255,8 @@ public class InvolvedImpl implements Involved {
     }
 
     @Override
-    public DeleteINGPartyWithAncestors deleteParty(String adminSysKeyType, String adminSysKey, List<String> userRoles) {
+    public DeleteINGPartyWithAncestors deleteParty(String adminSysKeyType, String
+            adminSysKey, List<String> userRoles) {
         try {
             Future<DeleteINGPartyWithAncestors> responseFuture = null;
             final DeleteINGPartyWithAncestors deleteParty = Party.deleteINGPartyWithAncestors(adminSysKeyType, adminSysKey);
@@ -269,7 +272,7 @@ public class InvolvedImpl implements Involved {
                             }
                         }
                     });
-            return Function.getResponse(responseFuture);
+            return Function.destroyMyPerformance(responseFuture);
         } catch (MDMServiceException mdmec) {
             log.error("Exception Message : {}", mdmec);
             log.error("MDM Service Exception throwableMessage : {}", mdmec.getThrowableMessage());
