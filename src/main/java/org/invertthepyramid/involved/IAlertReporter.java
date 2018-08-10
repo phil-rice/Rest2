@@ -5,6 +5,8 @@ import org.invertthepyramid.involved.misc.EventType;
 import org.invertthepyramid.involved.misc.MDMServiceException;
 import org.invertthepyramid.involved.misc.Severity;
 
+import java.util.function.Function;
+
 public interface IAlertReporter {
     void reportAlert(MDMServiceException mdmec);
 
@@ -45,6 +47,8 @@ class AlertReporter implements IAlertReporter {
     private String alertDtapStage;
     private LoggerAdapter log;
 
+    Function<MDMServiceException, AlertDetails> detailsMaker = AlertDetails::create;
+
     public AlertReporter(String alertDtapStage, LoggerAdapter log) {
         this.alertDtapStage = alertDtapStage;
         this.log = log;
@@ -52,8 +56,7 @@ class AlertReporter implements IAlertReporter {
 
 
     public void reportAlert(MDMServiceException mdmec) {
-        log.tryError("MDM", () -> AlertDetails.create(mdmec).message(alertDtapStage));
+        log.tryError("MDM", () -> detailsMaker.apply(mdmec).message(alertDtapStage));
     }
-
 
 }

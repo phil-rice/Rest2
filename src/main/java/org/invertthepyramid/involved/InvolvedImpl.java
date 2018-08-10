@@ -34,7 +34,7 @@ public class InvolvedImpl implements Involved {
 
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        try {
+        return wrap(() -> {
             Future<PartyAddress> responseFuture = mdmService.apply(partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser))
                     .map(new AbstractFunction1<ResponseChain, PartyAddress>() {
                         public PartyAddress apply(ResponseChain responseChain) {
@@ -43,8 +43,7 @@ public class InvolvedImpl implements Involved {
                         }
                     });
             return Function.getResponse(responseFuture);
-
-        } catch (MDMServiceException mdmec) { throw handleMdmException(mdmec); }
+        });
     }
 
     private InvolvedException handleMdmException(MDMServiceException mdmec) {
@@ -102,7 +101,7 @@ public class InvolvedImpl implements Involved {
             return Function.getResponse(responseFuture);
 
         } catch (MDMServiceException mdmec) {
-    throw        handleMdmException(mdmec);
+            throw handleMdmException(mdmec);
         }
     }
 
@@ -122,7 +121,7 @@ public class InvolvedImpl implements Involved {
             return Function.getResponse(responseFuture);
 
         } catch (MDMServiceException mdmec) {
-         throw   handleMdmException(mdmec);
+            throw handleMdmException(mdmec);
         }
     }
 

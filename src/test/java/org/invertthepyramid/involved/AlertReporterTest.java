@@ -41,15 +41,20 @@ public class AlertReporterTest {
     }
 
     @Test
-    public void testCallsTryLogWithMessage() {
-        MDMServiceException e = new MDMServiceException(123, "someMessage");
-        String expectedMessage = AlertDetails.create(e).message("stage");
+    public void testCallsTryLogAndCreatesAlertDetailsAndLogsMessage() {
+        MDMServiceException e = mock(MDMServiceException.class);
+        AlertDetails alertDetails = mock(AlertDetails.class);
+        when(alertDetails.message("stage")).thenReturn("someMessage");
         LoggerAdapter log = mock(LoggerAdapter.class);
-        IAlertReporter.reporter(log, "stage").reportAlert(e);
+
+        AlertReporter logger = (AlertReporter) IAlertReporter.reporter(log, "stage");
+        logger.detailsMaker = FunctionsFixture.constant(e, alertDetails);
+
+        logger.reportAlert(e);
 
         ArgumentCaptor<Getter> captor = ArgumentCaptor.forClass(Getter.class);
         verify(log, times(1)).tryError(eq("MDM"), captor.capture());
-        assertEquals(expectedMessage, captor.getValue().get());
+        assertEquals("someMessage", captor.getValue().get());
 
     }
 }
