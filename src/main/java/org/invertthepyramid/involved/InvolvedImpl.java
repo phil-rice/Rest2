@@ -13,6 +13,7 @@ import scala.runtime.AbstractFunction1;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.invertthepyramid.involved.Wrap.*;
 
 public class InvolvedImpl implements Involved {
@@ -27,12 +28,10 @@ public class InvolvedImpl implements Involved {
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
 
 
-
-
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        return wrap(IErrorStrategy.checkConnection(log, report), map(mdmService.apply(
-                partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser)),
+        return wrap(IErrorStrategy.checkConnection(log, report), map(
+                mdmService.apply(partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser)),
                 (responseChain) -> PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0))
         ));
     }
@@ -45,13 +44,9 @@ public class InvolvedImpl implements Involved {
 
     @Override
     public PartyAddress getAddress(String partyAddressIdPK, List<String> userRoles) {
-        try {
-            Future<PartyAddress> responseFutureSecondCall = null;
-            RequestChain requestChaingetAllPartyAdminSysKeys = PartyAddress
-                    .get(partyAddressIdPK).toChain("getPartyAddressByIdPK").withRole(userRoles);
-            responseFutureSecondCall = mdmService.apply(requestChaingetAllPartyAdminSysKeys).map(new AbstractFunction1<ResponseChain, PartyAddress>() {
-                @Override
-                public PartyAddress apply(ResponseChain responseChain) {
+        return wrap(IErrorStrategy.checkConnection(log, report), map(
+                mdmService.apply(PartyAddress.get(partyAddressIdPK).toChain("getPartyAddressByIdPK").withRole(userRoles)),
+                (responseChain) -> {
                     final Response response = responseChain.getOptionalResponse(0, "893");
                     if (response.getStatus() == ResponseStatus.SUCCESS) {
                         return PartyAddress.fromResponse(response.getObject(0), true);
@@ -59,42 +54,22 @@ public class InvolvedImpl implements Involved {
                         return null;
                     }
                 }
-            });
-
-
-            return Function.destroyMyPerformance(responseFutureSecondCall);
-
-        } catch (MDMServiceException mdmec) {
-            throw handleMdmException(mdmec);
-        }
+        ));
     }
 
+
     @Override
-    public ContactMethod getContactMethod(String partyContactMethodIdPK, boolean keepObjectAlive, List<
-            String> userRoles) {
-        try {
-            Future<ContactMethod> responseFuture = null;
-            final GetPartyContactMethodByIdPK getPartyContactMethodByIdPK = ContactMethod.getPartyContactMethodByIdPK(partyContactMethodIdPK);
-            final RequestChain requestChain = getPartyContactMethodByIdPK.toChain("getPartyContactMethodByIdPK").withRole(userRoles);
-
-            responseFuture = mdmService.apply(requestChain)
-                    .map(new AbstractFunction1<ResponseChain, ContactMethod>() {
-                        @Override
-                        public ContactMethod apply(ResponseChain responseChain) {
-                            final Response response = responseChain.getOptionalResponse(0, "893");
-                            if (response.getStatus() == ResponseStatus.SUCCESS) {
-                                return ContactMethod.fromResponse(response.getObject(0), keepObjectAlive);
-                            } else {
-                                return null;
-                            }
-                        }
-                    });
-
-            return Function.destroyMyPerformance(responseFuture);
-
-        } catch (MDMServiceException mdmec) {
-            throw handleMdmException(mdmec);
-        }
+    public ContactMethod getContactMethod(String partyContactMethodIdPK, boolean keepObjectAlive, List<String> userRoles) {
+        return wrap(IErrorStrategy.checkConnection(log, report), map(
+                mdmService.apply(ContactMethod.getPartyContactMethodByIdPK(partyContactMethodIdPK).toChain("getPartyContactMethodByIdPK").withRole(userRoles)),
+                (responseChain -> {
+                    final Response response = responseChain.getOptionalResponse(0, "893");
+                    if (response.getStatus() == ResponseStatus.SUCCESS) {
+                        return ContactMethod.fromResponse(response.getObject(0), keepObjectAlive);
+                    } else {
+                        return null;
+                    }
+                })));
     }
 
 
