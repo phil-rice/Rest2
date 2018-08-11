@@ -272,11 +272,15 @@ class UpdateAddress {
         this.mdmService = mdmService;
     }
 
+    RequestChain requestChain() {
+        return partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
+    }
+
+    PartyAddress fromResponseChain(ResponseChain responseChain) {
+        return PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0));
+    }
+
     public PartyAddress invoke() {
-        RequestChain requestChain = partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
-        return wrap(errorStrategy,
-                map(mdmService.apply(requestChain),
-                        (responseChain) -> PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0))
-                ));
+        return wrap(errorStrategy, map(mdmService.apply(requestChain()), this::fromResponseChain));
     }
 }
