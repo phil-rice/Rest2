@@ -3,17 +3,17 @@ package org.invertthepyramid.involved;
 import com.twitter.finagle.Service;
 import com.twitter.util.Future;
 import org.apache.commons.collections.CollectionUtils;
-import org.invertthepyramid.involved.misc.*;
 import org.invertthepyramid.involved.domain.*;
+import org.invertthepyramid.involved.misc.*;
 import org.invertthepyramid.involved.search.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
-
 import scala.runtime.AbstractFunction1;
 
 import java.util.ArrayList;
 import java.util.List;
+import static org.invertthepyramid.involved.Wrap.*;
 
 public class InvolvedImpl implements Involved {
     @Value("${Alert.alert.dtapstage}")
@@ -27,17 +27,14 @@ public class InvolvedImpl implements Involved {
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
 
 
+
+
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        return Wrap.wrap(IErrorStrategy.checkConnection(log, report), () ->
-                mdmService.apply(
-                        partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser))
-                        .<PartyAddress>map(new AbstractFunction1<ResponseChain, PartyAddress>() {
-                            @Override
-                            public PartyAddress apply(ResponseChain responseChain) {
-                                return PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0));
-                            }
-                        }));
+        return wrap(IErrorStrategy.checkConnection(log, report), map(mdmService.apply(
+                partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser)),
+                (responseChain) -> PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0))
+        ));
     }
 
     private InvolvedException handleMdmException(MDMServiceException mdmec) {
