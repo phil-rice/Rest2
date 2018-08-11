@@ -30,10 +30,8 @@ public class InvolvedImpl implements Involved {
 
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        return wrap(IErrorStrategy.checkConnection(log, report), map(
-                mdmService.apply(partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser)),
-                (responseChain) -> PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0))
-        ));
+        IErrorStrategy errorStrategy = IErrorStrategy.checkConnection(log, report);
+        return new UpdateAddress(errorStrategy, mdmService, partyAddress, lastUpdateUser, userRoles).invoke();
     }
 
     private InvolvedException handleMdmException(MDMServiceException mdmec) {
@@ -257,4 +255,28 @@ public class InvolvedImpl implements Involved {
         report.reportAlert(mdmec);
     }
 
+}
+
+class UpdateAddress {
+    private IErrorStrategy errorStrategy;
+    private PartyAddress partyAddress;
+    private String lastUpdateUser;
+    private List<String> userRoles;
+    private Service<RequestChain, ResponseChain> mdmService;
+
+    public UpdateAddress(IErrorStrategy errorStrategy, Service<RequestChain, ResponseChain> mdmService, PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
+        this.errorStrategy = errorStrategy;
+        this.partyAddress = partyAddress;
+        this.lastUpdateUser = lastUpdateUser;
+        this.userRoles = userRoles;
+        this.mdmService = mdmService;
+    }
+
+    public PartyAddress invoke() {
+        RequestChain requestChain = partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
+        return wrap(errorStrategy,
+                map(mdmService.apply(requestChain),
+                        (responseChain) -> PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0))
+                ));
+    }
 }
