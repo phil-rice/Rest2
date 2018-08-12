@@ -1,6 +1,7 @@
 package org.invertthepyramid.involved.misc;
 
 import org.invertthepyramid.involved.Request;
+import org.invertthepyramid.involved.domain.PartyAddress;
 
 import java.util.List;
 
@@ -23,5 +24,15 @@ public class RequestChain {
 
     public RequestChain withPageEndIndex(String s) {
         return this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof RequestChain;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }
