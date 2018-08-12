@@ -1,6 +1,6 @@
 package org.invertthepyramid.involved.search;
 
-import org.invertthepyramid.involved.misc.Command;
+import org.invertthepyramid.involved.mdm.Command;
 
 import java.util.Date;
 

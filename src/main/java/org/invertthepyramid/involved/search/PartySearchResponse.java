@@ -1,6 +1,6 @@
 package org.invertthepyramid.involved.search;
 
-import org.invertthepyramid.involved.misc.OrganizationSearch;
+import org.invertthepyramid.involved.domain.OrganizationSearch;
 
 import java.util.List;
 

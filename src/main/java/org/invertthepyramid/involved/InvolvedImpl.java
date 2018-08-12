@@ -4,8 +4,11 @@ import com.twitter.finagle.Service;
 import com.twitter.util.Future;
 import org.apache.commons.collections.CollectionUtils;
 import org.invertthepyramid.involved.domain.*;
-import org.invertthepyramid.involved.misc.*;
+import org.invertthepyramid.involved.mdm.*;
 import org.invertthepyramid.involved.search.*;
+import org.invertthepyramid.involved.utilities.IAlertReporter;
+import org.invertthepyramid.involved.utilities.IErrorStrategy;
+import org.invertthepyramid.involved.utilities.LoggerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -13,9 +16,9 @@ import scala.runtime.AbstractFunction1;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static org.invertthepyramid.involved.Wrap.*;
+import static org.invertthepyramid.involved.utilities.Wrap.map;
+import static org.invertthepyramid.involved.utilities.Wrap.wrap;
 
 public class InvolvedImpl implements Involved {
     @Value("${Alert.alert.dtapstage}")
@@ -24,18 +27,18 @@ public class InvolvedImpl implements Involved {
     Service<RequestChain, ResponseChain> mdmService;
 
     @Autowired
-    AlertReporter report;
+    IAlertReporter report;
 
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
 
-    AbstractService<UpdateAddressRequest, PartyAddress> updateAddress() {
-        return new AbstractService<>(IErrorStrategy.checkConnection(log, report), mdmService, UpdateAddressRequest.makeRequestChain, PartyAddress.fromResponseChain);
+    MdmService<UpdateAddressRequest, PartyAddress> updateAddress() {
+        return new MdmService<>(IErrorStrategy.checkConnection(log, report), mdmService, UpdateAddressRequest.makeRequestChain, PartyAddress.fromResponseChain);
     }
 
     public InvolvedImpl() {
     }
 
-    InvolvedImpl(LoggerAdapter log, AlertReporter reporter, Service<RequestChain, ResponseChain> mdmService) {
+    InvolvedImpl(LoggerAdapter log, IAlertReporter reporter, Service<RequestChain, ResponseChain> mdmService) {
         this.log = log;
         this.report = reporter;
         this.mdmService = mdmService;
@@ -48,8 +51,8 @@ public class InvolvedImpl implements Involved {
 
 
 
-    AbstractService<GetAddressRequest, PartyAddress> getAddress() {
-        return new AbstractService<GetAddressRequest, PartyAddress>(IErrorStrategy.checkConnection(log, report), mdmService,
+    MdmService<GetAddressRequest, PartyAddress> getAddress() {
+        return new MdmService<GetAddressRequest, PartyAddress>(IErrorStrategy.checkConnection(log, report), mdmService,
                 GetAddressRequest.makeRequestChain,
                 (responseChain) -> {
                     final Response response = responseChain.getOptionalResponse(0, "893");
@@ -273,82 +276,4 @@ public class InvolvedImpl implements Involved {
     }
 }
 
-interface MakeRequestChain {
-    RequestChain requestChain();
-}
 
-class UpdateAddressRequest implements MakeRequestChain {
-    private PartyAddress partyAddress;
-    private String lastUpdateUser;
-    private List<String> userRoles;
-
-    public UpdateAddressRequest(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        this.partyAddress = partyAddress;
-        this.lastUpdateUser = lastUpdateUser;
-        this.userRoles = userRoles;
-    }
-
-    public RequestChain requestChain() {
-        return partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
-    }
-
-    public static java.util.function.Function<UpdateAddressRequest, RequestChain> makeRequestChain = (rc) -> rc.requestChain();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UpdateAddressRequest that = (UpdateAddressRequest) o;
-        return Objects.equals(partyAddress, that.partyAddress) &&
-                Objects.equals(lastUpdateUser, that.lastUpdateUser) &&
-                Objects.equals(userRoles, that.userRoles);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(partyAddress, lastUpdateUser, userRoles);
-    }
-
-}
-
-
-class AbstractService<From, To> implements java.util.function.Function<From, To> {
-
-    IErrorStrategy errorStrategy;
-    Service<RequestChain, ResponseChain> mdmService;
-
-    final java.util.function.Function<From, RequestChain> makeRequestChain;
-
-    final java.util.function.Function<ResponseChain, To> fromResponseChain;
-
-    public AbstractService(IErrorStrategy errorStrategy, Service<RequestChain, ResponseChain> mdmService, java.util.function.Function<From, RequestChain> makeRequestChain, java.util.function.Function<ResponseChain, To> fromResponseChain) {
-        this.errorStrategy = errorStrategy;
-        this.mdmService = mdmService;
-        this.makeRequestChain = makeRequestChain;
-        this.fromResponseChain = fromResponseChain;
-    }
-
-    Getter<To> resultGetter(From from) {return wrap(errorStrategy, map(mdmService.apply(makeRequestChain.apply(from)), fromResponseChain));}
-
-    @Override
-    public To apply(From from) {
-        return resultGetter(from).get();
-    }
-}
-
-class GetAddressRequest {
-    String partyAddressIdPK;
-    List<String> userRoles;
-
-    public GetAddressRequest(String partyAddressIdPK, List<String> userRoles) {
-        this.partyAddressIdPK = partyAddressIdPK;
-        this.userRoles = userRoles;
-    }
-
-    RequestChain requestChain() {
-        return PartyAddress.get(partyAddressIdPK).toChain("getPartyAddressByIdPK").withRole(userRoles);
-    }
-
-    static java.util.function.Function<GetAddressRequest, RequestChain> makeRequestChain = (r) -> r.requestChain();
-}

@@ -1,5 +1,6 @@
 package org.invertthepyramid.involved.misc;
 
+import org.invertthepyramid.involved.mdm.MDMServiceException;
 import org.junit.Assert;
 import org.junit.Test;
 

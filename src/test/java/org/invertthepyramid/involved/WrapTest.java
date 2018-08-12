@@ -1,7 +1,10 @@
 package org.invertthepyramid.involved;
 
 import com.twitter.util.Await;
-import org.invertthepyramid.involved.misc.MDMServiceException;
+import org.invertthepyramid.involved.mdm.MDMServiceException;
+import org.invertthepyramid.involved.utilities.Getter;
+import org.invertthepyramid.involved.utilities.IErrorStrategy;
+import org.invertthepyramid.involved.utilities.Wrap;
 import org.junit.Assert;
 import org.junit.Test;
 

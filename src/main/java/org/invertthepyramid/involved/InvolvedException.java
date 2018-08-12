@@ -1,9 +1,9 @@
 package org.invertthepyramid.involved;
 
 public class InvolvedException extends RuntimeException {
-    final int errorCode;
-    final String errorKind;
-    final int status;
+    public final int errorCode;
+    public final String errorKind;
+    public final int status;
 
     public InvolvedException(int errorCode, String errorKind, int status) {
         this.errorCode = errorCode;

@@ -1,7 +1,7 @@
 package org.invertthepyramid.involved;
 
-import org.invertthepyramid.involved.misc.DeleteINGPartyWithAncestors;
-import org.invertthepyramid.involved.misc.SearchIndividualRequest;
+import org.invertthepyramid.involved.domain.DeleteINGPartyWithAncestors;
+import org.invertthepyramid.involved.search.SearchIndividualRequest;
 import org.invertthepyramid.involved.domain.ContactMethod;
 import org.invertthepyramid.involved.domain.Contract;
 import org.invertthepyramid.involved.domain.PartyAddress;

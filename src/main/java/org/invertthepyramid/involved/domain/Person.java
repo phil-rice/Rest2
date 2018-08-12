@@ -1,6 +1,6 @@
 package org.invertthepyramid.involved.domain;
 
-import org.invertthepyramid.involved.misc.CommonBObjType;
+import org.invertthepyramid.involved.mdm.CommonBObjType;
 
 public class Person {
     public static Person fromResponse(CommonBObjType object, boolean b) {

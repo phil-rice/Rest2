@@ -1,6 +1,5 @@
 package org.invertthepyramid.involved.domain;
 
-import org.invertthepyramid.involved.misc.DeleteINGPartyWithAncestors;
 import org.invertthepyramid.involved.search.SearchOrganization;
 import org.invertthepyramid.involved.search.SearchPerson;
 

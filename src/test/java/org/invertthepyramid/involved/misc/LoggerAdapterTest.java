@@ -1,6 +1,6 @@
 package org.invertthepyramid.involved.misc;
 
-import org.invertthepyramid.involved.LoggerAdapter;
+import org.invertthepyramid.involved.utilities.LoggerAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 

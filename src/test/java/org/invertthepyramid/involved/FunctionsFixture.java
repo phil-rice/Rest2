@@ -1,5 +1,6 @@
 package org.invertthepyramid.involved;
 
+import org.invertthepyramid.involved.utilities.Getter;
 import org.junit.Assert;
 
 import java.util.function.Function;
