@@ -27,11 +27,12 @@ public class InvolvedImpl implements Involved {
 
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
 
+    @Autowired
+    UpdateAddress updateAddress;
 
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        IErrorStrategy errorStrategy = IErrorStrategy.checkConnection(log, report);
-        return new UpdateAddress(errorStrategy, mdmService, partyAddress, lastUpdateUser, userRoles).invoke();
+        return updateAddress.apply(new UpdateAddressRequest(partyAddress, lastUpdateUser, userRoles));
     }
 
     private InvolvedException handleMdmException(MDMServiceException mdmec) {
@@ -257,30 +258,42 @@ public class InvolvedImpl implements Involved {
 
 }
 
-class UpdateAddress {
-    private IErrorStrategy errorStrategy;
+interface MakeRequestChain {
+    RequestChain requestChain();
+}
+
+class UpdateAddressRequest implements MakeRequestChain {
     private PartyAddress partyAddress;
     private String lastUpdateUser;
     private List<String> userRoles;
-    private Service<RequestChain, ResponseChain> mdmService;
 
-    public UpdateAddress(IErrorStrategy errorStrategy, Service<RequestChain, ResponseChain> mdmService, PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        this.errorStrategy = errorStrategy;
+    public UpdateAddressRequest(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
         this.partyAddress = partyAddress;
         this.lastUpdateUser = lastUpdateUser;
         this.userRoles = userRoles;
+    }
+
+    public RequestChain requestChain() {
+        return partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
+    }
+}
+
+class UpdateAddress implements java.util.function.Function<UpdateAddressRequest, PartyAddress> {
+    private IErrorStrategy errorStrategy;
+    private Service<RequestChain, ResponseChain> mdmService;
+
+    public UpdateAddress(IErrorStrategy errorStrategy, Service<RequestChain, ResponseChain> mdmService) {
+        this.errorStrategy = errorStrategy;
         this.mdmService = mdmService;
     }
 
-    RequestChain requestChain() {
-        return partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
-    }
 
     PartyAddress fromResponseChain(ResponseChain responseChain) {
         return PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0));
     }
 
-    public PartyAddress invoke() {
-        return wrap(errorStrategy, map(mdmService.apply(requestChain()), this::fromResponseChain));
+    @Override
+    public PartyAddress apply(UpdateAddressRequest updateAddressRequest) {
+        return wrap(errorStrategy, map(mdmService.apply(updateAddressRequest.requestChain()), this::fromResponseChain));
     }
 }

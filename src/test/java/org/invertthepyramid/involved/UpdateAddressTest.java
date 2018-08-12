@@ -14,18 +14,19 @@ import static org.mockito.Mockito.*;
 public class UpdateAddressTest {
 
     PartyAddress partyAddress = new PartyAddress();
+
     @Test
-    public void testRequestChain() {
+    public void testRequestChainIsMadeFromUpdateAddressRequest() {
         RequestChain expected = new RequestChain();
-        UpdateAddress updateAddress = new UpdateAddress(mock(IErrorStrategy.class), mock(Service.class), partyAddress, "someLastUpdateUser", new ArrayList<>());
-        assertEquals(expected, updateAddress.requestChain());
+        UpdateAddressRequest request = new UpdateAddressRequest(partyAddress, "someLastUpdateUser", new ArrayList<>());
+        assertEquals(expected, request.requestChain());
     }
 
     @Test
     public void testFromResponseChain() {
         ResponseChain responseChain = new ResponseChain();
         PartyAddress expected = new PartyAddress();
-        UpdateAddress updateAddress = new UpdateAddress(mock(IErrorStrategy.class), mock(Service.class), partyAddress, "someLastUpdateUser", new ArrayList<>());
+        UpdateAddress updateAddress = new UpdateAddress(mock(IErrorStrategy.class), mock(Service.class));
         assertEquals(expected, updateAddress.fromResponseChain(responseChain));
     }
 }
