@@ -11,8 +11,8 @@ public interface IErrorStrategy {
 }
 
 class CheckConnectionErrorStrategy implements IErrorStrategy {
-    private LoggerAdapter log;
-    IAlertReporter alertReporter;
+    final LoggerAdapter log;
+    final IAlertReporter alertReporter;
 
     public CheckConnectionErrorStrategy(LoggerAdapter log, IAlertReporter alertReporter) {
         this.log = log;

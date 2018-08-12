@@ -13,6 +13,7 @@ import scala.runtime.AbstractFunction1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.invertthepyramid.involved.Wrap.*;
 
@@ -27,12 +28,22 @@ public class InvolvedImpl implements Involved {
 
     private static LoggerAdapter log = null;//would normally be Logger.get... etc
 
-    @Autowired
-    UpdateAddress updateAddress;
+    AbstractService<UpdateAddressRequest, PartyAddress> updateAddress() {
+        return new AbstractService<>(IErrorStrategy.checkConnection(log, report), mdmService, UpdateAddressRequest.makeRequestChain, PartyAddress.fromResponseChain);
+    }
+
+    public InvolvedImpl() {
+    }
+
+    InvolvedImpl(LoggerAdapter log, AlertReporter reporter, Service<RequestChain, ResponseChain> mdmService) {
+        this.log = log;
+        this.report = reporter;
+        this.mdmService = mdmService;
+    }
 
     @Override
     public PartyAddress updateAddress(PartyAddress partyAddress, String lastUpdateUser, List<String> userRoles) {
-        return updateAddress.apply(new UpdateAddressRequest(partyAddress, lastUpdateUser, userRoles));
+        return updateAddress().apply(new UpdateAddressRequest(partyAddress, lastUpdateUser, userRoles));
     }
 
     private InvolvedException handleMdmException(MDMServiceException mdmec) {
@@ -53,7 +64,7 @@ public class InvolvedImpl implements Involved {
                         return null;
                     }
                 }
-        ));
+        )).get();
     }
 
 
@@ -68,7 +79,7 @@ public class InvolvedImpl implements Involved {
                     } else {
                         return null;
                     }
-                })));
+                }))).get();
     }
 
 
@@ -276,24 +287,48 @@ class UpdateAddressRequest implements MakeRequestChain {
     public RequestChain requestChain() {
         return partyAddress.toCommand().toChain("updatePartyAddress").withRole(userRoles).withRequesterName(lastUpdateUser);
     }
-}
 
-class UpdateAddress implements java.util.function.Function<UpdateAddressRequest, PartyAddress> {
-    private IErrorStrategy errorStrategy;
-    private Service<RequestChain, ResponseChain> mdmService;
+    public static java.util.function.Function<UpdateAddressRequest, RequestChain> makeRequestChain = (rc) -> rc.requestChain();
 
-    public UpdateAddress(IErrorStrategy errorStrategy, Service<RequestChain, ResponseChain> mdmService) {
-        this.errorStrategy = errorStrategy;
-        this.mdmService = mdmService;
-    }
-
-
-    PartyAddress fromResponseChain(ResponseChain responseChain) {
-        return PartyAddress.fromResponse(responseChain.getSafeResponse(0).getObject(0));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UpdateAddressRequest that = (UpdateAddressRequest) o;
+        return Objects.equals(partyAddress, that.partyAddress) &&
+                Objects.equals(lastUpdateUser, that.lastUpdateUser) &&
+                Objects.equals(userRoles, that.userRoles);
     }
 
     @Override
-    public PartyAddress apply(UpdateAddressRequest updateAddressRequest) {
-        return wrap(errorStrategy, map(mdmService.apply(updateAddressRequest.requestChain()), this::fromResponseChain));
+    public int hashCode() {
+
+        return Objects.hash(partyAddress, lastUpdateUser, userRoles);
     }
 }
+
+
+class AbstractService<From, To> implements java.util.function.Function<From, To> {
+
+    IErrorStrategy errorStrategy;
+    Service<RequestChain, ResponseChain> mdmService;
+
+    final java.util.function.Function<From, RequestChain> makeRequestChain;
+
+    final java.util.function.Function<ResponseChain, To> fromResponseChain;
+
+    public AbstractService(IErrorStrategy errorStrategy, Service<RequestChain, ResponseChain> mdmService, java.util.function.Function<From, RequestChain> makeRequestChain, java.util.function.Function<ResponseChain, To> fromResponseChain) {
+        this.errorStrategy = errorStrategy;
+        this.mdmService = mdmService;
+        this.makeRequestChain = makeRequestChain;
+        this.fromResponseChain = fromResponseChain;
+    }
+
+    Getter<To> resultGetter(From from) {return wrap(errorStrategy, map(mdmService.apply(makeRequestChain.apply(from)), fromResponseChain));}
+
+    @Override
+    public To apply(From from) {
+        return resultGetter(from).get();
+    }
+}
+

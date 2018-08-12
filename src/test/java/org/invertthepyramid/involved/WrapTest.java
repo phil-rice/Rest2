@@ -15,7 +15,7 @@ public class WrapTest {
     @Test
     public void testWrapReturnsTheValueIfNoException() {
         IErrorStrategy strategy = mock(IErrorStrategy.class);
-        int result = Wrap.wrap(strategy, FunctionsFixture.constantGetter(Future.value(123))).intValue();
+        int result = Wrap.wrap(strategy, FunctionsFixture.constantGetter(Future.value(123))).get().intValue();
         assertEquals(123, result);
         verify(strategy, times(0)).handleMdmException(any(MDMServiceException.class));
     }
@@ -27,7 +27,7 @@ public class WrapTest {
         IErrorStrategy strategy = mock(IErrorStrategy.class);
         when(strategy.handleMdmException(mdmServiceException)).thenReturn(involvedException);
         try {
-            Wrap.wrap(strategy, FunctionsFixture.constantGetter(Future.exception(mdmServiceException)));
+            Wrap.wrap(strategy, FunctionsFixture.constantGetter(Future.exception(mdmServiceException))).get();
             fail();
         } catch (InvolvedException e) {
             assertEquals(involvedException, e);
@@ -39,7 +39,7 @@ public class WrapTest {
         RuntimeException e = new RuntimeException();
         IErrorStrategy strategy = mock(IErrorStrategy.class);
         try {
-            Wrap.wrap(strategy, FunctionsFixture.constantGetter(Future.exception(e)));
+            Wrap.wrap(strategy, FunctionsFixture.constantGetter(Future.exception(e))).get();
             fail();
         } catch (RuntimeException actual) {
             assertEquals(e, actual);
