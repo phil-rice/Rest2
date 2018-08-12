@@ -5,12 +5,11 @@ import org.invertthepyramid.involved.domain.PartyAddress;
 import org.invertthepyramid.involved.misc.RequestChain;
 import org.invertthepyramid.involved.misc.ResponseChain;
 import org.junit.Test;
-import scala.actors.threadpool.Arrays;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class UpdateAddressTest {

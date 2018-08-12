@@ -46,16 +46,11 @@ public class InvolvedImpl implements Involved {
         return updateAddress().apply(new UpdateAddressRequest(partyAddress, lastUpdateUser, userRoles));
     }
 
-    private InvolvedException handleMdmException(MDMServiceException mdmec) {
-        log.error("Exception Message : ", mdmec);
-        report.reportAlert(mdmec);
-        return new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
-    }
 
-    @Override
-    public PartyAddress getAddress(String partyAddressIdPK, List<String> userRoles) {
-        return wrap(IErrorStrategy.checkConnection(log, report), map(
-                mdmService.apply(PartyAddress.get(partyAddressIdPK).toChain("getPartyAddressByIdPK").withRole(userRoles)),
+
+    AbstractService<GetAddressRequest, PartyAddress> getAddress() {
+        return new AbstractService<GetAddressRequest, PartyAddress>(IErrorStrategy.checkConnection(log, report), mdmService,
+                GetAddressRequest.makeRequestChain,
                 (responseChain) -> {
                     final Response response = responseChain.getOptionalResponse(0, "893");
                     if (response.getStatus() == ResponseStatus.SUCCESS) {
@@ -63,8 +58,12 @@ public class InvolvedImpl implements Involved {
                     } else {
                         return null;
                     }
-                }
-        )).get();
+                });
+    }
+
+    @Override
+    public PartyAddress getAddress(String partyAddressIdPK, List<String> userRoles) {
+        return getAddress().apply(new GetAddressRequest(partyAddressIdPK, userRoles));
     }
 
 
@@ -267,6 +266,11 @@ public class InvolvedImpl implements Involved {
         report.reportAlert(mdmec);
     }
 
+    private InvolvedException handleMdmException(MDMServiceException mdmec) {
+        log.error("Exception Message : ", mdmec);
+        report.reportAlert(mdmec);
+        return new InvolvedException(ApplicationConstant.ERROR_CODE_0, ApplicationConstant.ERROR_CANNOT_EXECUTE_REQUEST, Status.INTERNAL_SERVER_ERROR);
+    }
 }
 
 interface MakeRequestChain {
@@ -305,6 +309,7 @@ class UpdateAddressRequest implements MakeRequestChain {
 
         return Objects.hash(partyAddress, lastUpdateUser, userRoles);
     }
+
 }
 
 
@@ -332,3 +337,18 @@ class AbstractService<From, To> implements java.util.function.Function<From, To>
     }
 }
 
+class GetAddressRequest {
+    String partyAddressIdPK;
+    List<String> userRoles;
+
+    public GetAddressRequest(String partyAddressIdPK, List<String> userRoles) {
+        this.partyAddressIdPK = partyAddressIdPK;
+        this.userRoles = userRoles;
+    }
+
+    RequestChain requestChain() {
+        return PartyAddress.get(partyAddressIdPK).toChain("getPartyAddressByIdPK").withRole(userRoles);
+    }
+
+    static java.util.function.Function<GetAddressRequest, RequestChain> makeRequestChain = (r) -> r.requestChain();
+}
