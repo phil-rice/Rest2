@@ -1,5 +1,11 @@
 package one.xingyi.core.annotations;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 /** This is a view on an entity. If the entity is marked with this it is both a view and an entity */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME) // Need to keep them around for testing
 public @interface View {
     /** The name of the view.
      * <ul><li>If the name of the interface it marks is IEntity this defaults to EntityView. (it's </li>
