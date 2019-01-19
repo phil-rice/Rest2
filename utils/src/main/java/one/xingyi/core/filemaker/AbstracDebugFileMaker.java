@@ -10,6 +10,17 @@ public class AbstracDebugFileMaker {
     List<String> typeDomInfo(TypeDom typeDom) {
         return List.of(typeDom.toString());
     }
+    List<String> entityNameInfo(EntityNames names) {
+        return Lists.insert(
+                "Original: " + names.originalDefn.asString(),
+                Formating.indent(List.of(
+                        "IServer:    " + names.serverInterface.asString(),
+                        "ServerImpl: " + names.serverEntity.asString(),
+                        "Client:     " + names.clientEntity.asString(),
+                        "ServComp:   " + names.serverCompanion.asString(),
+                        "Lens:       " + names.entityNameForLens
+                )));
+    }
 
 
     List<String> fieldDebugInfo(FieldDom fieldDom) {

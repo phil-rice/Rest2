@@ -12,17 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 public class CodeDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<EntityDom> {
 
-    List<String> entityNameInfo(EntityNames names) {
-        return Lists.insert(
-                "Original: " + names.originalDefn.asString(),
-                Formating.indent(List.of(
-                        "IServer:    " + names.serverInterface.asString(),
-                        "ServerImpl: " + names.serverEntity.asString(),
-                        "Client:     " + names.clientEntity.asString(),
-                        "ServComp:   " + names.serverCompanion.asString(),
-                        "Lens:       " + names.entityNameForLens
-                )));
-    }
     List<String> entityDebugInfo(EntityDom entityDom) {
         return Lists.<String>append(
                 entityNameInfo(entityDom.entityName),

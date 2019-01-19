@@ -45,7 +45,7 @@ public class SimpleServerNamesTest {
 
 
     @Test public void testViewName() {
-        Result<String, ViewNames> actual = serverNames.viewName("original.package.class", "EntityClassName", "IViewRoot");
+        Result<String, ViewNames> actual = serverNames.viewName("original.package.class", " a.b.c.IEntityDefn", "IViewRoot");
         assertEquals(new PackageAndClassName("original.package.class"), actual.result().get().originalDefn);
 //        assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.clientView);
 //        assertEquals(new PackageAndClassName("original.package.client.companion.ViewRootCompanion"), actual.clientCompanion);

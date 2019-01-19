@@ -1,13 +1,11 @@
 package one.xingyi.core.annotationProcessors;
 import one.xingyi.core.annotations.View;
-import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.names.ViewNames;
-import one.xingyi.core.sdk.IXingYiOpsDefn;
+import one.xingyi.core.sdk.IXingYiViewDefn;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.function.Function;
@@ -21,10 +19,10 @@ class SimpleElementToViewNames implements IElementToViewNames {
     Result<String, String> findEntityName(TypeElement viewElement) {
         for (TypeMirror interfaceMirror : viewElement.getInterfaces()) {
             String interfaceName = interfaceMirror.toString();
-            if (interfaceName.startsWith(IXingYiOpsDefn.class.getName()))
-                return Result.succeed(Strings.extractFromOptionalEnvelope(IXingYiOpsDefn.class.getName() + "<", ">", interfaceName));
+            if (interfaceName.startsWith(IXingYiViewDefn.class.getName()))
+                return Result.succeed(Strings.extractFromOptionalEnvelope(IXingYiViewDefn.class.getName() + "<", ">", interfaceName));
         }
-        return Result.fail("could not find interface for " + viewElement.asType() + " that was IXingYiOpsDefn<> in " + viewElement.getInterfaces());
+        return Result.fail("could not find interface for " + viewElement.asType() + " that was IXingYiViewDefn<> in " + viewElement.getInterfaces());
     }
     @Override public Result<ElementFail, ViewNames> apply(TypeElement element) {
         return ElementFail.lift(element, findEntityName(element).flatMap(en -> serverNames.viewName(element.asType().toString(), en, element.getAnnotation(View.class).viewName())));

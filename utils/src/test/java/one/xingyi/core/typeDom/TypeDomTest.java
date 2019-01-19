@@ -60,7 +60,7 @@ public class TypeDomTest {
     }
 
     @Test public void testView() {
-        assertEquals(new ViewType("a.b.IPersonDefn", "a.b.IPerson"), TypeDom.create(names, "a.b.IPersonDefn").get());
+        assertEquals(new ViewType("a.b.IPersonDefn", "a.b.domain.IPerson"), TypeDom.create(names, "a.b.IPersonDefn").get());
     }
     @Test public void testAnythingInsideBracketsDoesntWork() {
         assertEquals(Optional.empty(), TypeDom.create(names, "Thing<something>"));

@@ -1,9 +1,9 @@
 package one.xingyi.targetcode.generate.generatedOnServerForClient.address;
 import one.xingyi.core.optics.Lens;
-import one.xingyi.core.sdk.IXingYiOps;
+import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.targetcode.generate.generatedOnServerForShared.address.IAddressEntity;
 
-public interface IAddressLine12 extends IXingYiOps<IAddressEntity> {
+public interface IAddressLine12 extends IXingYiView<IAddressEntity> {
     String line1();
     IAddressLine12 withLine1(String line1);
     Lens<IAddressEntity, String> line1L = Lens.create(IAddressEntity::line1, IAddressEntity::withLine1);

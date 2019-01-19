@@ -38,10 +38,11 @@ class SimpleServerNames implements IServerNames {
     @Override public Result<String, ViewNames> viewName(String className, String interfaceName, String nameInViewAnnotation) {
         PackageAndClassName originalDefn = new PackageAndClassName(className);
         String originalPackage = originalDefn.packageName;
-        return classNameStrategy.toRoot("View", originalDefn.className, nameInViewAnnotation).map(viewRoot -> {
+        return classNameStrategy.toRoot("View", originalDefn.className, nameInViewAnnotation).flatMap(viewRoot -> {
             PackageAndClassName clientView = new PackageAndClassName(packageNameStrategy.toClientViews(originalPackage), classNameStrategy.toClientViews(viewRoot));
             PackageAndClassName clientCompanion = new PackageAndClassName(packageNameStrategy.toClientCompanion(originalPackage), classNameStrategy.toClientCompanion(viewRoot));
-            return new ViewNames(originalDefn, clientView, clientCompanion);
+            return entityName(interfaceName, "").map(en ->
+                    new ViewNames(originalDefn, clientView, clientCompanion, en));
         });
     }
     @Override public String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName) {

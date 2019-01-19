@@ -12,12 +12,13 @@ import one.xingyi.core.utils.Lists;
 import java.util.List;
 public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<ViewDom> {
     List<String> viewNameInfo(ViewNames names) {
-        return Lists.insert(
-                "Original: " + names.originalDefn.asString(),
+        return Lists.append(
+                List.of("Original: " + names.originalDefn.asString()),
                 Formating.indent(List.of(
                         "IServer:    " + names.clientView.asString(),
                         "ServerImpl: " + names.clientCompanion.asString()
-                )));
+                )),
+                Formating.indent(entityNameInfo(names.entityNames)));
     }
 
     List<String> viewDebugInfo(ViewDom viewDom) {
@@ -37,7 +38,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
 
         List<String> result = Lists.append(
-                Formating.javaFile("class", packageAndClassName, "",manualImports),
+                Formating.javaFile("class", packageAndClassName, "", manualImports),
                 List.of("/*"),
                 viewDebugInfo(viewDom),
                 List.of("*/}"));
