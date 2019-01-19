@@ -28,7 +28,7 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
         String result = Lists.join(Lists.append(
                 Formating.javaFile("interface", entityDom.entityName.serverInterface,
                         " extends IXingYiEntity", IXingYiEntity.class, XingYiGenerated.class),
-                Formating.indent(allFieldsAccessors(entityDom.entityName.serverEntity.className, entityDom.fields)),
+                Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
                 List.of("}")
         ), "\n");
         return new FileDefn(entityDom.entityName.serverInterface, result);
