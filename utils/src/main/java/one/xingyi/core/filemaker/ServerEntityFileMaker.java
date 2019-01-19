@@ -33,9 +33,9 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     List<String> accessors(String entityName, String constructor, FieldDom dom) {
         List<String> result = new ArrayList<>();
-        result.add(dom.typeDom.fullTypeName() + " " + dom.name + "() { return " + dom.name + ";}");
+        result.add("public "+ dom.typeDom.fullTypeName() + " " + dom.name + "() { return " + dom.name + ";}");
         if (!dom.readOnly) {
-            result.add(entityName + " with" + dom.name + "(" + dom.typeDom.fullTypeName() + " " + dom.name + "){ return " + constructor + "; } ");
+            result.add("public "+ entityName + " with" + dom.name + "(" + dom.typeDom.fullTypeName() + " " + dom.name + "){ return " + constructor + "; } ");
         }
         return result;
     }
@@ -63,7 +63,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public String toString(){");
-        result.add(Formating.indent+"return " + Strings.quote(entityDom.entityName.serverEntity.className + "(") +"+" +
+        result.add(Formating.indent + "return " + Strings.quote(entityDom.entityName.serverEntity.className + "(") + "+" +
                 entityDom.fields.mapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
         result.add("}");
         return result;
@@ -73,7 +73,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     @Override public FileDefn apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile(entityDom.entityName.serverEntity, "", XingYiGenerated.class, Objects.class),
+                Formating.javaFile("class", entityDom.entityName.serverEntity, " implements " + entityDom.entityName.serverInterface.asString(), XingYiGenerated.class, Objects.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),
                 Formating.indent(allFieldsAccessors(entityDom.entityName.serverEntity.className, entityDom.fields)),

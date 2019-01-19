@@ -52,7 +52,7 @@ public class CodeDomDebugFileMaker implements IFileMaker<EntityDom> {
 
         PackageAndClassName packageAndClassName = entityDom.entityName.serverEntity.mapName(e -> e + "DebugInfo");
         List<String> result = Lists.append(
-                Formating.javaFile(packageAndClassName, ""),
+                Formating.javaFile("class", packageAndClassName, ""),
                 List.of("/*"),
                 entityDebugInfo(entityDom),
                 List.of("*/}"));

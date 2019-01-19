@@ -5,10 +5,7 @@ import one.xingyi.core.annotations.View;
 import one.xingyi.core.codeDom.CodeDom;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.filemaker.CodeDomDebugFileMaker;
-import one.xingyi.core.filemaker.FileDefn;
-import one.xingyi.core.filemaker.IFileMaker;
-import one.xingyi.core.filemaker.ServerEntityFileMaker;
+import one.xingyi.core.filemaker.*;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IClassNameStrategy;
 import one.xingyi.core.names.IPackageNameStrategy;
@@ -72,7 +69,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     List<FileDefn> makeContent(CodeDom codeDom) {
-        List<IFileMaker<EntityDom>> entityFile = Arrays.asList(new CodeDomDebugFileMaker(), new ServerEntityFileMaker());
+        List<IFileMaker<EntityDom>> entityFile = Arrays.asList(
+                new CodeDomDebugFileMaker(),
+                new ServerInterfaceFileMaker(),
+                new ServerEntityFileMaker());
         return Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFile, f -> f.apply(entityDom)));
     }
 
