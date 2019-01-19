@@ -12,6 +12,7 @@ import one.xingyi.core.names.IClassNameStrategy;
 import one.xingyi.core.names.IPackageNameStrategy;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.utils.*;
+import one.xingyi.core.validation.Result;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -21,14 +22,12 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.sql.ResultSet;
+import java.util.*;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
-    final IElementToEntityDom elementToEntityDom = IElementToEntityDom.simple;
-    final IElementToViewDom elementToViewDom = IElementToViewDom.simple;
+    ElementToBundle bundle = ElementToBundle.simple;
+
     private Types typeUtils;
     private Elements elementUtils;
     private Filer filer;
@@ -48,13 +47,25 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
-        List<EntityDom> entityDoms = Lists.map(Sets.sortedList(env.getElementsAnnotatedWith(Entity.class), comparator()), e -> elementToEntityDom.apply(e));
-        List<ViewDom> viewDoms = Lists.map(Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator()), v -> elementToViewDom.apply(entityDoms, v));
-        CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
-        List<FileDefn> content = makeContent(codeDom);
-        log.info("Started");
-        for (FileDefn fileDefn : content)
-            makeClassFile(fileDefn);
+        try {
+            Set<? extends Element> elements = env.getElementsAnnotatedWith(Entity.class);
+            log.info("Found these entities: " + elements);
+            List<Result<ElementFail, EntityDom>> entityDomResults = Lists.map(
+                    Sets.sortedList(elements, comparator()),
+                    e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply((TypeElement) e));
+            log.info("Made entityDoms: " + entityDomResults);
+            Result.merge(entityDomResults).result().ifPresent(entityDoms -> {
+                List<ViewDom> viewDoms = Lists.map(Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator()), v -> bundle.elementToViewDom().apply(entityDoms, v));
+                CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
+                List<FileDefn> content = makeContent(codeDom);
+                log.info("Started");
+                for (FileDefn fileDefn : content)
+                    makeClassFile(fileDefn);
+
+            });
+        } catch (Exception e) {
+            log.error("In Annotation Processor\n" + e.getClass().getName() + "\n" + Lists.mapJoin(Arrays.asList(e.getStackTrace()), "\n", Objects::toString));
+        }
         return false;
     }
 

@@ -80,6 +80,12 @@ public class Lists {
                 result.add(t1);
         return result;
     }
+    public static <T, T1> List<T1> flatMapOptional(List<T> list, Function<T, Optional<T1>> fn) {
+        List<T1> result = new ArrayList<>();
+        for (T t : list)
+            fn.apply(t).ifPresent(result::add);
+        return result;
+    }
     public static <T> List<T> filter(List<T> list, Function<T, Boolean> fn) {
         List<T> result = new ArrayList<>();
         for (T t : list)
