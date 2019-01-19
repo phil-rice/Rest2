@@ -22,7 +22,8 @@ class SimpleClassSimpleNameStrategy implements IClassNameStrategy {
                 ).map(n -> Strings.from(n.substring(1, n.length() - 4), nameInEntityAnnotation));
     }
     @Override public String toServerCompanion(String entityDefn) { return entityDefn + "Companion"; }
-    @Override public String toClientViews(String entityDefn) { return entityDefn; }
+    @Override public String toClientViewInterface(String entityDefn) { return entityDefn; }
+    @Override public String toClientViewImpl(String entityDefn) { return entityDefn + "Impl"; }
     @Override public String toServerInterfaceForDomain(String entityDefn) { return "I" + entityDefn; }
     @Override public String toClientEntityDefn(String entityDefn) { return "I" + entityDefn + "Entity"; }
     @Override public String toClientCompanion(String entityDefn) { return entityDefn + "Companion"; }

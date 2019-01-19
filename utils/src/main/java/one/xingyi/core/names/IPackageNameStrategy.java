@@ -7,7 +7,8 @@ public interface IPackageNameStrategy extends INameStrategy {
 
 class SimplePackageNameStrategy implements IPackageNameStrategy {
     @Override public String toServerCompanion(String entityDefn) { return entityDefn + ".server.companion"; }
-    @Override public String toClientViews(String entityDefn) { return entityDefn + ".client.view"; }
+    @Override public String toClientViewInterface(String entityDefn) { return entityDefn + ".client.view"; }
+    @Override public String toClientViewImpl(String entityDefn) { return entityDefn + ".client.view"; }
     @Override public String toClientEntityDefn(String entityDefn) { return entityDefn + ".client.entitydefn"; }
     @Override public String toClientCompanion(String entityDefn) { return entityDefn + ".client.companion"; }
     @Override public String toServerImplForDomain(String entityDefn) { return entityDefn + ".domain"; }

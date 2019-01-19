@@ -15,7 +15,9 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         return Lists.append(
                 List.of("Original: " + names.originalDefn.asString()),
                 Formating.indent(List.of(
-                        "IServer:    " + names.clientView.asString(),
+                        "Entity:     " + names.clientEntity.asString(),
+                        "View:        " + names.clientView.asString(),
+                        "Impl   :    " + names.clientViewImpl.asString(),
                         "ServerImpl: " + names.clientCompanion.asString()
                 )),
                 Formating.indent(entityNameInfo(names.entityNames)));

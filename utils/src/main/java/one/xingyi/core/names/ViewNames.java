@@ -8,7 +8,9 @@ import one.xingyi.core.codeDom.PackageAndClassName;
 @EqualsAndHashCode
 public class ViewNames {
     public final PackageAndClassName originalDefn;
+    public final PackageAndClassName clientEntity;
     public final PackageAndClassName clientView;
+    public final PackageAndClassName clientViewImpl;
     public final PackageAndClassName clientCompanion;
     public final EntityNames entityNames;
 }
