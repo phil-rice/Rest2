@@ -13,6 +13,7 @@ public class Optionals {
         else return in.apply(opt.get());
     }
 
+
     public static <T> Optional<T> from(boolean b, Supplier<T> supplier) {
         if (b) return Optional.of(supplier.get());
         else return Optional.empty();

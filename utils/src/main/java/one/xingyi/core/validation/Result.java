@@ -5,11 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.utils.FunctionWithError;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Optionals;
 
+import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 public interface Result<Fail, T> {
     List<Fail> fails();
     Optional<T> result();
@@ -17,6 +20,7 @@ public interface Result<Fail, T> {
     <T1> Result<Fail, T1> flatMap(Function<T, Result<Fail, T1>> fn);
     <Fail1> Result<Fail1, T> failMap(FunctionWithError<Fail, Fail1> fn);
 
+    static <Fail, T> Result<Fail, T> from(Optional<T> optT, Supplier<Fail> supplier) { return Optionals.<T, Result<Fail, T>>fold(optT, () -> Result.fail(supplier.get()), Result::succeed);}
     static <Fail, T> Result<Fail, List<T>> merge(List<Result<Fail, T>> results) {
         return Result.<Fail, List<T>>apply(Lists.flatMap(results, f -> f.fails()), Lists.flatMapOptional(results, Result::result));
     }
