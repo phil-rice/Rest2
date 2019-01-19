@@ -8,19 +8,16 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static one.xingyi.core.codeDom.EntityDom.create;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 public class EntityDomTest {
 
-
     @Entity(entityName = "someEntityName", bookmark = "someBookmark", getUrl = "someUrl")
     class DummyClass {
-
     }
 
     Reflection<FieldDomTest> reflection = new Reflection(DummyClass.class);
-
 
     @Test public void testCreate() {
         IServerNames names = mock(IServerNames.class);
