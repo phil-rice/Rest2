@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 public class Strings {
     public static Optional<String> from(String s) { return Optionals.from(s != null && s.length() > 0, () -> s); }
-
-    public static String lift(String monad, String inside){return monad + "<" + inside + ">";}
+    public static String from(String s, String defaultValue) { return s != null && s.length() > 0 ? s : defaultValue; }
+    public static String lift(String monad, String inside) {return monad + "<" + inside + ">";}
     public static List<String> useIf(boolean b, String string) { return b ? Arrays.asList(string) : Arrays.asList();}
 
     public static final String[] empty = new String[0];
@@ -25,7 +25,7 @@ public class Strings {
 
     public static String extractFromOptionalEnvelope(String start, String end, String s) {
         int startIndex = s.indexOf(start);
-        int endOfStart = startIndex + start.length() ;
+        int endOfStart = startIndex + start.length();
         int endIndex = s.indexOf(end, endOfStart);
         if (startIndex == -1 || endIndex == -1)
             return s;

@@ -3,6 +3,8 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.annotations.Field;
+import one.xingyi.core.names.EntityNames;
+import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.Strings;
 
@@ -18,10 +20,10 @@ public class FieldDom {
     final String lensPath;
     final Optional<String> javascript;
 
-    public static FieldDom create(INames names, PackageAndClassName entityName, TypeDom typeDom, String fieldName, Field field) {
+    public static FieldDom create(IServerNames names, EntityNames entityName, TypeDom typeDom, String fieldName, Field field) {
         return new FieldDom(typeDom, fieldName, field.readOnly(),
-                names.lensName(entityName, fieldName, field.lensName()),
-                names.lensPath(entityName, fieldName, field.lensPath()),
+                names.entityLensName(entityName, fieldName, field.lensName()),
+                names.entityLensPath(entityName, fieldName, field.lensPath()),
                 Strings.from(field.javascript()));
     }
 }

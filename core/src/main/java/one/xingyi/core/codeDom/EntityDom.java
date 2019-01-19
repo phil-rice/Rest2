@@ -4,23 +4,25 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.annotations.Entity;
+import one.xingyi.core.names.EntityNames;
+import one.xingyi.core.names.IServerNames;
 
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class EntityDom {
-    final PackageAndClassName entityName;
+    final EntityNames entityName;
     final Optional<String> bookmark;
     final Optional<String> getUrl;
-    final List<FieldDom> fields;
+    final FieldListDom fields;
 
-    static public EntityDom create(INames name, PackageAndClassName entityName, Entity entity, List<FieldDom> fields) {
-        return new EntityDom(name.entityName(entityName, entity.entityName()),
-                name.bookmark(entityName, entity.bookmark()),
-                name.getUrl(entityName, entity.getUrl()),
+    static public EntityDom create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
+        EntityNames entityNames = name.entityName(interfaceDefnName, entity.entityName());
+        return new EntityDom(entityNames,
+                name.bookmark(entityNames, entity.bookmark()),
+                name.getUrl(entityNames, entity.getUrl()),
                 fields);
     }
 }

@@ -1,14 +1,15 @@
 package one.xingyi.core.codeDom;
 import one.xingyi.core.annotations.Field;
+import one.xingyi.core.names.EntityNames;
+import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.reflection.Reflection;
 import one.xingyi.core.typeDom.TypeDom;
 import org.junit.Test;
 
-import java.lang.ref.Reference;
 import java.util.Optional;
 
-import static one.xingyi.core.codeDom.FieldDom.*;
-import static org.junit.Assert.*;
+import static one.xingyi.core.codeDom.FieldDom.create;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 public class FieldDomTest {
@@ -22,18 +23,16 @@ public class FieldDomTest {
 
 
     @Test public void testCreate() {
-        INames names = mock(INames.class);
+        IServerNames names = mock(IServerNames.class);
         TypeDom typeDom = mock(TypeDom.class);
-        PackageAndClassName pCName = mock(PackageAndClassName.class);
-        when(names.getUrl(pCName, "")).thenReturn(Optional.of("theGetUrl"));
-        when(names.bookmark(pCName, "")).thenReturn(Optional.of("theBookmark"));
-        when(names.lensName(pCName, "someFieldName","someLensName")).thenReturn("theLensName");
-        when(names.lensPath(pCName, "someFieldName","someLensPath")).thenReturn("theLensPath");
+        EntityNames entityNames = mock(EntityNames.class);
+        when(names.entityLensName(entityNames, "someFieldName","someLensName")).thenReturn("theLensName");
+        when(names.entityLensPath(entityNames, "someFieldName","someLensPath")).thenReturn("theLensPath");
 
-        FieldDom actualReadOnly = create(names, pCName, typeDom, "someFieldName", reflection.methodAnnotation(Field.class, "readOnlyField"));
+        FieldDom actualReadOnly = create(names, entityNames, typeDom, "someFieldName", reflection.methodAnnotation(Field.class, "readOnlyField"));
         assertEquals(new FieldDom(typeDom, "someFieldName", true, "theLensName", "theLensPath", Optional.empty()), actualReadOnly);
 
-        FieldDom actualReadWrite = create(names, pCName, typeDom, "someFieldName", reflection.methodAnnotation(Field.class, "readWriteField"));
+        FieldDom actualReadWrite = create(names, entityNames, typeDom, "someFieldName", reflection.methodAnnotation(Field.class, "readWriteField"));
         assertEquals(new FieldDom(typeDom, "someFieldName", false, "theLensName", "theLensPath", Optional.empty()), actualReadWrite);
     }
 
