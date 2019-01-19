@@ -17,13 +17,13 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     }
 
     List<String> fields(FieldListDom dom) {
-        return dom.map(nv -> "final " + nv.typeDom.fullTypeName() + " " + nv.name + ";");
+        return dom.map(nv -> "final " + nv.typeDom.transformed() + " " + nv.name + ";");
     }
 
     List<String> constructor(EntityDom dom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
-        result.add("public " + dom.entityName.serverEntity.className + "(" + dom.fields.mapJoin(",", nv -> nv.typeDom.fullTypeName() + " " + nv.name) + "){");
+        result.add("public " + dom.entityName.serverEntity.className + "(" + dom.fields.mapJoin(",", nv -> nv.typeDom.transformed() + " " + nv.name) + "){");
         result.addAll(dom.fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
         return result;
@@ -33,9 +33,9 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     List<String> accessors(String entityName, String constructor, FieldDom dom) {
         List<String> result = new ArrayList<>();
-        result.add("public "+ dom.typeDom.fullTypeName() + " " + dom.name + "() { return " + dom.name + ";}");
+        result.add("public "+ dom.typeDom.transformed() + " " + dom.name + "() { return " + dom.name + ";}");
         if (!dom.readOnly) {
-            result.add("public "+ entityName + " with" + dom.name + "(" + dom.typeDom.fullTypeName() + " " + dom.name + "){ return " + constructor + "; } ");
+            result.add("public "+ entityName + " with" + dom.name + "(" + dom.typeDom.transformed() + " " + dom.name + "){ return " + constructor + "; } ");
         }
         return result;
     }

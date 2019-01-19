@@ -3,6 +3,8 @@ package one.xingyi.core.typeDom;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @ToString
@@ -10,7 +12,7 @@ import lombok.ToString;
 public class ListType implements TypeDom {
     final String fullTypeName;
     final TypeDom nested;
-
+    @Override public String transformed() { return List.class.getName() + "<" + nested.transformed() + ">"; }
     @Override public String fullTypeName() { return fullTypeName; }
     @Override public boolean primitive() { return false; }
     @Override public TypeDom nested() { return nested; }

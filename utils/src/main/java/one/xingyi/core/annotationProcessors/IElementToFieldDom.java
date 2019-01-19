@@ -25,7 +25,7 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
     @Override public Result<ElementFail, FieldDom> apply(Element element) {
         String fieldType = element.asType().toString();
         String fieldName = element.getSimpleName().toString();
-        Optional<TypeDom> typeDom = TypeDom.create(fieldType);
+        Optional<TypeDom> typeDom = TypeDom.create(serverNames,fieldType);
         if (typeDom.isEmpty()) return Result.fail(new ElementFail("Could not handle the type " + fieldType + " for " + fieldName, element));
         Field annotation = element.getAnnotation(Field.class);
         String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> findLensName(fieldName, f));

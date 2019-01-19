@@ -1,6 +1,9 @@
 package one.xingyi.core.typeDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.embedded.Embedded;
+import one.xingyi.core.names.IClassNameStrategy;
+import one.xingyi.core.names.IPackageNameStrategy;
+import one.xingyi.core.names.IServerNames;
 import org.junit.Test;
 
 import java.util.List;
@@ -10,7 +13,7 @@ import static one.xingyi.core.utils.Strings.lift;
 import static org.junit.Assert.assertEquals;
 
 public class TypeDomTest {
-
+    IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
     PackageAndClassName pn(String s) {return new PackageAndClassName(s);}
 
     PackageAndClassName stringPn = pn(String.class.getName());
@@ -40,27 +43,37 @@ public class TypeDomTest {
     ListType listBooleanPt = new ListType(listBooleanPn.asString(), booleanPt);
 
     @Test public void testPrimitives() {
-        assertEquals(stringPt, TypeDom.create("()" +stringPn.asString()).get());
-        assertEquals(intPt, TypeDom.create("()" +intPn.asString()).get());
-        assertEquals(doublePt, TypeDom.create("()" +doublePn.asString()).get());
-        assertEquals(booleanPt, TypeDom.create("()" +booleanPn.asString()).get());
+        assertEquals(stringPt, TypeDom.create(names, "()" + stringPn.asString()).get());
+        assertEquals(intPt, TypeDom.create(names, "()" + intPn.asString()).get());
+        assertEquals(doublePt, TypeDom.create(names, "()" + doublePn.asString()).get());
+        assertEquals(booleanPt, TypeDom.create(names, "()" + booleanPn.asString()).get());
     }
     @Test public void testList() {
-        assertEquals(listStringPt, TypeDom.create("()" +listStringPn.asString()).get());
-        assertEquals(listIntPt, TypeDom.create("()" +listIntPn.asString()).get());
-        assertEquals(listDoublePt, TypeDom.create("()" +listDoublePn.asString()).get());
-        assertEquals(listBooleanPt, TypeDom.create("()" +listBooleanPn.asString()).get());
+        assertEquals(listStringPt, TypeDom.create(names, "()" + listStringPn.asString()).get());
+        assertEquals(listIntPt, TypeDom.create(names, "()" + listIntPn.asString()).get());
+        assertEquals(listDoublePt, TypeDom.create(names, "()" + listDoublePn.asString()).get());
+        assertEquals(listBooleanPt, TypeDom.create(names, "()" + listBooleanPn.asString()).get());
     }
     @Test public void testEmbedded() {
-        assertEquals(embeededStringPt, TypeDom.create("()" +embeddedStringPn.asString()).get());
-        assertEquals(embeededIntPt, TypeDom.create("()" +embeddedIntPn.asString()).get());
+        assertEquals(embeededStringPt, TypeDom.create(names, "()" + embeddedStringPn.asString()).get());
+        assertEquals(embeededIntPt, TypeDom.create(names, "()" + embeddedIntPn.asString()).get());
     }
 
     @Test public void testView() {
-        assertEquals(new ViewType("something"), TypeDom.create("something").get());
+        assertEquals(new ViewType("a.b.IPersonDefn", "a.b.IPerson"), TypeDom.create(names, "a.b.IPersonDefn").get());
     }
     @Test public void testAnythingInsideBracketsDoesntWork() {
-        assertEquals(Optional.empty(), TypeDom.create("Thing<something>"));
+        assertEquals(Optional.empty(), TypeDom.create(names, "Thing<something>"));
+    }
+
+    @Test public void testTransformed() {
+        TypeDom viewType = TypeDom.create(names, "a.b.IPersonDefn").get();
+        assertEquals("java.lang.String", stringPt.transformed());
+        assertEquals("java.util.List<java.lang.String>", listStringPt.transformed());
+        assertEquals("a.b.domain.IPerson", viewType.transformed());
+        ListType listType = (ListType) TypeDom.create(names, "java.util.List<a.b.IPersonDefn>").get();
+        assertEquals("java.util.List<a.b.domain.IPerson>", listType.transformed());
+
     }
 
 }

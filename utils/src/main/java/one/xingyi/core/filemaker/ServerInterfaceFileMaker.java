@@ -18,9 +18,9 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     List<String> accessors(String entityName, FieldDom dom) {
         List<String> result = new ArrayList<>();
         result.add("//" + dom.typeDom);
-        result.add(dom.typeDom.fullTypeName() + " " + dom.name + "();");
+        result.add(dom.typeDom.transformed() + " " + dom.name + "();");
         if (!dom.readOnly) {
-            result.add(entityName + " with" + dom.name + "(" + dom.typeDom.fullTypeName() + " " + dom.name + ");");
+            result.add(entityName + " with" + dom.name + "(" + dom.typeDom.transformed() + " " + dom.name + ");");
         }
         return result;
     }
