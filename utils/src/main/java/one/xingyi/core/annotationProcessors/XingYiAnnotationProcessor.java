@@ -69,12 +69,19 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     List<FileDefn> makeContent(CodeDom codeDom) {
-        List<IFileMaker<EntityDom>> entityFile = Arrays.asList(
+        List<IFileMaker<EntityDom>> entityFileMakes = Arrays.asList(
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
                 new ServerEntityFileMaker(),
                 new ServerCompanionFileMaker());
-        return Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFile, f -> f.apply(entityDom)));
+        List<FileDefn> fromCodeDom = Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
+
+        List<IFileMaker<ViewDom>> viewFileMakers = List.of(
+                new ViewDomDebugFileMaker()
+        );
+        List<FileDefn> fromViewDom = Lists.flatMap(codeDom.viewDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));
+
+        return Lists.<FileDefn>append(fromCodeDom, fromViewDom);
     }
 
     void makeClassFile(FileDefn fileDefn) {

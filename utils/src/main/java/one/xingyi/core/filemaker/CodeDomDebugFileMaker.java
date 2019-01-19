@@ -10,10 +10,7 @@ import one.xingyi.core.utils.Lists;
 
 import java.util.Arrays;
 import java.util.List;
-public class CodeDomDebugFileMaker implements IFileMaker<EntityDom> {
-    List<String> typeDomInfo(TypeDom typeDom) {
-        return List.of(typeDom.toString());
-    }
+public class CodeDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<EntityDom> {
 
     List<String> entityNameInfo(EntityNames names) {
         return Lists.insert(
@@ -24,17 +21,6 @@ public class CodeDomDebugFileMaker implements IFileMaker<EntityDom> {
                         "Client:     " + names.clientEntity.asString(),
                         "ServComp:   " + names.serverCompanion.asString(),
                         "Lens:       " + names.entityNameForLens
-                )));
-    }
-
-    List<String> fieldDebugInfo(FieldDom fieldDom) {
-        return Lists.append(
-                List.<String>of("Field: " + fieldDom.name),
-                Formating.indent(typeDomInfo(fieldDom.typeDom)),
-                Formating.indent(List.of(
-                        "Lens path " + fieldDom.lensPath,
-                        "Lens name " + fieldDom.lensName,
-                        "Readonly " + fieldDom.readOnly
                 )));
     }
     List<String> entityDebugInfo(EntityDom entityDom) {
@@ -49,7 +35,6 @@ public class CodeDomDebugFileMaker implements IFileMaker<EntityDom> {
     }
 
     @Override public FileDefn apply(EntityDom entityDom) {
-
         PackageAndClassName packageAndClassName = entityDom.entityName.serverEntity.mapName(e -> e + "DebugInfo");
         List<String> result = Lists.append(
                 Formating.javaFile("class", packageAndClassName, ""),
