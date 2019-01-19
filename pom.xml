@@ -11,8 +11,10 @@
     <modules>
         <module>reference</module>
         <module>server</module>
+        <module>utils</module>
         <module>core</module>
         <module>targetcode</module>
+        <module>core</module>
     </modules>
     <build>
         <plugins>
