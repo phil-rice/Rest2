@@ -18,7 +18,7 @@ public class SimpleClassSimpleNameStrategyTest {
         assertEquals(List.of("<Thing> [SimpleDefn] Should start with an I"), namesStrategy.toRoot("<Thing>", "SimpleDefn", "").fails());
         assertEquals(List.of("<Thing> annotation [Override] in [SimpleDefn] doesn't start with an I"), namesStrategy.toRoot("<Thing>", "SimpleDefn", "Override").fails());
 
-        assertEquals("Overide", namesStrategy.toRoot("<Thing>", "simple", "IOveride").result().get());
+        assertEquals("Overide", namesStrategy.toRoot("<Thing>", "forEntity", "IOveride").result().get());
         assertEquals("Overide", namesStrategy.toRoot("<Thing>", "Isimple", "IOveride").result().get());
         assertEquals("Overide", namesStrategy.toRoot("<Thing>", "simpleDefn", "IOveride").result().get());
     }

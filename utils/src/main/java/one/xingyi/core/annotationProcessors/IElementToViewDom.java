@@ -1,17 +1,22 @@
 package one.xingyi.core.annotationProcessors;
-import one.xingyi.core.codeDom.EntityDom;
+import lombok.RequiredArgsConstructor;
 import one.xingyi.core.codeDom.ViewDom;
+import one.xingyi.core.names.ViewNames;
+import one.xingyi.core.validation.Result;
 
-import javax.lang.model.element.Element;
-import java.util.List;
-import java.util.function.Function;
+import javax.lang.model.element.TypeElement;
 public interface IElementToViewDom {
-    static IElementToViewDom simple = new SimpleElementToViewDom();
+    static IElementToViewDom forView(ElementToBundle bundle, ViewNames viewNames) { return new SimpleElementToViewDom(viewNames, bundle.elementToFieldListDomForView(viewNames));}
 
-    ViewDom apply(List<EntityDom> entityDoms, Element viewElement);
+    Result<ElementFail, ViewDom> apply(TypeElement viewElement);
 }
+@RequiredArgsConstructor
 class SimpleElementToViewDom implements IElementToViewDom {
-    @Override public ViewDom apply(List<EntityDom> entityDoms, Element viewElement) {
-        return null;
+    final ViewNames viewNames;
+    final IElementToFieldListDom elementToFieldListDom;
+
+
+    @Override public Result<ElementFail, ViewDom> apply(TypeElement viewElement) {
+        return elementToFieldListDom.apply(viewElement).map(fieldListDom -> new ViewDom(viewNames, "not worked out yet", fieldListDom));
     }
 }

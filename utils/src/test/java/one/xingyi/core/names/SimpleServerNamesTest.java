@@ -45,13 +45,14 @@ public class SimpleServerNamesTest {
 
 
     @Test public void testViewName() {
-        Result<String, ViewNames> actual = serverNames.viewName("original.package.class", "IViewRoot");
+        Result<String, ViewNames> actual = serverNames.viewName("original.package.class", "EntityClassName", "IViewRoot");
         assertEquals(new PackageAndClassName("original.package.class"), actual.result().get().originalDefn);
 //        assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.clientView);
 //        assertEquals(new PackageAndClassName("original.package.client.companion.ViewRootCompanion"), actual.clientCompanion);
     }
     @Test public void testViewNameWithoutAnI() {
-        assertEquals(List.of("View annotation [ViewRoot] in [class] doesn't start with an I" ), serverNames.viewName("original.package.class", "ViewRoot").fails());
+        assertEquals(List.of("View annotation [ViewRoot] in [class] doesn't start with an I"),
+                serverNames.viewName("original.package.class", "EntityClassName", "ViewRoot").fails());
     }
 
     @Test public void testLensName() {

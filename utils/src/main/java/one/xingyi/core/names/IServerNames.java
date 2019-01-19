@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface IServerNames {
     static IServerNames simple(IPackageNameStrategy packageNameStrategy, IClassNameStrategy classNameStrategy) { return new SimpleServerNames(packageNameStrategy, classNameStrategy); }
     Result<String, EntityNames> entityName(String className, String annotationEntityname);
-    Result<String, ViewNames> viewName(String className, String annotationViewName);
+    Result<String, ViewNames> viewName(String className, String entityClassName, String annotationViewName);
     String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
     String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
     Optional<String> bookmark(EntityNames entityElementName, String annotationBookmark);
@@ -35,7 +35,7 @@ class SimpleServerNames implements IServerNames {
             return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, entityRoot);
         });
     }
-    @Override public Result<String, ViewNames> viewName(String className, String nameInViewAnnotation) {
+    @Override public Result<String, ViewNames> viewName(String className, String interfaceName, String nameInViewAnnotation) {
         PackageAndClassName originalDefn = new PackageAndClassName(className);
         String originalPackage = originalDefn.packageName;
         return classNameStrategy.toRoot("View", originalDefn.className, nameInViewAnnotation).map(viewRoot -> {

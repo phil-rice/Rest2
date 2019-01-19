@@ -1,8 +1,21 @@
 package one.xingyi.core.utils;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 public class Strings {
+    public static String getFrom(Consumer<PrintStream> consumer){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        consumer.accept(new PrintStream(stream));
+        return stream.toString();
+    }
+
+
+
     public static Optional<String> from(String s) { return Optionals.from(s != null && s.length() > 0, () -> s); }
     public static String from(String s, String defaultValue) { return s != null && s.length() > 0 ? s : defaultValue; }
     public static String lift(String monad, String inside) {return monad + "<" + inside + ">";}

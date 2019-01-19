@@ -12,12 +12,12 @@ import one.xingyi.core.validation.Result;
 @ToString
 @EqualsAndHashCode
 public class ViewDom {
-    public final EntityDom entityDom;
+    //    public final EntityDom entityDom;
     public final ViewNames viewNames;
     public final String bookmark;
     public final FieldListDom fields;
 
-    static public Result<String, ViewDom> create(IServerNames name, String viewInterfaceDefnName, EntityDom entityDom, View view, FieldListDom fields) {
-        return name.viewName(viewInterfaceDefnName, view.viewName()).map(viewNames -> new ViewDom(entityDom, viewNames, entityDom.bookmark.orElseThrow(), fields));
+    static public Result<String, ViewDom> create(IServerNames name, String viewInterfaceDefnName, String entityClassName, View view, FieldListDom fields) {
+        return name.viewName(viewInterfaceDefnName, entityClassName, view.viewName()).map(viewNames -> new ViewDom(viewNames, "haven't wired up bookmark", fields));
     }
 }

@@ -6,10 +6,7 @@ import one.xingyi.core.codeDom.CodeDom;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.filemaker.*;
-import one.xingyi.core.names.EntityNames;
-import one.xingyi.core.names.IClassNameStrategy;
-import one.xingyi.core.names.IPackageNameStrategy;
-import one.xingyi.core.names.IServerNames;
+import one.xingyi.core.names.*;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
 
@@ -51,19 +48,29 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             List<Result<ElementFail, EntityDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
-            log.info("Made entityDoms: " + entityDomResults);
 
-            Result.merge(entityDomResults).result().ifPresent(entityDoms -> {
-                List<ViewDom> viewDoms = Lists.map(Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator()), v -> bundle.elementToViewDom().apply(entityDoms, v));
-                CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
+
+            Result<ElementFail, List<EntityDom>> entityDoms = Result.merge(entityDomResults);
+
+            List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());
+            log.info("Making viewDoms elements: " + viewElements);
+            List<Result<ElementFail, ViewDom>> viewDomResults = Lists.map(viewElements,
+                    v -> bundle.elementToViewNames().apply((TypeElement) v).flatMap(vn ->
+                            bundle.elementToViewDom(vn).apply((TypeElement) v)
+                    )
+            );
+            Result<ElementFail, List<ViewDom>> viewDoms = Result.merge(viewDomResults);
+            log.info("Made viewDoms: " + viewDoms);
+
+            Result.join(entityDoms, viewDoms, (ed, vd) -> new CodeDom(ed, vd)).forEach(codeDom -> {
                 List<FileDefn> content = makeContent(codeDom);
                 log.info("Started");
                 for (FileDefn fileDefn : content)
                     makeClassFile(fileDefn);
-
             });
+
         } catch (Exception e) {
-            log.error("In Annotation Processor\n" + e.getClass().getName() + "\n" + Lists.mapJoin(Arrays.asList(e.getStackTrace()), "\n", Objects::toString));
+            log.error("In Annotation Processor\n" + Strings.getFrom(e::printStackTrace));
         }
         return false;
     }
