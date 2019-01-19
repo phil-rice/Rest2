@@ -10,5 +10,7 @@ class SimplePackageNameStrategy implements IPackageNameStrategy {
     @Override public String toClientViews(String entityDefn) { return entityDefn + ".client.view"; }
     @Override public String toClientEntityDefn(String entityDefn) { return entityDefn + ".client.entitydefn"; }
     @Override public String toClientCompanion(String entityDefn) { return entityDefn + ".client.companion"; }
-    @Override public String toServerForDomain(String entityDefn) { return entityDefn + ".domain"; }
+    @Override public String toServerImplForDomain(String entityDefn) { return entityDefn + ".domain"; }
+    @Override public String toServerInterfaceForDomain(String entityDefn) { return entityDefn + ".domain";}
+
 }

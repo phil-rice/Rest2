@@ -6,6 +6,7 @@ import lombok.ToString;
 import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
+import one.xingyi.core.validation.Result;
 
 import java.util.Optional;
 
@@ -18,11 +19,8 @@ public class EntityDom {
     public final Optional<String> getUrl;
     public final FieldListDom fields;
 
-    static public EntityDom create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
-        EntityNames entityNames = name.entityName(interfaceDefnName, entity.entityName());
-        return new EntityDom(entityNames,
-                name.bookmark(entityNames, entity.bookmark()),
-                name.getUrl(entityNames, entity.getUrl()),
-                fields);
+    static public Result<String, EntityDom> create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
+        return name.entityName(interfaceDefnName, entity.entityName()).
+                map(entityNames -> new EntityDom(entityNames, name.bookmark(entityNames, entity.bookmark()), name.getUrl(entityNames, entity.getUrl()), fields));
     }
 }

@@ -3,6 +3,7 @@ import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.reflection.Reflection;
+import one.xingyi.core.validation.Result;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -19,19 +20,19 @@ public class EntityDomTest {
 
     Reflection<FieldDomTest> reflection = new Reflection(DummyClass.class);
 
-    @Test public void testCreate() {
+    @Test public void testCreateHappyPath() {
         IServerNames names = mock(IServerNames.class);
         String originalEntityName = DummyClass.class.getName();
         EntityNames entityNames = mock(EntityNames.class);
         FieldListDom fieldListDom = mock(FieldListDom.class);
 
 
-        when(names.entityName(originalEntityName, "someEntityName")).thenReturn(entityNames);
+        when(names.entityName(originalEntityName, "someEntityName")).thenReturn(Result.succeed(entityNames));
         when(names.bookmark(entityNames, "someBookmark")).thenReturn(Optional.of("theBookmark"));
         when(names.getUrl(entityNames, "someUrl")).thenReturn(Optional.of("theGetUrl"));
 
-        EntityDom actual = create(names, originalEntityName, reflection.classAnnotation(Entity.class), fieldListDom);
-        assertEquals(new EntityDom(entityNames, Optional.of("theBookmark"), Optional.of("theGetUrl"), fieldListDom), actual);
+        Result<String, EntityDom> actual = create(names, originalEntityName, reflection.classAnnotation(Entity.class), fieldListDom);
+        assertEquals(new EntityDom(entityNames, Optional.of("theBookmark"), Optional.of("theGetUrl"), fieldListDom), actual.result().get());
     }
 
 }

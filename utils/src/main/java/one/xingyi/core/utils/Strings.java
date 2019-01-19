@@ -44,4 +44,7 @@ public class Strings {
     public static String firstLetterUppercase(String s) {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
+    public static boolean hasContent(String s) {
+        return s != null && s.length()>0;
+    }
 }

@@ -23,4 +23,11 @@ public class ResultTest {
         assertEquals(Result.fail("fail"),Result.fail("fail").map(e->e+"mapped"));
     }
 
+    @Test public void testLeftMap(){
+        fail();
+    }
+    @Test public void testFlatMap(){
+        fail();
+    }
+
 }

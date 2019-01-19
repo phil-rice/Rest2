@@ -18,10 +18,12 @@ public class CodeDomDebugFileMaker implements IFileMaker<EntityDom> {
     List<String> entityNameInfo(EntityNames names) {
         return Lists.insert(
                 "Original: " + names.originalDefn.asString(),
-                Formating.indent(List.of("Server:   " + names.serverEntity.asString(),
-                        "Client:   " + names.clientEntity.asString(),
-                        "ServComp: " + names.serverCompanion.asString(),
-                        "Lens:    " + names.entityNameForLens
+                Formating.indent(List.of(
+                        "IServer:    " + names.serverInterface.asString(),
+                        "ServerImpl: " + names.serverEntity.asString(),
+                        "Client:     " + names.clientEntity.asString(),
+                        "ServComp:   " + names.serverCompanion.asString(),
+                        "Lens:       " + names.entityNameForLens
                 )));
     }
 

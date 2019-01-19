@@ -23,7 +23,6 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
         Entity annotation = element.getAnnotation(Entity.class);
         Optional<String> optBookmark = Optionals.chainOpt(annotation, Entity::bookmark, b -> serverNames.bookmark(entityNames, b));
         Optional<String> optGetUrl = Optionals.chainOpt(annotation, Entity::getUrl, b -> serverNames.getUrl(entityNames, b));
-        EntityNames entityNames = serverNames.entityName(element.asType().toString(), annotation.entityName());
         return elementToFieldListDom.apply(element).map(fieldListDom -> new EntityDom(entityNames, optBookmark, optGetUrl, fieldListDom));
     }
 }

@@ -4,12 +4,12 @@ import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.annotations.View;
 import one.xingyi.core.codeDom.CodeDom;
 import one.xingyi.core.codeDom.EntityDom;
-import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.filemaker.CodeDomDebugFileMaker;
-import one.xingyi.core.filemaker.EntityFileMaker;
 import one.xingyi.core.filemaker.FileDefn;
 import one.xingyi.core.filemaker.IFileMaker;
+import one.xingyi.core.filemaker.ServerEntityFileMaker;
+import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IClassNameStrategy;
 import one.xingyi.core.names.IPackageNameStrategy;
 import one.xingyi.core.names.IServerNames;
@@ -24,7 +24,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
 import java.util.*;
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
@@ -54,7 +53,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             log.info("Found these entities: " + elements);
             List<Result<ElementFail, EntityDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),
-                    e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply((TypeElement) e));
+                    e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
             log.info("Made entityDoms: " + entityDomResults);
 
             Result.merge(entityDomResults).result().ifPresent(entityDoms -> {
@@ -73,7 +72,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     List<FileDefn> makeContent(CodeDom codeDom) {
-        List<IFileMaker<EntityDom>> entityFile = Arrays.asList(new CodeDomDebugFileMaker());
+        List<IFileMaker<EntityDom>> entityFile = Arrays.asList(new CodeDomDebugFileMaker(), new ServerEntityFileMaker());
         return Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFile, f -> f.apply(entityDom)));
     }
 

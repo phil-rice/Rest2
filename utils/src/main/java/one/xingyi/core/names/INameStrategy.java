@@ -5,6 +5,7 @@ public interface INameStrategy {
     String toClientViews(String entityDefn);
     String toClientEntityDefn(String entityDefn);
     String toClientCompanion(String entityDefn);
-    String toServerForDomain(String entityDefn);
+    String toServerImplForDomain(String entityDefn);
+    String toServerInterfaceForDomain(String entityDefn);
 
 }
