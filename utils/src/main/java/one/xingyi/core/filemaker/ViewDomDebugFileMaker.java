@@ -34,8 +34,10 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
     @Override public FileDefn apply(ViewDom viewDom) {
 
         PackageAndClassName packageAndClassName = viewDom.viewNames.clientView.mapName(e -> e + "DebugInfo");
+        List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
+
         List<String> result = Lists.append(
-                Formating.javaFile("class", packageAndClassName, ""),
+                Formating.javaFile("class", packageAndClassName, "",manualImports),
                 List.of("/*"),
                 viewDebugInfo(viewDom),
                 List.of("*/}"));

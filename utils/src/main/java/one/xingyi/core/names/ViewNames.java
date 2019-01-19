@@ -10,4 +10,5 @@ public class ViewNames {
     public final PackageAndClassName originalDefn;
     public final PackageAndClassName clientView;
     public final PackageAndClassName clientCompanion;
+//    public final PackageAndClassName entity
 }

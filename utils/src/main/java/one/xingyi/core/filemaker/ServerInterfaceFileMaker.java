@@ -17,6 +17,7 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
 
     List<String> accessors(String entityName, FieldDom dom) {
         List<String> result = new ArrayList<>();
+        result.add("//" + dom.typeDom);
         result.add(dom.typeDom.fullTypeName() + " " + dom.name + "();");
         if (!dom.readOnly) {
             result.add(entityName + " with" + dom.name + "(" + dom.typeDom.fullTypeName() + " " + dom.name + ");");
@@ -25,9 +26,10 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     }
 
     @Override public FileDefn apply(EntityDom entityDom) {
+        List<String> manualImports = Lists.unique(entityDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
                 Formating.javaFile("interface", entityDom.entityName.serverInterface,
-                        " extends IXingYiEntity", IXingYiEntity.class, XingYiGenerated.class),
+                        " extends IXingYiEntity", manualImports, IXingYiEntity.class, XingYiGenerated.class),
                 Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
                 List.of("}")
         ), "\n");
