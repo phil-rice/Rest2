@@ -6,9 +6,10 @@ import one.xingyi.targetcode.manuallyDefinedOnServer.person.IPersonEntityDefn;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 public class PersonServerCompanion implements IXingYiServerCompanion<IPersonEntityDefn, Person> {
-    @Override public String bookmark() { return "person"; }
-    @Override public JavascriptStore javascriptStore() { return null; }
+    @Override public Optional<String> bookmark() { return Optional.of("person"); }
+//    @Override public JavascriptStore javascriptStore() { return null; }
 
     public Map<String, String> javascriptMap() {
         Map<String, String> result = new LinkedHashMap<>();

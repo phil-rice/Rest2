@@ -72,7 +72,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         List<IFileMaker<EntityDom>> entityFile = Arrays.asList(
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
-                new ServerEntityFileMaker());
+                new ServerEntityFileMaker(),
+                new ServerCompanionFileMaker());
         return Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFile, f -> f.apply(entityDom)));
     }
 

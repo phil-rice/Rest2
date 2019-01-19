@@ -3,10 +3,15 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public class Optionals {
-//Optional<String> optBookmark = Optional.ofNullable(annotation).map(Entity::bookmark).flatMap(b -> serverNames.bookmark(entityNames, b));
+    //Optional<String> optBookmark = Optional.ofNullable(annotation).map(Entity::bookmark).flatMap(b -> serverNames.bookmark(entityNames, b));
 //
-    public static <T,T1,T2> Optional<T2> chainOpt(T nullable, Function<T,T1> fn1, Function<T1,Optional<T2>> fn2){ return Optional.ofNullable(nullable).map(fn1).flatMap(fn2); }
-    public static <T,T1,T2> T2 chain(T nullable,  Function<T,T1> fn1, T1 defaultValue,Function<T1,T2> fn2){ return fn2.apply(Optional.ofNullable(nullable).map(fn1).orElse(defaultValue)); }
+    public static <T, T1, T2> Optional<T2> chainOpt(T nullable, Function<T, T1> fn1, Function<T1, Optional<T2>> fn2) { return Optional.ofNullable(nullable).map(fn1).flatMap(fn2); }
+    public static <T, T1, T2> T2 chain(T nullable, Function<T, T1> fn1, T1 defaultValue, Function<T1, T2> fn2) { return fn2.apply(Optional.ofNullable(nullable).map(fn1).orElse(defaultValue)); }
+
+    public static <T, T1> T1 fold(Optional<T> opt, Supplier<T1> notIn, Function<T, T1> in) {
+        if (opt.isEmpty()) return notIn.get();
+        else return in.apply(opt.get());
+    }
 
     public static <T> Optional<T> from(boolean b, Supplier<T> supplier) {
         if (b) return Optional.of(supplier.get());

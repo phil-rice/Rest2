@@ -1,7 +1,9 @@
 package one.xingyi.core.sdk;
 import one.xingyi.core.javascript.JavascriptStore;
+
+import java.util.Optional;
 public interface IXingYiServerCompanion<Defn extends IXingYiEntityDefn, T extends IXingYiEntity> {
 
-    String bookmark();
-    JavascriptStore javascriptStore();
+    Optional<String> bookmark();
+//    JavascriptStore javascriptStore();
 }
