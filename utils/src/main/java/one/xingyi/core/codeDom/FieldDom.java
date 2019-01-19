@@ -13,12 +13,12 @@ import java.util.Optional;
 @ToString
 @EqualsAndHashCode
 public class FieldDom {
-    final TypeDom typeDom;
-    final String name;
-    final boolean readOnly;
-    final String lensName;
-    final String lensPath;
-    final Optional<String> javascript;
+    public final TypeDom typeDom;
+    public final String name;
+    public final boolean readOnly;
+    public final String lensName;
+    public final String lensPath;
+    public final Optional<String> javascript;
 
     public static FieldDom create(IServerNames names, EntityNames entityName, TypeDom typeDom, String fieldName, Field field) {
         return new FieldDom(typeDom, fieldName, field.readOnly(),

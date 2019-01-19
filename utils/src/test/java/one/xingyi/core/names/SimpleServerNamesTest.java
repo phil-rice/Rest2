@@ -15,11 +15,12 @@ public class SimpleServerNamesTest {
 
     @Test public void testEntityName() {
 
-        EntityNames actual = serverNames.entityName("original.package.class", "EntityRoot");
-        assertEquals(new PackageAndClassName("original.package.class"), actual.originalDefn);
+        EntityNames actual = serverNames.entityName("original.package.className", "EntityRoot");
+        assertEquals(new PackageAndClassName("original.package.className"), actual.originalDefn);
         assertEquals(new PackageAndClassName("original.package.domain.EntityRoot"), actual.serverEntity);
         assertEquals(new PackageAndClassName("original.package.server.companion.EntityRootCompanion"), actual.serverCompanion);
         assertEquals(new PackageAndClassName("original.package.client.entitydefn.EntityRootEntity"), actual.clientEntity);
+        assertEquals("EntityRoot", actual.entityNameForLens);
     }
 
     @Test public void testViewName() {
@@ -30,8 +31,8 @@ public class SimpleServerNamesTest {
     }
 
     @Test public void testLensName() {
-        EntityNames entityNames = new EntityNames(null, new PackageAndClassName("something.someclass"), null, null);
-        assertEquals("lens_someclass_fieldName", serverNames.entityLensName(entityNames, "fieldName", ""));
+        EntityNames entityNames = new EntityNames(null, new PackageAndClassName("something.someclass"), null, null, "someEntityForLens");
+        assertEquals("lens_someEntityForLens_fieldName", serverNames.entityLensName(entityNames, "fieldName", ""));
         assertEquals("override", serverNames.entityLensName(entityNames, "fieldName", "override"));
        }
     @Test public void testLensPath() {

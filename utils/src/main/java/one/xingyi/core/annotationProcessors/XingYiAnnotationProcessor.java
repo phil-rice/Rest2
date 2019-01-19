@@ -6,8 +6,10 @@ import one.xingyi.core.codeDom.CodeDom;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.codeDom.ViewDom;
+import one.xingyi.core.filemaker.CodeDomDebugFileMaker;
 import one.xingyi.core.filemaker.EntityFileMaker;
 import one.xingyi.core.filemaker.FileDefn;
+import one.xingyi.core.filemaker.IFileMaker;
 import one.xingyi.core.names.IClassNameStrategy;
 import one.xingyi.core.names.IPackageNameStrategy;
 import one.xingyi.core.names.IServerNames;
@@ -54,6 +56,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply((TypeElement) e));
             log.info("Made entityDoms: " + entityDomResults);
+
             Result.merge(entityDomResults).result().ifPresent(entityDoms -> {
                 List<ViewDom> viewDoms = Lists.map(Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator()), v -> bundle.elementToViewDom().apply(entityDoms, v));
                 CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
@@ -70,7 +73,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     List<FileDefn> makeContent(CodeDom codeDom) {
-        List<EntityFileMaker> entityFile = Arrays.asList(new EntityFileMaker());
+        List<IFileMaker<EntityDom>> entityFile = Arrays.asList(new CodeDomDebugFileMaker());
         return Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFile, f -> f.apply(entityDom)));
     }
 

@@ -31,7 +31,7 @@ class SimpleServerNames implements IServerNames {
         PackageAndClassName serverEntity = new PackageAndClassName(packageNameStrategy.toServerForDomain(originalPackage), classNameStrategy.toServerForDomain(entityRoot));
         PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientCompanion(entityRoot));
         PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(entityRoot));
-        return new EntityNames(originalDefn, serverEntity, serverCompanion, clientEntity);
+        return new EntityNames(originalDefn, serverEntity, serverCompanion, clientEntity, entityRoot);
     }
     @Override public ViewNames viewName(String className, String nameInViewAnnotation) {
         PackageAndClassName originalDefn = new PackageAndClassName(className);
@@ -42,7 +42,7 @@ class SimpleServerNames implements IServerNames {
         return new ViewNames(originalDefn, clientView, clientCompanion);
     }
     @Override public String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName) {
-        return Strings.from(annotationLensName, "lens_" + entityElementName.serverEntity.className + "_" + fieldName);
+        return Strings.from(annotationLensName, "lens_" + entityElementName.entityNameForLens + "_" + fieldName);
     }
     @Override public String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath) { return Strings.from(annotationLensPath, fieldName); }
     @Override public Optional<String> bookmark(EntityNames entityElementName, String annotationBookmark) {

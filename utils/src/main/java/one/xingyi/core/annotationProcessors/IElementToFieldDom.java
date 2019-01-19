@@ -24,11 +24,11 @@ class SimpleElementToFieldDom implements IElementToFieldDom {
         Optional<TypeDom> typeDom = TypeDom.create(fieldType);
         if (typeDom.isEmpty()) return Result.fail(new ElementFail("Could not handle the type " + fieldType + " for " + fieldName, element));
         Field annotation = element.getAnnotation(Field.class);
-        String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> serverNames.entityLensName(entityNames, fieldType, f));
-        String lensPath = Optionals.chain(annotation, f -> f.lensPath(), "", f -> serverNames.entityLensPath(entityNames, fieldType, f));
+        String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> serverNames.entityLensName(entityNames, fieldName, f));
+        String lensPath = Optionals.chain(annotation, f -> f.lensPath(), "", f -> serverNames.entityLensPath(entityNames, fieldName, f));
         Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
         Optional<String> javascript = Optional.ofNullable(annotation).map(Field::javascript);
-        return Result.succeed(new FieldDom(typeDom.get(), fieldType, readOnly, lensName, lensPath, javascript));
+        return Result.succeed(new FieldDom(typeDom.get(), fieldName, readOnly, lensName, lensPath, javascript));
     }
 }
 

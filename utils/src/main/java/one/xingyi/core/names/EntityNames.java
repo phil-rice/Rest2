@@ -11,4 +11,5 @@ public class EntityNames {
     public final PackageAndClassName serverEntity;
     public final PackageAndClassName serverCompanion;
     public final PackageAndClassName clientEntity;
+    public final String entityNameForLens;
 }

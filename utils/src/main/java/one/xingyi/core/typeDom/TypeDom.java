@@ -18,7 +18,8 @@ public interface TypeDom {
 
     static Set<PackageAndClassName> primitives = Set.of(stringPn, intPn, booleanPn, doublePn);
 
-    static Optional<TypeDom> create(String fullTypeName) {
+    static Optional<TypeDom> create(String rawTypeName) {
+        String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);
         PackageAndClassName packageAndClassName = new PackageAndClassName(fullTypeName);
         String listClassName = List.class.getName();
         String embeddedClassName = Embedded.class.getName();

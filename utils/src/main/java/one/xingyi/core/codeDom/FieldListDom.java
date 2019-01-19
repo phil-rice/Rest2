@@ -11,5 +11,5 @@ import java.util.List;
 
 public class FieldListDom {
 
-    final List<FieldDom> allFields;
+public    final List<FieldDom> allFields;
 }

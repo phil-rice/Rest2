@@ -40,20 +40,20 @@ public class TypeDomTest {
     ListType listBooleanPt = new ListType(listBooleanPn.asString(), booleanPt);
 
     @Test public void testPrimitives() {
-        assertEquals(stringPt, TypeDom.create(stringPn.asString()).get());
-        assertEquals(intPt, TypeDom.create(intPn.asString()).get());
-        assertEquals(doublePt, TypeDom.create(doublePn.asString()).get());
-        assertEquals(booleanPt, TypeDom.create(booleanPn.asString()).get());
+        assertEquals(stringPt, TypeDom.create("()" +stringPn.asString()).get());
+        assertEquals(intPt, TypeDom.create("()" +intPn.asString()).get());
+        assertEquals(doublePt, TypeDom.create("()" +doublePn.asString()).get());
+        assertEquals(booleanPt, TypeDom.create("()" +booleanPn.asString()).get());
     }
     @Test public void testList() {
-        assertEquals(listStringPt, TypeDom.create(listStringPn.asString()).get());
-        assertEquals(listIntPt, TypeDom.create(listIntPn.asString()).get());
-        assertEquals(listDoublePt, TypeDom.create(listDoublePn.asString()).get());
-        assertEquals(listBooleanPt, TypeDom.create(listBooleanPn.asString()).get());
+        assertEquals(listStringPt, TypeDom.create("()" +listStringPn.asString()).get());
+        assertEquals(listIntPt, TypeDom.create("()" +listIntPn.asString()).get());
+        assertEquals(listDoublePt, TypeDom.create("()" +listDoublePn.asString()).get());
+        assertEquals(listBooleanPt, TypeDom.create("()" +listBooleanPn.asString()).get());
     }
     @Test public void testEmbedded() {
-        assertEquals(embeededStringPt, TypeDom.create(embeddedStringPn.asString()).get());
-        assertEquals(embeededIntPt, TypeDom.create(embeddedIntPn.asString()).get());
+        assertEquals(embeededStringPt, TypeDom.create("()" +embeddedStringPn.asString()).get());
+        assertEquals(embeededIntPt, TypeDom.create("()" +embeddedIntPn.asString()).get());
     }
 
     @Test public void testView() {
