@@ -1,8 +1,8 @@
 package one.xingyi.core.sdk;
 import one.xingyi.core.client.IXingYi;
-public interface IXingYiClientMaker<Entity extends IXingYiEntity, IOps extends IXingYiView<Entity>> {
-    Class<IOps> opsClass();
+public interface IXingYiClientMaker<Entity extends IXingYiEntity, IView extends IXingYiView<Entity>> {
+    Class<IView> opsClass();
     String bookmark();
     String acceptHeader();
-    IOps create(IXingYi xingYi, Object mirror);
+    IView create(IXingYi xingYi, Object mirror);
 }

@@ -26,7 +26,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
                 Formating.javaFile("interface", viewDom.viewNames.clientView,
-                        " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports, IXingYiView.class, XingYiGenerated.class),
+                        " extends IXingYiView<" + viewDom.viewNames.entityNames.clientEntity.asString() + ">", manualImports, IXingYiView.class, XingYiGenerated.class),
                 Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDom.fields)),
                 List.of("}")
         ), "\n");
