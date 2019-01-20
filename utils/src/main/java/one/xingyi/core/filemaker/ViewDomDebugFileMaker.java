@@ -1,16 +1,13 @@
 package one.xingyi.core.filemaker;
-import one.xingyi.core.codeDom.EntityDom;
-import one.xingyi.core.codeDom.FieldDom;
-import one.xingyi.core.codeDom.PackageAndClassName;
-import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.names.EntityNames;
+import one.xingyi.core.codeDom.*;
 import one.xingyi.core.names.ViewNames;
-import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Optionals;
 
 import java.util.List;
-public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<ViewDom> {
+public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+
     List<String> viewNameInfo(ViewNames names) {
         return Lists.append(
                 List.of("Original: " + names.originalDefn.asString()),
@@ -22,7 +19,6 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
                 )),
                 Formating.indent(entityNameInfo(names.entityNames)));
     }
-
     List<String> viewDebugInfo(ViewDom viewDom) {
         return Lists.<String>append(
                 viewNameInfo(viewDom.viewNames),
@@ -34,8 +30,8 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         );
     }
 
-    @Override public FileDefn apply(ViewDom viewDom) {
-
+    @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
+        ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         PackageAndClassName packageAndClassName = viewDom.viewNames.clientView.mapName(e -> e + "DebugInfo");
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
 
@@ -43,6 +39,8 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
                 Formating.javaFile("class", packageAndClassName, "", manualImports),
                 List.of("/*"),
                 viewDebugInfo(viewDom),
+                List.of(""),
+                Optionals.fold(viewDomAndItsEntityDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),
                 List.of("*/}"));
         return new FileDefn(packageAndClassName, Lists.join(result, "\n"));
     }

@@ -1,37 +1,60 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
-import one.xingyi.core.codeDom.FieldDom;
-import one.xingyi.core.codeDom.FieldListDom;
-import one.xingyi.core.codeDom.ViewDom;
+import one.xingyi.core.client.IXingYi;
+import one.xingyi.core.codeDom.*;
 import one.xingyi.core.sdk.IXingYiClientImpl;
-import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
-public class ClientViewImplFileMaker implements IFileMaker<ViewDom> {
+import java.util.Optional;
+public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
 
-    List<String> allFieldsAccessors(String interfaceName, FieldListDom dom) { return dom.flatMap(fd -> accessors(interfaceName, fd)); }
 
-    List<String> accessors(String interfaceName, FieldDom dom) {
+    List<String> viewAndEntityaccessors(String interfaceName, ViewDomAndEntityDomField viewDomAndEntityDomField) {
+        FieldDom viewDom = viewDomAndEntityDomField.viewDomField;
+        Optional<FieldDom> entityDom = viewDomAndEntityDomField.entityDomField;
         List<String> result = new ArrayList<>();
-        result.add("//" + dom.typeDom);
-        result.add("public "+ dom.typeDom.transformed() + " " + dom.name + "(){return null;};");
-        if (!dom.readOnly) {
-            result.add("public "+ interfaceName + " with" + dom.name + "(" + dom.typeDom.transformed() + " " + dom.name + "){return null;};");
+        result.add("//View" + viewDomAndEntityDomField.viewDomField);
+        result.add("//Entity" + viewDomAndEntityDomField.entityDomField);
+        Optional<String> lensName = entityDom.map(fd -> fd.lensName);
+        String getterBody = Optionals.fold(lensName,
+                () -> "throw new RuntimeException(" + Strings.quote("Cannot find lensname for field " + viewDom.name + ")"),
+                ln -> "return xingYi.lens(" + Strings.quote(ln) + ")");
+        result.add("//viewTypedom:    " + viewDom.typeDom);
+        result.add("//entityTypeDom:   " + entityDom.map(x -> x.typeDom));
+        result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){" + getterBody + ";};");
+        if (!viewDom.readOnly && entityDom.map(f -> !f.readOnly).orElse(true)) {
+            result.add("public " + interfaceName + " with" + viewDom.name + "(" + viewDom.typeDom.forView() + " " + viewDom.name + "){return null;}");
         }
         return result;
     }
 
-    @Override public FileDefn apply(ViewDom viewDom) {
+    List<String> allFieldAccessorsForView(String interfaceName, List<ViewDomAndEntityDomField> fields) {
+        return Lists.flatMap(fields, f -> viewAndEntityaccessors(interfaceName, f));
+    }
+
+    List<String> fields(FieldListDom fld) {
+        return List.of("final IXingYi xingYi;", "final Object mirror;");
+    }
+    List<String> constructor(String classname, FieldListDom fld) {
+        return List.of("public " + classname + "(IXingYi xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
+    }
+
+    @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
+        ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
                 Formating.javaFile("class", viewDom.viewNames.clientViewImpl,
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
-                                viewDom.viewNames.clientEntity.asString() + ","+
-                                viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYiClientImpl.class, XingYiGenerated.class),
-                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDom.fields)),
+                                viewDom.viewNames.clientEntity.asString() + "," +
+                                viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class),
+                Formating.indent(fields(viewDom.fields)),
+                Formating.indent(constructor(viewDom.viewNames.clientViewImpl.className, viewDom.fields)),
+                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");
         return new FileDefn(viewDom.viewNames.clientViewImpl, result);

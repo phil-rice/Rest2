@@ -1,4 +1,5 @@
 package one.xingyi.core.filemaker;
+import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.typeDom.TypeDom;
@@ -34,4 +35,14 @@ public class AbstracDebugFileMaker {
                 )));
     }
 
+    List<String> entityDebugInfo(EntityDom entityDom) {
+        return Lists.<String>append(
+                entityNameInfo(entityDom.entityName),
+                List.of(
+                        "bookmark " + entityDom.bookmark + ", geturl: " + entityDom.getUrl,
+                        "Fields: " + entityDom.fields.allFields.size()
+                ),
+                Formating.indent(Lists.<FieldDom, String>flatMap(entityDom.fields.allFields, this::fieldDebugInfo))
+        );
+    }
 }

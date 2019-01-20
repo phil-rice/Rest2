@@ -12,7 +12,7 @@ import java.util.List;
 public class ListType implements TypeDom {
     final String fullTypeName;
     final TypeDom nested;
-    @Override public String transformed() { return List.class.getName() + "<" + nested.transformed() + ">"; }
+    @Override public String forEntity() { return List.class.getName() + "<" + nested.forEntity() + ">"; }
     @Override public String fullTypeName() { return fullTypeName; }
     @Override public boolean primitive() { return false; }
     @Override public TypeDom nested() { return nested; }

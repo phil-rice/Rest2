@@ -25,14 +25,15 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
     @Override public Result<ElementFail, FieldDom> apply(Element element) {
         String fieldType = element.asType().toString();
         String fieldName = element.getSimpleName().toString();
-        Optional<TypeDom> typeDom = TypeDom.create(serverNames,fieldType);
-        if (typeDom.isEmpty()) return Result.fail(new ElementFail("Could not handle the type " + fieldType + " for " + fieldName, element));
-        Field annotation = element.getAnnotation(Field.class);
-        String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> findLensName(fieldName, f));
-        String lensPath = Optionals.chain(annotation, f -> f.lensPath(), "", f -> findLensPath(fieldName, f));
-        Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
-        Optional<String> javascript = Optional.ofNullable(annotation).map(Field::javascript);
-        return Result.succeed(new FieldDom(typeDom.get(), fieldName, readOnly, lensName, lensPath, javascript));
+        Result<String, TypeDom> typeDom = TypeDom.create(serverNames, fieldType);
+        return ElementFail.lift(element, typeDom).flatMap(td -> {
+            Field annotation = element.getAnnotation(Field.class);
+            String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> findLensName(fieldName, f));
+            String lensPath = Optionals.chain(annotation, f -> f.lensPath(), "", f -> findLensPath(fieldName, f));
+            Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
+            Optional<String> javascript = Optional.ofNullable(annotation).map(Field::javascript);
+            return Result.succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript));
+        });
     }
 }
 class SimpleElementToFieldDomForEntity extends AbstractElementToFieldDom {

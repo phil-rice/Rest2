@@ -4,6 +4,7 @@ import one.xingyi.core.embedded.Embedded;
 import one.xingyi.core.names.IClassNameStrategy;
 import one.xingyi.core.names.IPackageNameStrategy;
 import one.xingyi.core.names.IServerNames;
+import one.xingyi.core.validation.Result;
 import org.junit.Test;
 
 import java.util.List;
@@ -43,36 +44,40 @@ public class TypeDomTest {
     ListType listBooleanPt = new ListType(listBooleanPn.asString(), booleanPt);
 
     @Test public void testPrimitives() {
-        assertEquals(stringPt, TypeDom.create(names, "()" + stringPn.asString()).get());
-        assertEquals(intPt, TypeDom.create(names, "()" + intPn.asString()).get());
-        assertEquals(doublePt, TypeDom.create(names, "()" + doublePn.asString()).get());
-        assertEquals(booleanPt, TypeDom.create(names, "()" + booleanPn.asString()).get());
+        assertEquals(Result.succeed(stringPt), TypeDom.create(names, "()" + stringPn.asString()));
+        assertEquals(Result.succeed(intPt), TypeDom.create(names, "()" + intPn.asString()));
+        assertEquals(Result.succeed(doublePt), TypeDom.create(names, "()" + doublePn.asString()));
+        assertEquals(Result.succeed(booleanPt), TypeDom.create(names, "()" + booleanPn.asString()));
     }
     @Test public void testList() {
-        assertEquals(listStringPt, TypeDom.create(names, "()" + listStringPn.asString()).get());
-        assertEquals(listIntPt, TypeDom.create(names, "()" + listIntPn.asString()).get());
-        assertEquals(listDoublePt, TypeDom.create(names, "()" + listDoublePn.asString()).get());
-        assertEquals(listBooleanPt, TypeDom.create(names, "()" + listBooleanPn.asString()).get());
+        assertEquals(Result.succeed(listStringPt), TypeDom.create(names, "()" + listStringPn.asString()));
+        assertEquals(Result.succeed(listIntPt), TypeDom.create(names, "()" + listIntPn.asString()));
+        assertEquals(Result.succeed(listDoublePt), TypeDom.create(names, "()" + listDoublePn.asString()));
+        assertEquals(Result.succeed(listBooleanPt), TypeDom.create(names, "()" + listBooleanPn.asString()));
     }
     @Test public void testEmbedded() {
-        assertEquals(embeededStringPt, TypeDom.create(names, "()" + embeddedStringPn.asString()).get());
-        assertEquals(embeededIntPt, TypeDom.create(names, "()" + embeddedIntPn.asString()).get());
+        assertEquals(Result.succeed(embeededStringPt), TypeDom.create(names, "()" + embeddedStringPn.asString()));
+        assertEquals(Result.succeed(embeededIntPt), TypeDom.create(names, "()" + embeddedIntPn.asString()));
     }
 
     @Test public void testView() {
-        assertEquals(new ViewType("a.b.IPersonDefn", "a.b.domain.IPerson"), TypeDom.create(names, "a.b.IPersonDefn").get());
+        Result<String, TypeDom> actual = TypeDom.create(names, "a.b.IPersonDefn");
+        assertEquals(Result.succeed(new ViewType("a.b.IPersonDefn", "a.b.domain.IPerson", "")), actual);
     }
     @Test public void testAnythingInsideBracketsDoesntWork() {
-        assertEquals(Optional.empty(), TypeDom.create(names, "Thing<something>"));
+        assertEquals(Result.fail("Could not work out what type Thing<something> was"), TypeDom.create(names, "Thing<something>"));
     }
 
     @Test public void testTransformed() {
-        TypeDom viewType = TypeDom.create(names, "a.b.IPersonDefn").get();
-        assertEquals("java.lang.String", stringPt.transformed());
-        assertEquals("java.util.List<java.lang.String>", listStringPt.transformed());
-        assertEquals("a.b.domain.IPerson", viewType.transformed());
-        ListType listType = (ListType) TypeDom.create(names, "java.util.List<a.b.IPersonDefn>").get();
-        assertEquals("java.util.List<a.b.domain.IPerson>", listType.transformed());
+        assertEquals("java.lang.String", stringPt.forEntity());
+        assertEquals("java.util.List<java.lang.String>", listStringPt.forEntity());
+        TypeDom viewType = TypeDom.create(names, "a.b.IPersonDefn").result().get();
+        assertEquals("a.b.domain.IPerson", viewType.forEntity());
+        assertEquals("", viewType.forView());
+
+        TypeDom listType = TypeDom.create(names, "java.util.List<a.b.IPersonDefn>").result().get();
+        assertEquals("java.util.List<a.b.domain.IPerson>", listType.forEntity());
+        assertEquals("java.util.List<a.b.domain.IPerson>", listType.forView());
 
     }
 

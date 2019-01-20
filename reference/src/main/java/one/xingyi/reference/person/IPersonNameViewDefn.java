@@ -5,5 +5,4 @@ import one.xingyi.core.sdk.IXingYiViewDefn;
 @View
 public interface IPersonNameViewDefn extends IXingYiViewDefn<IPersonDefn> {
     String name();
-    IPersonDefn person();
-}
+ }

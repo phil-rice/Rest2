@@ -6,11 +6,9 @@ import one.xingyi.core.codeDom.FieldListDom;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
-import one.xingyi.core.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
 
     List<String> allFieldsAccessors(String entityName, FieldListDom dom) { return dom.flatMap(fd -> accessors(entityName, fd)); }
@@ -18,9 +16,9 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     List<String> accessors(String entityName, FieldDom dom) {
         List<String> result = new ArrayList<>();
         result.add("//" + dom.typeDom);
-        result.add(dom.typeDom.transformed() + " " + dom.name + "();");
+        result.add(dom.typeDom.forEntity() + " " + dom.name + "();");
         if (!dom.readOnly) {
-            result.add(entityName + " with" + dom.name + "(" + dom.typeDom.transformed() + " " + dom.name + ");");
+            result.add(entityName + " with" + dom.name + "(" + dom.typeDom.forEntity() + " " + dom.name + ");");
         }
         return result;
     }

@@ -5,6 +5,7 @@ import one.xingyi.core.annotations.View;
 import one.xingyi.core.codeDom.CodeDom;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.ViewDom;
+import one.xingyi.core.codeDom.ViewDomAndItsEntityDom;
 import one.xingyi.core.filemaker.*;
 import one.xingyi.core.names.*;
 import one.xingyi.core.utils.*;
@@ -62,7 +63,11 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             Result<ElementFail, List<ViewDom>> viewDoms = Result.merge(viewDomResults);
             log.info("Made viewDoms: " + viewDoms);
 
-            Result.join(entityDoms, viewDoms, (ed, vd) -> new CodeDom(ed, vd)).forEach(codeDom -> {
+            //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
+
+            Result<ElementFail, CodeDom> codeDoms = Result.join(entityDoms, viewDoms, (ed, vd) -> new CodeDom(ed, vd));
+
+            codeDoms.forEach(codeDom -> {
                 List<FileDefn> content = makeContent(codeDom);
                 log.info("Started");
                 for (FileDefn fileDefn : content)
@@ -83,13 +88,13 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ServerCompanionFileMaker());
         List<FileDefn> fromCodeDom = Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
 
-        List<IFileMaker<ViewDom>> viewFileMakers = List.of(
+        List<IFileMaker<ViewDomAndItsEntityDom>> viewFileMakers = List.of(
                 new ViewDomDebugFileMaker(),
                 new ClientViewInterfaceFileMaker(),
                 new ClientEntityFileMaker(),
                 new ClientViewImplFileMaker()
         );
-        List<FileDefn> fromViewDom = Lists.flatMap(codeDom.viewDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));
+        List<FileDefn> fromViewDom = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));
 
         return Lists.<FileDefn>append(fromCodeDom, fromViewDom);
     }
