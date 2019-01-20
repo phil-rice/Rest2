@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
 
-    List<String> allFieldsAccessors(String interfaceName, FieldListDom dom) { return dom.flatMap(fd -> accessors(interfaceName, fd)); }
+    List<String> allFieldsAccessors(String interfaceName, List<ViewDomAndEntityDomField> dom) { return Lists.flatMap(dom, fd -> accessors(interfaceName, fd)); }
 
-    List<String> accessors(String interfaceName, FieldDom dom) {
+    List<String> accessors(String interfaceName, ViewDomAndEntityDomField viewDomAndEntityDom) {
+        FieldDom dom = viewDomAndEntityDom.viewDomField;
         List<String> result = new ArrayList<>();
         result.add("//" + dom.typeDom);
         result.add(dom.typeDom.forView() + " " + dom.name + "();");
-        if (!dom.readOnly) {
+        if (!dom.readOnly && !viewDomAndEntityDom.entityDomField.map(e -> e.readOnly).orElse(false)) {
             result.add(interfaceName + " with" + dom.name + "(" + dom.typeDom.forView() + " " + dom.name + ");");
         }
         return result;
@@ -25,9 +26,9 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
-                Formating.javaFile("interface", viewDom.viewNames.clientView,
-                        " extends IXingYiView<" + viewDom.viewNames.entityNames.clientEntity.asString() + ">", manualImports, IXingYiView.class, XingYiGenerated.class),
-                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDom.fields)),
+                Formating.javaFile(getClass(), "interface", viewDom.viewNames.clientView,
+                        " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports, IXingYiView.class, XingYiGenerated.class),
+                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");
         return new FileDefn(viewDom.viewNames.clientView, result);

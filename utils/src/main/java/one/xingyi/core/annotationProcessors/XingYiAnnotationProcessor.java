@@ -92,6 +92,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ViewDomDebugFileMaker(),
                 new ClientViewInterfaceFileMaker(),
                 new ClientEntityFileMaker(),
+                new ClientViewCompanionFileMaker(),
                 new ClientViewImplFileMaker()
         );
         List<FileDefn> fromViewDom = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));

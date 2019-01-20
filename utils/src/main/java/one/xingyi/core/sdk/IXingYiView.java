@@ -1,3 +1,3 @@
 package one.xingyi.core.sdk;
-public interface IXingYiView<T extends IXingYiEntity>{
+public interface IXingYiView<T extends IXingYiClientEntity>{
 }

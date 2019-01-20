@@ -24,7 +24,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     @Override public FileDefn apply(EntityDom entityDom) {
         String implementsString = "IXingYiServerCompanion<" + entityDom.entityName.originalDefn.asString() + "," + entityDom.entityName.serverEntity.asString() + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile("class", entityDom.entityName.serverCompanion,
+                Formating.javaFile(getClass(),"class", entityDom.entityName.serverCompanion,
                         " implements " + implementsString,List.of(), IXingYiServerCompanion.class, XingYiGenerated.class, Optional.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmark(entityDom)),

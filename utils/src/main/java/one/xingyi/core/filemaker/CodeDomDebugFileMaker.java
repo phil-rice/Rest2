@@ -15,7 +15,7 @@ public class CodeDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
     @Override public FileDefn apply(EntityDom entityDom) {
         PackageAndClassName packageAndClassName = entityDom.entityName.serverEntity.mapName(e -> e + "DebugInfo");
         List<String> result = Lists.append(
-                Formating.javaFile("class", packageAndClassName, "", List.of()),
+                Formating.javaFile(getClass(),"class", packageAndClassName, "", List.of()),
                 List.of("/*"),
                 entityDebugInfo(entityDom),
                 List.of("*/}"));

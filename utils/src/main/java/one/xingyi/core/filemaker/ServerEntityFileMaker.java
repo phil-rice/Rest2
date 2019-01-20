@@ -73,7 +73,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     @Override public FileDefn apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile("class", entityDom.entityName.serverEntity, " implements " + entityDom.entityName.serverInterface.asString(),
+                Formating.javaFile(getClass(),"class", entityDom.entityName.serverEntity, " implements " + entityDom.entityName.serverInterface.asString(),
                         List.of(),XingYiGenerated.class, Objects.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),

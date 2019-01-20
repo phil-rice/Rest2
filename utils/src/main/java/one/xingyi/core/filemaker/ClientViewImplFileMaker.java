@@ -22,27 +22,24 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         result.add("//View" + viewDomAndEntityDomField.viewDomField);
         result.add("//Entity" + viewDomAndEntityDomField.entityDomField);
         Optional<String> lensName = entityDom.map(fd -> fd.lensName);
-        String getterBody = Optionals.fold(lensName,
-                () -> "throw new RuntimeException(" + Strings.quote("Cannot find lensname for field " + viewDom.name + ")"),
-                ln -> "return xingYi.lens(" + Strings.quote(ln) + ")");
+//        String getterBody = Optionals.fold(lensName,
+//                () -> "throw new RuntimeException(" + Strings.quote("Cannot find lensname for field " + viewDom.name + ")"),
+//                ln -> "return xingYi.lens(" + Strings.quote(ln) + ")");
         result.add("//viewTypedom:    " + viewDom.typeDom);
         result.add("//entityTypeDom:   " + entityDom.map(x -> x.typeDom));
 
         result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
-                "Lens(){ return xingYi.<" + clientEntity.asString() + "," +
-                interfaceName + ">stringLens(" + interfaceName + "::new, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");})");
-//        result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
-//                "Lens(){ return xingYi.<" + viewDom.typeDom.clientEntity().orElse("not a view") + "<" +
-//                interfaceName + ">stringLens(" + interfaceName + "::new, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");})");
-        result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){" + getterBody + ";};");
+                "Lens(){ return xingYi.<" + clientEntity.asString() + "," + interfaceName + ">stringLens(companion, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");}");
+        result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
         if (!viewDom.readOnly && entityDom.map(f -> !f.readOnly).orElse(true)) {
-            result.add("public " + interfaceName + " with" + viewDom.name + "(" + viewDom.typeDom.forView() + " " + viewDom.name + "){return null;}");
+            result.add("public " + interfaceName + " with" + viewDom.name + "(" +
+                    viewDom.typeDom.forView() + " " + viewDom.name + "){ return " + viewDom.name + "Lens().set(this," + viewDom.name + ");}");
         }
         return result;
     }
 
     List<String> allFieldAccessorsForView(PackageAndClassName clientEntity, String interfaceName, List<ViewDomAndEntityDomField> fields) {
-        return Lists.flatMap(fields, f -> viewAndEntityaccessors(clientEntity,interfaceName, f));
+        return Lists.flatMap(fields, f -> viewAndEntityaccessors(clientEntity, interfaceName, f));
     }
 
     List<String> fields(FieldListDom fld) {
@@ -56,13 +53,14 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
-                Formating.javaFile("class", viewDom.viewNames.clientViewImpl,
+                Formating.javaFile(getClass(), "class", viewDom.viewNames.clientViewImpl,
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class, Lens.class),
+                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion;"),
                 Formating.indent(fields(viewDom.fields)),
                 Formating.indent(constructor(viewDom.viewNames.clientViewImpl.className, viewDom.fields)),
-                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.entityNames.clientEntity,viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
+                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");
         return new FileDefn(viewDom.viewNames.clientViewImpl, result);

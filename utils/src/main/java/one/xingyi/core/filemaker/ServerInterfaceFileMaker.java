@@ -26,7 +26,7 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     @Override public FileDefn apply(EntityDom entityDom) {
         List<String> manualImports = Lists.unique(entityDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
-                Formating.javaFile("interface", entityDom.entityName.serverInterface,
+                Formating.javaFile(getClass(),"interface", entityDom.entityName.serverInterface,
                         " extends IXingYiEntity", manualImports, IXingYiEntity.class, XingYiGenerated.class),
                 Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
                 List.of("}")

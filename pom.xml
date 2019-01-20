@@ -13,7 +13,6 @@
         <module>server</module>
         <module>utils</module>
         <module>core</module>
-        <module>targetcode</module>
     </modules>
     <build>
         <plugins>
