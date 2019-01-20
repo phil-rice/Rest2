@@ -21,15 +21,14 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         List<String> result = new ArrayList<>();
         result.add("//View" + viewDomAndEntityDomField.viewDomField);
         result.add("//Entity" + viewDomAndEntityDomField.entityDomField);
-        Optional<String> lensName = entityDom.map(fd -> fd.lensName);
+        String lensName = entityDom.map(fd -> fd.lensName).orElse("not defined. Is this because of incremental compilation?");
 
         if (viewDom.typeDom.primitive()) {
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
-                    "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");}");
+                    "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(lensName) + ");}");
         } else {
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){");
-            result.add("return xingYi.objectLens(companion, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");}");
+                    viewDom.name + "Lens(){return xingYi.objectLens(companion, " + Strings.quote(lensName) + ");}");
 
         }
         result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");

@@ -43,10 +43,10 @@ class SimpleElementToFieldDomForEntity extends AbstractElementToFieldDom {
         this.entityNames = entityNames;
     }
     @Override String findLensName(String fieldName, String annotationField) {
-        return serverNames.entityLensPath(entityNames, fieldName, annotationField);
+        return serverNames.entityLensName(entityNames, fieldName, annotationField);
     }
     @Override String findLensPath(String fieldName, String annotationField) {
-        return serverNames.entityLensName(entityNames, fieldName, annotationField);
+        return serverNames.entityLensPath(entityNames, fieldName, annotationField);
     }
 }
 
