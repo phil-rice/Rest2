@@ -28,7 +28,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                     "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(lensName) + ");}");
         } else {
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){return xingYi.objectLens(companion, " + Strings.quote(lensName) + ");}");
+                    viewDom.name + "Lens(){return xingYi.objectLens(companion, " + viewDom.typeDom.viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
 
         }
         result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
@@ -58,8 +58,9 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class, Lens.class),
-                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion;"),
+                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
                 Formating.indent(fields(viewDom)),
+                List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
                 Formating.indent(constructor(viewDom.viewNames.clientViewImpl.className, viewDom.fields)),
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")

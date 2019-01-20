@@ -18,6 +18,8 @@ public interface TypeDom {
     /** This is the type that is used by entities.  For most type doms it is the same as the full typenames.
      * For view types it changes from the defn to the view interfaces*/
     default String forView() {return fullTypeName();}
+    /** empty string unless a view type */
+    default String viewCompanion() {return "";}
     /** For example if the type if List<T> this is T, but if the types is T this is also T */
     TypeDom nested();
     boolean primitive();
@@ -41,7 +43,7 @@ public interface TypeDom {
                 String serviceInterface = tr.serverInterface.asString();
                 String serviceClass = tr.originalDefn.asString();
                 return names.viewName(fullTypeName, serviceClass, "").map(
-                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString()));
+                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(),vn.clientCompanion.asString()));
             });
         }
         return Result.failwith("Could not work out what type " + rawTypeName + " was");
