@@ -1,14 +1,11 @@
 package one.xingyi.core.typeDom;
-import com.sun.net.httpserver.Authenticator;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.embedded.Embedded;
-import one.xingyi.core.names.INameStrategy;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static one.xingyi.core.codeDom.PackageAndClassName.*;
@@ -27,14 +24,13 @@ public interface TypeDom {
 
     default String forJson(String fieldName){return fieldName;}
 
-    static Set<PackageAndClassName> primitives = Set.of(stringPn, intPn, booleanPn, doublePn);
 
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName) {
         String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);
         PackageAndClassName packageAndClassName = new PackageAndClassName(fullTypeName);
         String listClassName = List.class.getName();
         String embeddedClassName = Embedded.class.getName();
-        if (primitives.contains(packageAndClassName))
+        if (primitives().contains(packageAndClassName))
             return Result.succeed(new PrimitiveType(packageAndClassName));
         if (fullTypeName.startsWith(listClassName))
             return create(names, Strings.extractFromOptionalEnvelope(listClassName + "<", ">", fullTypeName)).map(nested -> new ListType(fullTypeName, nested));
@@ -48,7 +44,7 @@ public interface TypeDom {
                         vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString()));
             });
         }
-        return Result.fail("Could not work out what type " + rawTypeName + " was");
+        return Result.failwith("Could not work out what type " + rawTypeName + " was");
     }
 
 }

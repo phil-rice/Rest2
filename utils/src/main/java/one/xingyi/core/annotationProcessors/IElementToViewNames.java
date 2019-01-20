@@ -22,7 +22,7 @@ class SimpleElementToViewNames implements IElementToViewNames {
             if (interfaceName.startsWith(IXingYiViewDefn.class.getName()))
                 return Result.succeed(Strings.extractFromOptionalEnvelope(IXingYiViewDefn.class.getName() + "<", ">", interfaceName));
         }
-        return Result.fail("could not find interface for " + viewElement.asType() + " that was IXingYiViewDefn<> in " + viewElement.getInterfaces());
+        return Result.failwith("could not find interface for " + viewElement.asType() + " that was IXingYiViewDefn<> in " + viewElement.getInterfaces());
     }
     @Override public Result<ElementFail, ViewNames> apply(TypeElement element) {
         return ElementFail.lift(element, findEntityName(element).flatMap(en -> serverNames.viewName(element.asType().toString(), en, element.getAnnotation(View.class).viewName())));

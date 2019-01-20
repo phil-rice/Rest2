@@ -23,7 +23,7 @@ public interface LoggerAdapter {
                 messager.printMessage(Diagnostic.Kind.NOTE, message);
             }
             @Override public void warning(Element element, String message) { messager.printMessage(Diagnostic.Kind.WARNING, message); }
-            @Override public void error(Element element, String message) { messager.printMessage(Diagnostic.Kind.ERROR, message); }
+            @Override public void error(Element element, String message) { messager.printMessage(Diagnostic.Kind.ERROR, message, element); }
             @Override public void error(String message) { messager.printMessage(Diagnostic.Kind.ERROR, message); }
             @Override public LoggerAdapter withElement(Element element) { return fromMessager(messager, element); }
         };

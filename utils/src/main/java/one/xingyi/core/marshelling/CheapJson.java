@@ -1,6 +1,14 @@
 package one.xingyi.core.marshelling;
 import one.xingyi.core.utils.Strings;
 class CheapJson implements JsonTC<JsonObject> {
+    public String jsonValueFor(Object obj){
+        if (obj instanceof JsonObject) return ((JsonObject) obj).string;
+        if (obj instanceof Integer) return obj.toString();
+        if (obj instanceof Double) return obj.toString();
+        if (obj instanceof Boolean) return obj.toString();
+        return Strings.quote(obj.toString());
+    }
+
     @Override public JsonObject makeObject(Object... namesAndValues) {
         StringBuilder builder = new StringBuilder("{");
         for (int i = 0; i < namesAndValues.length; i += 2) {
@@ -8,7 +16,7 @@ class CheapJson implements JsonTC<JsonObject> {
             builder.append(Strings.quote(escape((String) namesAndValues[i])));
             builder.append(":");
             Object value = namesAndValues[i + 1];
-            String valueString = value instanceof JsonObject ? ((JsonObject) value).string : Strings.quote(escape((String) value));
+            String valueString = jsonValueFor(value);
             builder.append(valueString);
         }
         return new JsonObject(builder + "}");

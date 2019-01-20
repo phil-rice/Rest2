@@ -51,7 +51,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
 
 
-            Result<ElementFail, List<EntityDom>> entityDoms = Result.merge(entityDomResults);
+            List<EntityDom> entityDoms = Result.successes(entityDomResults);
+
 
             List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());
             log.info("Making viewDoms elements: " + viewElements);
@@ -60,19 +61,20 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                             bundle.elementToViewDom(vn).apply((TypeElement) v)
                     )
             );
-            Result<ElementFail, List<ViewDom>> viewDoms = Result.merge(viewDomResults);
+            List<ViewDom> viewDoms = Result.successes(viewDomResults);
             log.info("Made viewDoms: " + viewDoms);
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 
-            Result<ElementFail, CodeDom> codeDoms = Result.join(entityDoms, viewDoms, (ed, vd) -> new CodeDom(ed, vd));
+            CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
 
-            codeDoms.forEach(codeDom -> {
-                List<FileDefn> content = makeContent(codeDom);
-                log.info("Started");
-                for (FileDefn fileDefn : content)
-                    makeClassFile(fileDefn);
-            });
+            List<FileDefn> content = makeContent(codeDom);
+            log.info("Started");
+            for (FileDefn fileDefn : content)
+                makeClassFile(fileDefn);
+            for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults)))
+                Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
+
 
         } catch (Exception e) {
             log.error("In Annotation Processor\n" + Strings.getFrom(e::printStackTrace));

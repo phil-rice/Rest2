@@ -8,7 +8,6 @@ import one.xingyi.core.validation.Result;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static one.xingyi.core.utils.Strings.lift;
 import static org.junit.Assert.assertEquals;
@@ -65,7 +64,7 @@ public class TypeDomTest {
         assertEquals(Result.succeed(new ViewType("a.b.IPersonDefn", "a.b.domain.IPerson", "a.b.client.view.Person")), actual);
     }
     @Test public void testAnythingInsideBracketsDoesntWork() {
-        assertEquals(Result.fail("Could not work out what type Thing<something> was"), TypeDom.create(names, "Thing<something>"));
+        assertEquals(Result.failwith("Could not work out what type Thing<something> was"), TypeDom.create(names, "Thing<something>"));
     }
 
     @Test public void testTransformed() {

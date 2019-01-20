@@ -8,7 +8,6 @@ import one.xingyi.core.utils.FunctionWithError;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
 
-import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,15 +30,17 @@ public interface Result<Fail, T> {
         return res1.flatMap(r1 -> res2.flatMap(r2 -> res3.map(r3 -> fn.apply(r1, r2, r3))));
     }
 
-    static <Fail, T> Result<Fail, T> from(Optional<T> optT, Supplier<Fail> supplier) { return Optionals.<T, Result<Fail, T>>fold(optT, () -> Result.fail(supplier.get()), Result::succeed);}
+    static <Fail, T> Result<Fail, T> from(Optional<T> optT, Supplier<Fail> supplier) { return Optionals.<T, Result<Fail, T>>fold(optT, () -> Result.failwith(supplier.get()), Result::succeed);}
     static <Fail, T> Result<Fail, List<T>> merge(List<Result<Fail, T>> results) {
         return Result.<Fail, List<T>>apply(Lists.flatMap(results, f -> f.fails()), Lists.flatMapOptional(results, Result::result));
     }
     static <Fail, T> Result<Fail, T> validate(T t, Function<T, List<Fail>>... failFns) { return apply(Lists.flatMap(Arrays.asList(failFns), fn -> fn.apply(t)), t); }
     static <Fail, T> Result<Fail, T> succeed(T t) { return new Succeeds<>(t);}
-    static <Fail, T> Result<Fail, T> fail(Fail fail) { return new Failures<>(List.of(fail));}
-    static <Fail, T> Result<Fail, T> fails(Fail... fails) { return new Failures<>(Arrays.asList(fails));}
+    static <Fail, T> Result<Fail, T> failwith(Fail fail) { return new Failures<>(List.of(fail));}
+    static <Fail, T> Result<Fail, T> allFail(Fail... fails) { return new Failures<>(Arrays.asList(fails));}
     static <Fail, T> Result<Fail, T> apply(List<Fail> fails, T t) { return fails.isEmpty() ? new Succeeds<>(t) : new Failures(fails);}
+    static <Fail, T> List<T> successes(List<Result<Fail, T>> results) { return Lists.flatMapOptional(results, Result::result);}
+    static <Fail, T> List<Fail> failures(List<Result<Fail, T>> results) {return Lists.flatMap(results, Result::fails);}
 }
 
 @ToString

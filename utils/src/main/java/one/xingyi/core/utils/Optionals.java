@@ -1,5 +1,6 @@
 package one.xingyi.core.utils;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public class Optionals {
@@ -11,6 +12,10 @@ public class Optionals {
     public static <T, T1> T1 fold(Optional<T> opt, Supplier<T1> notIn, Function<T, T1> in) {
         if (opt.isEmpty()) return notIn.get();
         else return in.apply(opt.get());
+    }
+    public static <T> void doit(Optional<T> opt, Runnable notIn, Consumer<T> in) {
+        if (opt.isEmpty()) notIn.run();
+        else in.accept(opt.get());
     }
 
 
