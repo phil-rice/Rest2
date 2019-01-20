@@ -8,6 +8,8 @@ import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.Strings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 @RequiredArgsConstructor
 @ToString
@@ -18,12 +20,13 @@ public class FieldDom {
     public final boolean readOnly;
     public final String lensName;
     public final String lensPath;
-    public final Optional<String> javascript;
+    public final String javascript;
 
-    public static FieldDom create(IServerNames names, EntityNames entityName, TypeDom typeDom, String fieldName, Field field) {
-        return new FieldDom(typeDom, fieldName, field.readOnly(),
-                names.entityLensName(entityName, fieldName, field.lensName()),
-                names.entityLensPath(entityName, fieldName, field.lensPath()),
-                Strings.from(field.javascript()));
-    }
+//    public static FieldDom create(IServerNames names, EntityNames entityName, TypeDom typeDom, String fieldName, Field field) {
+//        String lensName = names.entityLensName(entityName, fieldName, field.lensName());
+//        String lensPath = names.entityLensPath(entityName, fieldName, field.lensPath());
+//        String javascript = Strings.from(field.javascript(), "function lens_" + lensName + "(){ return lens('" + lensPath + "');};");
+//        return new FieldDom(typeDom, fieldName, field.readOnly(), lensName, lensPath, javascript);
+//
+//    }
 }

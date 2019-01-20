@@ -47,7 +47,7 @@ class DefaultHttpService implements HttpService {
         return service.apply(serviceRequest).thenApply(serviceResponse -> {
             DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
             IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
-            Object mirror = xingYi.parse(dataAndJavaScript.javascript);
+            Object mirror = xingYi.parse(dataAndJavaScript.data);
             return fn.apply(clientMaker.create(xingYi, mirror));
         });
     }

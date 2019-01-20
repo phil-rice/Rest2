@@ -18,7 +18,7 @@ public class EntityDomTest {
     class DummyClass {
     }
 
-    Reflection<FieldDomTest> reflection = new Reflection(DummyClass.class);
+    Reflection<DummyClass> reflection = new Reflection(DummyClass.class);
 
     @Test public void testCreateHappyPath() {
         IServerNames names = mock(IServerNames.class);

@@ -43,7 +43,7 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
         this.inv = (Invocable) engine;
         System.out.println("Duration: " + (System.nanoTime() - time) / 1000000);
     }
-    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse", () -> inv.invokeFunction("parse", s)); }
+    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse. Strings was \n"+ s, () -> inv.invokeFunction("parse", s)); }
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
         Getter<View, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror()));

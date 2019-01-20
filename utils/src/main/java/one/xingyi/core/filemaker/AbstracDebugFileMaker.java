@@ -5,6 +5,7 @@ import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Strings;
 
 import java.util.List;
 public class AbstracDebugFileMaker {
@@ -31,8 +32,8 @@ public class AbstracDebugFileMaker {
                 Formating.indent(List.of(
                         "Lens path " + fieldDom.lensPath,
                         "Lens name " + fieldDom.lensName,
-                        "Readonly " + fieldDom.readOnly
-                )));
+                        "Readonly " + fieldDom.readOnly,
+                        "Javascript " + Strings.noWhitespace(fieldDom.javascript))));
     }
 
     List<String> entityDebugInfo(EntityDom entityDom) {

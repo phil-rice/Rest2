@@ -7,6 +7,7 @@ import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
 import javax.lang.model.element.Element;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 public interface IElementToFieldDom extends Function<Element, Result<ElementFail, FieldDom>> {
     static IElementToFieldDom forEntity(ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToFieldDomForEntity(bundle.serverNames(), entityNames);}
     static IElementToFieldDom forView(ElementToBundle bundle, ViewNames viewNames) {return new SimpleElementToFieldDomForViews(bundle.serverNames(), viewNames);}
+
 }
 
 @RequiredArgsConstructor
@@ -31,7 +33,8 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
             String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> findLensName(fieldName, f));
             String lensPath = Optionals.chain(annotation, f -> f.lensPath(), "", f -> findLensPath(fieldName, f));
             Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
-            Optional<String> javascript = Optional.ofNullable(annotation).map(Field::javascript);
+            String javascriptBody = Optional.ofNullable(annotation).map(Field::javascript).orElse("return lens('" + lensPath + "');");
+            String javascript = "function " + lensName + "(){" + javascriptBody + "};";
             return Result.succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript));
         });
     }
