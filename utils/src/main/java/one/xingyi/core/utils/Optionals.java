@@ -1,5 +1,6 @@
 package one.xingyi.core.utils;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -16,6 +17,10 @@ public class Optionals {
     public static <T> void doit(Optional<T> opt, Runnable notIn, Consumer<T> in) {
         if (opt.isEmpty()) notIn.run();
         else in.accept(opt.get());
+    }
+
+    public static <T> CompletableFuture<Optional<T>> flip(Optional<CompletableFuture<T>> opt) {
+        return opt.map(fut -> fut.thenApply(x -> Optional.of(x))).orElse(CompletableFuture.completedFuture(Optional.empty()));
     }
 
 
