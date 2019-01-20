@@ -23,7 +23,7 @@ public class SimpleServerNamesTest {
         assertEquals(new PackageAndClassName("original.package.domain.IEntity"), actual.serverInterface);
         assertEquals(new PackageAndClassName("original.package.domain.Entity"), actual.serverEntity);
         assertEquals(new PackageAndClassName("original.package.server.companion.EntityCompanion"), actual.serverCompanion);
-        assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityEntity"), actual.clientEntity);
+        assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientEntity);
         assertEquals("Entity", actual.entityNameForLens);
     }
     @Test public void testEntityNameWhenRootDefinedInAnnotationStartingWithI() {
@@ -32,7 +32,7 @@ public class SimpleServerNamesTest {
         assertEquals(new PackageAndClassName("original.package.domain.IEntity"), actual.serverInterface);
         assertEquals(new PackageAndClassName("original.package.domain.Entity"), actual.serverEntity);
         assertEquals(new PackageAndClassName("original.package.server.companion.EntityCompanion"), actual.serverCompanion);
-        assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityEntity"), actual.clientEntity);
+        assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientEntity);
         assertEquals("Entity", actual.entityNameForLens);
         serverNames.entityName("original.package.className", "IEntity");
 

@@ -62,7 +62,7 @@ public class TypeDomTest {
 
     @Test public void testView() {
         Result<String, TypeDom> actual = TypeDom.create(names, "a.b.IPersonDefn");
-        assertEquals(Result.succeed(new ViewType("a.b.IPersonDefn", "a.b.domain.IPerson", "")), actual);
+        assertEquals(Result.succeed(new ViewType("a.b.IPersonDefn", "a.b.domain.IPerson", "a.b.client.view.Person")), actual);
     }
     @Test public void testAnythingInsideBracketsDoesntWork() {
         assertEquals(Result.fail("Could not work out what type Thing<something> was"), TypeDom.create(names, "Thing<something>"));
@@ -73,11 +73,11 @@ public class TypeDomTest {
         assertEquals("java.util.List<java.lang.String>", listStringPt.forEntity());
         TypeDom viewType = TypeDom.create(names, "a.b.IPersonDefn").result().get();
         assertEquals("a.b.domain.IPerson", viewType.forEntity());
-        assertEquals("", viewType.forView());
+        assertEquals("a.b.client.view.Person", viewType.forView());
 
         TypeDom listType = TypeDom.create(names, "java.util.List<a.b.IPersonDefn>").result().get();
         assertEquals("java.util.List<a.b.domain.IPerson>", listType.forEntity());
-        assertEquals("java.util.List<a.b.domain.IPerson>", listType.forView());
+        assertEquals("java.util.List<a.b.IPersonDefn>", listType.forView());
 
     }
 

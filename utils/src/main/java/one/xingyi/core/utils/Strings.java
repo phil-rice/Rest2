@@ -8,12 +8,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 public class Strings {
-    public static String getFrom(Consumer<PrintStream> consumer){
+    public static String getFrom(Consumer<PrintStream> consumer) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         consumer.accept(new PrintStream(stream));
         return stream.toString();
     }
 
+    public static String noWhitespace(String s) {return s.replaceAll("\\se*", ""); }
+    public static String changeQuotes(String s) {return s.replace('\'', '"'); }
 
 
     public static Optional<String> from(String s) { return Optionals.from(s != null && s.length() > 0, () -> s); }
@@ -58,6 +60,6 @@ public class Strings {
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
     public static boolean hasContent(String s) {
-        return s != null && s.length()>0;
+        return s != null && s.length() > 0;
     }
 }

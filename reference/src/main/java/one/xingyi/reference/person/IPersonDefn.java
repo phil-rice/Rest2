@@ -9,5 +9,6 @@ import one.xingyi.reference.address.IAddressDefn;
 public interface IPersonDefn extends IXingYiEntityDefn {
     @Field(readOnly = true)
     String name();
+    int age();
     IAddressDefn address();
 }

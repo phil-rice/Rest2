@@ -25,6 +25,7 @@ public interface TypeDom {
     TypeDom nested();
     boolean primitive();
 
+    default String forJson(String fieldName){return fieldName;}
 
     static Set<PackageAndClassName> primitives = Set.of(stringPn, intPn, booleanPn, doublePn);
 
