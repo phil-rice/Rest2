@@ -43,8 +43,8 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         return Lists.flatMap(fields, f -> viewAndEntityaccessors(clientEntity, interfaceName, f));
     }
 
-    List<String> fields(FieldListDom fld) {
-        return List.of("final IXingYi xingYi;", "final Object mirror;");
+    List<String> fields(ViewDom viewDom) {
+        return List.of("final IXingYi<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi;", "final Object mirror;");
     }
     List<String> constructor(String classname, FieldListDom fld) {
         return List.of("public " + classname + "(IXingYi xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
@@ -59,7 +59,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class, Lens.class),
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion;"),
-                Formating.indent(fields(viewDom.fields)),
+                Formating.indent(fields(viewDom)),
                 Formating.indent(constructor(viewDom.viewNames.clientViewImpl.className, viewDom.fields)),
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
