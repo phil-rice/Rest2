@@ -22,14 +22,16 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         result.add("//View" + viewDomAndEntityDomField.viewDomField);
         result.add("//Entity" + viewDomAndEntityDomField.entityDomField);
         Optional<String> lensName = entityDom.map(fd -> fd.lensName);
-//        String getterBody = Optionals.fold(lensName,
-//                () -> "throw new RuntimeException(" + Strings.quote("Cannot find lensname for field " + viewDom.name + ")"),
-//                ln -> "return xingYi.lens(" + Strings.quote(ln) + ")");
-        result.add("//viewTypedom:    " + viewDom.typeDom);
-        result.add("//entityTypeDom:   " + entityDom.map(x -> x.typeDom));
 
-        result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
-                "Lens(){ return xingYi.<" + clientEntity.asString() + "," + interfaceName + ">stringLens(companion, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");}");
+        if (viewDom.typeDom.primitive()) {
+            result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
+                    "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");}");
+        } else {
+            result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
+                    viewDom.name + "Lens(){");
+            result.add("return xingYi.objectLens(companion, " + Strings.quote(entityDom.map(e -> e.lensName).orElse("not known")) + ");}");
+
+        }
         result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
         if (!viewDom.readOnly && entityDom.map(f -> !f.readOnly).orElse(true)) {
             result.add("public " + interfaceName + " with" + viewDom.name + "(" +
