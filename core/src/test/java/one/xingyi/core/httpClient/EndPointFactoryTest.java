@@ -25,7 +25,7 @@ public class EndPointFactoryTest {
             req -> CompletableFuture.completedFuture(new Entity("faked" + req.entityName)));
     EndPointFactory<JsonObject> optionalFactory = EndPointFactory.<JsonObject, EntityDetailsRequest, Entity>optionalBookmarked("/<id>", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(Optional.of(new Entity("faked" + req.entityName))));
-    EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonTC.cheapJson);
+    EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonTC.cheapJson, "http://");
 
     @Test
     public void testBookmarked() throws ExecutionException, InterruptedException {

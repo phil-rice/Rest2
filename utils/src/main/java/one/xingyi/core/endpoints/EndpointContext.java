@@ -10,4 +10,5 @@ import one.xingyi.core.marshelling.JsonTC;
 public class EndpointContext<J> {
     public final JavascriptStore javascriptStore;
     public final JsonTC<J> jsonTC;
+    public final String protocol;
 }

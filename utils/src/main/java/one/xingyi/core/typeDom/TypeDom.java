@@ -6,7 +6,6 @@ import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-import java.util.Set;
 
 import static one.xingyi.core.codeDom.PackageAndClassName.*;
 public interface TypeDom {
@@ -24,7 +23,7 @@ public interface TypeDom {
     TypeDom nested();
     boolean primitive();
 
-    default String forJson(String fieldName){return fieldName;}
+    default String forJson(String fieldName, boolean templated){return fieldName;}
 
 
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName) {

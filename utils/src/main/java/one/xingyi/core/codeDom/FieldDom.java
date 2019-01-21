@@ -21,7 +21,7 @@ public class FieldDom {
     public final String lensName;
     public final String lensPath;
     public final String javascript;
-
+    public final boolean templated;
 //    public static FieldDom create(IServerNames names, EntityNames entityName, TypeDom typeDom, String fieldName, Field field) {
 //        String lensName = names.entityLensName(entityName, fieldName, field.lensName());
 //        String lensPath = names.entityLensPath(entityName, fieldName, field.lensPath());

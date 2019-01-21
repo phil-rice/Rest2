@@ -35,7 +35,8 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
             Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
             String javascriptBody = Optional.ofNullable(annotation).map(Field::javascript).orElse("return lens('" + lensPath + "');");
             String javascript = "function " + lensName + "(){" + javascriptBody + "};";
-            return Result.succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript));
+            Boolean templated = Optional.ofNullable(annotation).map(a -> a.templated()).orElse(false);
+            return Result.succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript, templated));
         });
     }
 }

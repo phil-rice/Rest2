@@ -30,10 +30,11 @@ public class AbstracDebugFileMaker {
                 List.<String>of("Field: " + fieldDom.name),
                 Formating.indent(typeDomInfo(fieldDom.typeDom)),
                 Formating.indent(List.of(
-                        "Lens path " + fieldDom.lensPath,
-                        "Lens name " + fieldDom.lensName,
-                        "Readonly " + fieldDom.readOnly,
-                        "Javascript " + Strings.noWhitespace(fieldDom.javascript))));
+                        "Lens path  " + fieldDom.lensPath,
+                        "Lens name  " + fieldDom.lensName,
+                        "Readonly   " + fieldDom.readOnly,
+                        "Javascript " + Strings.noWhitespace(fieldDom.javascript),
+                        "Templated: " + fieldDom.templated)));
     }
 
     List<String> entityDebugInfo(EntityDom entityDom) {

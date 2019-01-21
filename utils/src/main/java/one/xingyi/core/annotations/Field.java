@@ -16,4 +16,5 @@ public @interface Field {
     String lensPath() default "";
     /** overrides the javascript associated with this view field (the default is to call the lens */
     String javascript() default "";
+    boolean templated() default false;
 }

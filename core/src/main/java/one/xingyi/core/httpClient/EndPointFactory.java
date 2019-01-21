@@ -30,6 +30,7 @@ class BookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements
         return EndPoint.<J, From, To>javascriptAndJson(
                 context.jsonTC,
                 200,
+                context.protocol,
                 EndpointAcceptor1.bookmarkAcceptor("get", pattern, reqFn),
                 fn,
                 context.javascriptStore);
@@ -45,6 +46,7 @@ class OptionalBookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> im
         return EndPoint.<J, From, To>optionalJavascriptAndJson(
                 context.jsonTC,
                 200,
+                context.protocol,
                 EndpointAcceptor1.bookmarkAcceptor("get", pattern, reqFn),
                 fn,
                 context.javascriptStore);

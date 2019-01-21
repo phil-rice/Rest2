@@ -27,7 +27,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     static String protocolAndHost = "http://someHost:9000";
     static String url = protocolAndHost + bookmark;
     static ServiceRequest serviceRequest = new ServiceRequest("get", url, List.of(), "");
-    static ContextForJson context = ContextForJson.forServiceRequest(serviceRequest);
+    static ContextForJson context = ContextForJson.forServiceRequest("http://", serviceRequest);
     static JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
     static String javascript = Files.getText("header.js") + EntityCompanion.companion.javascript;
     static String json = new Entity("http://someHost:9000/someUrlPattern<id>").toJsonString(jsonTC, context);

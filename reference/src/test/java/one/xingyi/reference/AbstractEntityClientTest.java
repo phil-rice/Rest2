@@ -48,7 +48,7 @@ abstract class AbstractEntityClientTest {
     static String javascript = Files.getText("header.js") + EntityCompanion.companion.javascript;
 
     static JavascriptStore javascriptStore = JavascriptStore.constant(javascript);
-    static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC);
+    static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC,"http://");
 
     static EntityRegister entityRegister = EntityRegister.apply(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion);
     static EndPointFactory<JsonObject> entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
@@ -95,7 +95,7 @@ abstract class AbstractEntityClientTest {
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
-        assertEquals("/person/<id>", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
+        assertEquals(expectedHost() + "/person/<id>", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
         assertEquals(expectedHost() + "/person/<id>", UrlPattern.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
     }
 
