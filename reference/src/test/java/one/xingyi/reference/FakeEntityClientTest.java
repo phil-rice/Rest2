@@ -13,17 +13,6 @@ import org.mockito.internal.matchers.Null;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class FakeEntityClientTest extends AbstractEntityClientTest {
-    EntityRegister entityRegister = EntityRegister.apply(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion);
-//    EndPoint entityEndpoint = EntityDetailsEndpoint.entityDetailsEndPoint(jsonTC, entityRegister, javascriptStore);
-
-    EndPointFactory<JsonObject> entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
-    EndPoint entityEndpoint = entityFactory.apply(endpointContext);
-
-    EndPoint entityEndpoints() {
-        if (entityFactory==null)throw new NullPointerException();
-        if (entityEndpoint==null)throw new NullPointerException();
-        return EndPoint.compose(entityEndpoint);}
-    ;
 
     @Override protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints()); }
     @Override protected String expectedHost() { return ""; }

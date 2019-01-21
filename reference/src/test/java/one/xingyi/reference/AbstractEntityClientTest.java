@@ -49,6 +49,18 @@ abstract class AbstractEntityClientTest {
 
     static JavascriptStore javascriptStore = JavascriptStore.constant(javascript);
     static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC);
+
+    static EntityRegister entityRegister = EntityRegister.apply(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion);
+    static EndPointFactory<JsonObject> entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
+    static EndPoint entityEndpoint = entityFactory.apply(endpointContext);
+
+    EndPoint entityEndpoints() {
+        if (entityFactory == null) throw new NullPointerException();
+        if (entityEndpoint == null) throw new NullPointerException();
+        return EndPoint.compose(entityEndpoint);
+    }
+    ;
+
     HttpService rawService;
     HttpService service() {
         if (rawService == null) rawService = HttpService.defaultService(protocolHostAndPort, httpClient());
@@ -56,7 +68,6 @@ abstract class AbstractEntityClientTest {
     }
     static ServiceRequest sr(String url) {
         return new ServiceRequest("get", protocolHostAndPort + url, List.of(), "");
-
     }
 
     @Test
