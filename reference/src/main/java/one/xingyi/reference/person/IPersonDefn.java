@@ -4,11 +4,16 @@ import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.annotations.Field;
 import one.xingyi.core.sdk.IXingYiEntityDefn;
 import one.xingyi.reference.address.IAddressDefn;
+import one.xingyi.reference.telephone.ITelephoneNumberDefn;
 
-@Entity
+@Entity(bookmark = "person", getUrl = "/person/<id>")
 public interface IPersonDefn extends IXingYiEntityDefn {
     @Field(readOnly = true)
     String name();
-    Integer  age();
+
+    Integer age();
+
     IAddressDefn address();
+
+    ITelephoneNumberDefn telephone();
 }

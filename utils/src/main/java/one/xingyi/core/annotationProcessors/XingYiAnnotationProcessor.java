@@ -1,11 +1,9 @@
 package one.xingyi.core.annotationProcessors;
 
 import one.xingyi.core.annotations.Entity;
+import one.xingyi.core.annotations.Server;
 import one.xingyi.core.annotations.View;
-import one.xingyi.core.codeDom.CodeDom;
-import one.xingyi.core.codeDom.EntityDom;
-import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.codeDom.ViewDomAndItsEntityDom;
+import one.xingyi.core.codeDom.*;
 import one.xingyi.core.filemaker.*;
 import one.xingyi.core.names.*;
 import one.xingyi.core.utils.*;
@@ -68,9 +66,11 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
 
-            List<FileDefn> content = makeContent(codeDom);
-            log.info("Started");
-            for (FileDefn fileDefn : content)
+            List<FileDefn> codeContent = makeContent(codeDom);
+            List<? extends Element> serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
+            List<FileDefn> serverContent = Lists.map(serverElements, e -> makeServer(e, codeDom));
+
+            for (FileDefn fileDefn : Lists.append(codeContent, serverContent))
                 makeClassFile(fileDefn);
             for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults)))
                 Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
@@ -80,6 +80,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             log.error("In Annotation Processor\n" + Strings.getFrom(e::printStackTrace));
         }
         return false;
+    }
+    FileDefn makeServer(Element e, CodeDom codeDom) {
+        ServerDom dom = ServerDom.create(e, codeDom);
+        return new ServerFileMaker().apply(dom);
     }
 
     List<FileDefn> makeContent(CodeDom codeDom) {
@@ -111,5 +115,5 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     @Override public SourceVersion getSupportedSourceVersion() { return SourceVersion.latestSupported(); }
-    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(Entity.class.getName(), View.class.getName()); }
+    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName()); }
 }

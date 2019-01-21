@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface HttpService {
 
-    static HttpService defaultService(Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
+public     static HttpService defaultService(Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
         return new DefaultHttpService(delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter);
     }
 

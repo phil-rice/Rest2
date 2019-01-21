@@ -10,6 +10,13 @@ public class Sets {
         return result;
     }
 
+    public static <T>List<T> toList(Set<T> set){
+        List<T> result = new ArrayList<>();
+        result.addAll(set);
+        return result;
+
+    }
+
     public static String sortedString(Set<String> names, String separator) {
         List<String> result11 = new ArrayList<>();
         result11.addAll(names);

@@ -3,6 +3,8 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.codeDom.PackageAndClassName;
+import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
@@ -13,8 +15,7 @@ public interface IServerNames {
     Result<String, ViewNames> viewName(String className, String entityClassName, String annotationViewName);
     String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
     String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
-    Optional<String> bookmark(EntityNames entityElementName, String annotationBookmark);
-    Optional<String> getUrl(EntityNames entityElementName, String annotationGetUrl);
+    Optional<BookmarkAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl);
 }
 
 @RequiredArgsConstructor
@@ -51,10 +52,8 @@ class SimpleServerNames implements IServerNames {
         return Strings.from(annotationLensName, "lens_" + entityElementName.entityNameForLens + "_" + fieldName);
     }
     @Override public String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath) { return Strings.from(annotationLensPath, fieldName); }
-    @Override public Optional<String> bookmark(EntityNames entityElementName, String annotationBookmark) {
-        return Strings.from(annotationBookmark);
+    @Override public Optional<BookmarkAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl) {//TODO review this business logic
+        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), BookmarkAndUrlPattern::new);
     }
-    @Override public Optional<String> getUrl(EntityNames entityElementName, String annotationGetUrl) {
-        return Strings.from(annotationGetUrl);
-    }
+
 }

@@ -23,7 +23,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         return Lists.<String>append(
                 viewNameInfo(viewDom.viewNames),
                 List.of(
-                        "bookmark " + viewDom.bookmark,
+                        "bookmarkAndUrl " + viewDom.bookmark,
                         "Fields: " + viewDom.fields.allFields.size()
                 ),
                 Formating.indent(Lists.<FieldDom, String>flatMap(viewDom.fields.allFields, this::fieldDebugInfo))

@@ -2,9 +2,11 @@ package one.xingyi.core.annotationProcessors;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.codeDom.EntityDom;
+import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
 import javax.lang.model.element.TypeElement;
@@ -20,8 +22,7 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
     final IElementToFieldListDom elementToFieldListDom;
     @Override public Result<ElementFail, EntityDom> apply(TypeElement element) {
         Entity annotation = element.getAnnotation(Entity.class);
-        Optional<String> optBookmark = Optionals.chainOpt(annotation, Entity::bookmark, b -> serverNames.bookmark(entityNames, b));
-        Optional<String> optGetUrl = Optionals.chainOpt(annotation, Entity::getUrl, b -> serverNames.getUrl(entityNames, b));
-        return elementToFieldListDom.apply(element).map(fieldListDom -> new EntityDom(entityNames, optBookmark, optGetUrl, fieldListDom));
+        Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, annotation.bookmark(), annotation.getUrl());
+        return elementToFieldListDom.apply(element).map(fieldListDom -> new EntityDom(entityNames, bookmarkAndUrlPattern, fieldListDom));
     }
 }

@@ -1,5 +1,6 @@
 package one.xingyi.core.names;
 import one.xingyi.core.codeDom.PackageAndClassName;
+import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.validation.Result;
 import org.junit.Test;
 
@@ -67,12 +68,7 @@ public class SimpleServerNamesTest {
     }
     @Test public void testBookmark() {
         EntityNames entityNames = mock(EntityNames.class);
-        assertEquals(Optional.empty(), serverNames.bookmark(entityNames, ""));
-        assertEquals(Optional.of("override"), serverNames.bookmark(entityNames, "override"));
-    }
-    @Test public void testGetUrl() {
-        EntityNames entityNames = mock(EntityNames.class);
-        assertEquals(Optional.empty(), serverNames.getUrl(entityNames, ""));
-        assertEquals(Optional.of("override"), serverNames.getUrl(entityNames, "override"));
+        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", ""));
+        assertEquals(Optional.of(new BookmarkAndUrlPattern("overrideB", "overrideU")), serverNames.bookmarkAndUrl(entityNames, "overrideB", "overrideU"));
     }
 }

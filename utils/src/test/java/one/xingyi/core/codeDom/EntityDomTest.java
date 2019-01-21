@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static one.xingyi.core.codeDom.EntityDom.create;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 public class EntityDomTest {
@@ -27,12 +28,13 @@ public class EntityDomTest {
         FieldListDom fieldListDom = mock(FieldListDom.class);
 
 
-        when(names.entityName(originalEntityName, "someEntityName")).thenReturn(Result.succeed(entityNames));
-        when(names.bookmark(entityNames, "someBookmark")).thenReturn(Optional.of("theBookmark"));
-        when(names.getUrl(entityNames, "someUrl")).thenReturn(Optional.of("theGetUrl"));
-
-        Result<String, EntityDom> actual = create(names, originalEntityName, reflection.classAnnotation(Entity.class), fieldListDom);
-        assertEquals(new EntityDom(entityNames, Optional.of("theBookmark"), Optional.of("theGetUrl"), fieldListDom), actual.result().get());
+//        when(names.entityName(originalEntityName, "someEntityName")).thenReturn(Result.succeed(entityNames));
+//        when(names.bookmarkAndUrl(entityNames, "someBookmark")).thenReturn(Optional.of("theBookmark"));
+//        when(names.getUrl(entityNames, "someUrl")).thenReturn(Optional.of("theGetUrl"));
+//
+//        Result<String, EntityDom> actual = create(names, originalEntityName, reflection.classAnnotation(Entity.class), fieldListDom);
+//        assertEquals(new EntityDom(entityNames, Optional.of("theBookmark"), Optional.of("theGetUrl"), fieldListDom), actual.result().get()
+        fail();
     }
 
 }

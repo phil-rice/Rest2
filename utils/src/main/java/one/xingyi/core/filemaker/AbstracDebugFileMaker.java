@@ -40,7 +40,7 @@ public class AbstracDebugFileMaker {
         return Lists.<String>append(
                 entityNameInfo(entityDom.entityName),
                 List.of(
-                        "bookmark " + entityDom.bookmark + ", geturl: " + entityDom.getUrl,
+                        "bookmarkAndUrl " + entityDom.bookmark,
                         "Fields: " + entityDom.fields.allFields.size()
                 ),
                 Formating.indent(Lists.<FieldDom, String>flatMap(entityDom.fields.allFields, this::fieldDebugInfo))

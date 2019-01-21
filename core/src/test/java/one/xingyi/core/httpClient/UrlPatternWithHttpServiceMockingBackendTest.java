@@ -21,9 +21,9 @@ import java.util.function.Function;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-public class UrlPatternWithHttpServiceTest {
+public class UrlPatternWithHttpServiceMockingBackendTest {
     static Function<UrlPattern, String> getFn = UrlPattern::urlPattern;
-    static String bookmark = "bookmark";
+    static String bookmark = "bookmarkAndUrl";
     static String url = "http://someHost:9000/" + bookmark;
     static ServiceRequest serviceRequest = new ServiceRequest("get", url, List.of(), "");
     static ContextForJson context = ContextForJson.forServiceRequest(serviceRequest);
@@ -41,13 +41,6 @@ public class UrlPatternWithHttpServiceTest {
         when(delegate.apply(serviceRequest)).thenReturn(CompletableFuture.completedFuture(serviceResponse));
 
         assertEquals("http://someHost:9000/someUrlPattern<id>", service.primitiveGet(UrlPatternCompanion.companion, url, getFn).get());
-    }
-    @Test
-    public void testDelegatesGetPrimitiveToHttpService() throws ExecutionException, InterruptedException {
-        HttpService service = mock(HttpService.class);
-        when(service.primitiveGet(UrlPatternCompanion.companion, url, getFn)).thenReturn(CompletableFuture.completedFuture("someUrlPattern"));
-        String actual = UrlPattern.getPrimitive(service, url, getFn).get();
-        assertEquals("someUrlPattern", actual);
     }
 }
 

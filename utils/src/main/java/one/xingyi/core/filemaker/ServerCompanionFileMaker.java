@@ -1,10 +1,8 @@
 package one.xingyi.core.filemaker;
-import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.EntityDom;
-import one.xingyi.core.codeDom.FieldDom;
-import one.xingyi.core.codeDom.FieldListDom;
-import one.xingyi.core.sdk.IXingYiEntity;
+import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.endpoints.HasBookmarkAndUrl;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
@@ -16,9 +14,8 @@ import java.util.List;
 import java.util.Optional;
 public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
 
-    List<String> createBookmark(EntityDom entityDom) {
-        String bookmark = Optionals.fold(entityDom.bookmark, () -> "Optional.empty()", b -> "Optional.of(" + Strings.quote(b) + ")");
-        return List.of("@Override public Optional<String> bookmark(){ return " + bookmark + "; }");
+    List<String> createBookmarkAndUrl(EntityDom entityDom) {
+        return Optionals.fold(entityDom.bookmark, () -> List.of(), b -> List.of("@Override public BookmarkAndUrlPattern bookmarkAndUrl(){return new BookmarkAndUrlPattern(" + Strings.quote(b.bookmark) + "," + Strings.quote(b.urlPattern) + ");}"));
     }
 
     private List<String> createCompanion(EntityDom entityDom) {
@@ -35,11 +32,12 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
 
     @Override public FileDefn apply(EntityDom entityDom) {
         String implementsString = "IXingYiServerCompanion<" + entityDom.entityName.originalDefn.asString() + "," + entityDom.entityName.serverEntity.asString() + ">";
+        if (entityDom.bookmark.isPresent()) implementsString += ",HasBookmarkAndUrl";
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), "class", entityDom.entityName.serverCompanion,
-                        " implements " + implementsString, List.of(), IXingYiServerCompanion.class, XingYiGenerated.class, Optional.class),
+                        " implements " + implementsString, List.of(), IXingYiServerCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
-                Formating.indent(createBookmark(entityDom)),
+                Formating.indent(createBookmarkAndUrl(entityDom)),
                 Formating.indent(createCompanion(entityDom)),
                 Formating.indent(createJavascript(entityDom)),
                 List.of("}")

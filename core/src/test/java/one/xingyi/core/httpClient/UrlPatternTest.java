@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 public class UrlPatternTest {
 
     Function<UrlPattern, String> getFn = UrlPattern::urlPattern;
-    String url = "http://localhost:9000/bookmark";
+    String url = "http://localhost:9000/bookmarkAndUrl";
     @Test
     public void testDelegatesGetPrimitiveToHttpService() throws ExecutionException, InterruptedException {
         HttpService service = mock(HttpService.class);
