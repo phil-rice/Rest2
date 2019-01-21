@@ -43,7 +43,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
 
     }
     List<String> getUrlPatternMethod(ViewDom viewDom) {
-        return List.of(" static CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPattern.getPrimitive(service, one.xingyi.core.httpClient.client.companion.UrlPatternCompanion.companion.bookmark(), UrlPattern::urlPattern); }");
+        return List.of(" static CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPattern.getPrimitive(service, "+ viewDom.viewNames.clientCompanion.asString() + ".companion.bookmark(), UrlPattern::urlPattern); }");
 
     }
 

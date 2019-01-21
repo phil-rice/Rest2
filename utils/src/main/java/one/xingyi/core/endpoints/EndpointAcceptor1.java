@@ -5,12 +5,13 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.utils.Optionals;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Optional<From>> {
 
     static <From> EndpointAcceptor1<From> justOneThing(String method, Function<String, From> fn) { return new JustOneThing<>(method, fn); }
     static <From> EndpointAcceptor1<From> nameThenId(String method, String name, Function<String, From> fn) { return new NameThenid<>(method, name, fn); }
-    static <From> EndpointAcceptor1<From> bookmarkAcceptor(String method, String bookmakr, Function<String, From> fn) { return new BookmarkAcceptor<>(method, bookmakr, fn); }
+    static <From> EndpointAcceptor1<From> bookmarkAcceptor(String method, String bookmakr, BiFunction<ServiceRequest, String, From> fn) { return new BookmarkAcceptor<>(method, bookmakr, fn); }
 
 }
 
@@ -42,9 +43,9 @@ class BookmarkAcceptor<From> implements EndpointAcceptor1<From> {
     private final String method;
     private final String startString;
     private final String endString;
-    private final Function<String, From> fn;
+    private final BiFunction<ServiceRequest,String, From> fn;
 
-    public BookmarkAcceptor(String method, String bookmark, Function<String, From> fn) {
+    public BookmarkAcceptor(String method, String bookmark, BiFunction<ServiceRequest,String, From> fn) {
         this.method = method;
         int index = bookmark.indexOf("<id>");
         this.fn = fn;
@@ -58,7 +59,7 @@ class BookmarkAcceptor<From> implements EndpointAcceptor1<From> {
         if (url.startsWith(startString) && url.endsWith(endString)) {
             String substring = url.substring(startString.length(), url.length() - endString.length());
             if (substring.indexOf("/") != -1)return Optional.empty();
-            return Optional.of(fn.apply(substring));
+            return Optional.of(fn.apply(serviceRequest, substring));
         }
         return Optional.empty();
     }

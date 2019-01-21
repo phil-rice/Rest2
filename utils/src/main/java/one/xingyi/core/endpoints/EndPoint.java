@@ -73,8 +73,12 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 
 @ToString
 @EqualsAndHashCode
-@RequiredArgsConstructor
 class ComposeEndPoints implements EndPoint {
+    public ComposeEndPoints(List<EndPoint> endpoints) {
+        this.endpoints = endpoints;
+        for (EndPoint endPoint : endpoints)
+            if (endPoint == null) throw new NullPointerException(endpoints.toString());
+    }
     final List<EndPoint> endpoints;
 
     CompletableFuture<Optional<ServiceResponse>> recurse(ServiceRequest serviceRequest, int index) {

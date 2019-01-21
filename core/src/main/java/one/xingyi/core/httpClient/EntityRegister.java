@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Entity>> {
-//    static EntityRegister apply(HasBookmarkAndUrl... bookmarkAndUrls) { return new SimpleEntityRegister(Arrays.asList(bookmarkAndUrls)); }
+public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Optional<Entity>>> {
+    static EntityRegister apply(HasBookmarkAndUrl... bookmarkAndUrls) { return new SimpleEntityRegister(Arrays.asList(bookmarkAndUrls)); }
 }
 
 
@@ -27,8 +27,11 @@ class SimpleEntityRegister implements EntityRegister {
     final List<HasBookmarkAndUrl> companions;
 
     @Override
-    public CompletableFuture<Entity> apply(EntityDetailsRequest entityDetailsRequest) {
-        Optional<Entity> entity = Lists.find(companions, c -> c.bookmarkAndUrl().bookmark.equals(entityDetailsRequest.entityName)).map(b -> b.bookmarkAndUrl().urlPattern).map(Entity::new);
-        return CompletableFuture.completedFuture(entity.orElseThrow(() -> new RuntimeException("Cannot create for " + entityDetailsRequest + " only accept " + legalValues)));
+    public CompletableFuture<Optional<Entity>> apply(EntityDetailsRequest entityDetailsRequest) {
+        Optional<Entity> entity = Lists.find(companions, c -> c.bookmarkAndUrl().bookmark.equals(entityDetailsRequest.entityName)).
+                map(b ->
+                        b.bookmarkAndUrl().urlPattern).
+                map(Entity::new);
+        return CompletableFuture.completedFuture(entity);
     }
 }

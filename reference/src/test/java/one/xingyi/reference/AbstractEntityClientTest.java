@@ -8,11 +8,13 @@ import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.*;
+import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.httpClient.server.companion.EntityCompanion;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
+import one.xingyi.reference.address.client.view.AddressLine12View;
 import one.xingyi.reference.address.domain.Address;
 import one.xingyi.reference.address.server.companion.AddressCompanion;
 import one.xingyi.reference.person.client.view.PersonNameView;
@@ -28,26 +30,31 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 abstract class AbstractEntityClientTest {
-    String protocolHostAndPort = "http://localhost:9000";
+    static String protocolHostAndPort = "http://localhost:9000";
 
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
 
-    TelephoneNumber number = new TelephoneNumber("someNumber");
-    Address address = new Address("someLine1", "someLine2", "somePostCode");
-    Person person = new Person("serverName", 23, address, number);
-    IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
-    IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
+    static TelephoneNumber number = new TelephoneNumber("someNumber");
+    static Address address = new Address("someLine1", "someLine2", "somePostCode");
+    static Person person = new Person("serverName", 23, address, number);
+    static IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
+    static IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
-    JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
+    static JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
     static String javascript = Files.getText("header.js") + EntityCompanion.companion.javascript;
 
-    JavascriptStore javascriptStore = JavascriptStore.constant(javascript);
-    EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC);
-    HttpService service = HttpService.defaultService(protocolHostAndPort, httpClient());
-
-    ServiceRequest sr(String url) {
+    static JavascriptStore javascriptStore = JavascriptStore.constant(javascript);
+    static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC);
+    HttpService rawService;
+    HttpService service() {
+        if (rawService == null) rawService = HttpService.defaultService(protocolHostAndPort, httpClient());
+        return rawService;
+    }
+    static ServiceRequest sr(String url) {
         return new ServiceRequest("get", protocolHostAndPort + url, List.of(), "");
 
     }
@@ -58,9 +65,20 @@ abstract class AbstractEntityClientTest {
 
     @Test
     public void testDummyToBeDeleted() throws ExecutionException, InterruptedException {
-        EndPointFactory<JsonObject> factory = EndPointFactory.optionalBookmarked("/person/<id>", Function.identity(), personStore::read);
+        EndPointFactory<JsonObject> factory = EndPointFactory.optionalBookmarked("/person/<id>", (sr, s) -> s, personStore::read);
         EndPoint endPoint = factory.apply(endpointContext);
         ServiceResponse serviceResponse = endPoint.apply(sr("/person/id1")).get().get();
+        assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
+        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
+        assertEquals(javascript, dataAndJavaScript.javascript);
+        assertEquals(person.toJsonString(jsonTC, ContextForJson.nullContext), dataAndJavaScript.data);
+
+    }
+    @Test
+    public void testDummy2ToBeDeleted() throws ExecutionException, InterruptedException {
+        EndPointFactory<JsonObject> factory = EndPointFactory.optionalBookmarked("/<id>", (sr, s) -> s, personStore::read);
+        EndPoint endPoint = factory.apply(endpointContext);
+        ServiceResponse serviceResponse = endPoint.apply(sr("/id1")).get().get();
         assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
         DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
         assertEquals(javascript, dataAndJavaScript.javascript);
@@ -70,20 +88,26 @@ abstract class AbstractEntityClientTest {
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/<id>", UrlPattern.getPrimitive(service, "/person", e -> e.urlPattern()).get());
+        assertEquals("/person/<id>", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
+        assertEquals(expectedHost() + "/person/<id>", UrlPattern.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
     }
 
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
-//        CompletableFuture<String> entity = UrlPattern.getUrlPattern(service);
-//        assertEquals(expectedHost() + "/entity/<id>", entity.get());
-        assertEquals(expectedHost() + "/person/<id>", PersonNameView.getUrlPattern(service).get());
-        assertEquals(expectedHost() + "/address/<id>", UrlPattern.get(service, "address", UrlPattern::urlPattern).get());
+        assertEquals(expectedHost() + "/person/<id>", PersonNameView.getUrlPattern(service()).get());
+        assertEquals(expectedHost() + "/address/<id>", AddressLine12View.getUrlPattern(service()).get());
     }
     @Test
     public void testGetUrlPatternWhenEntityNotRegistered() throws ExecutionException, InterruptedException {
-        UrlPattern.get(service, "someUnknownEntity", UrlPattern::urlPattern).get();
+        try {
+            UrlPattern.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
+            fail();
+        } catch (Exception e) {
+            Throwable cause = e.getCause().getCause();
+            assertTrue(cause.getClass().getName(), cause instanceof UnexpectedResponse);
+            assertEquals(404, ((UnexpectedResponse) cause).response.statusCode);
+        }
     }
 //
 //    @Test

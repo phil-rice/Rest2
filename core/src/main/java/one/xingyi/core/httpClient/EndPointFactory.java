@@ -1,18 +1,20 @@
 package one.xingyi.core.httpClient;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.endpoints.*;
+import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.httpClient.domain.Entity;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 public interface EndPointFactory<J> extends Function<EndpointContext<J>, EndPoint> {
-    static <J, From, To extends HasJson<ContextForJson>> EndPointFactory<J> bookmarked(String pattern, Function<String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
+    static <J, From, To extends HasJson<ContextForJson>> EndPointFactory<J> bookmarked(String pattern, BiFunction<ServiceRequest,String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
         return new BookmarkedEndpoint<J, From, To>(pattern, reqFn, fn);
     }
-    static <J, From, To extends HasJson<ContextForJson>> EndPointFactory<J> optionalBookmarked(String pattern, Function<String, From> reqFn, Function<From, CompletableFuture<Optional<To>>> fn) {
+    static <J, From, To extends HasJson<ContextForJson>> EndPointFactory<J> optionalBookmarked(String pattern, BiFunction<ServiceRequest,String, From> reqFn, Function<From, CompletableFuture<Optional<To>>> fn) {
         return new OptionalBookmarkedEndpoint<>(pattern, reqFn, fn);
     }
 
@@ -21,7 +23,7 @@ public interface EndPointFactory<J> extends Function<EndpointContext<J>, EndPoin
 @RequiredArgsConstructor
 class BookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements EndPointFactory<J> {
     final String pattern;
-    final Function<String, From> reqFn;
+    final BiFunction<ServiceRequest,String, From> reqFn;
     final Function<From, CompletableFuture<To>> fn;
 
     @Override public EndPoint apply(EndpointContext<J> context) {
@@ -36,7 +38,7 @@ class BookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements
 @RequiredArgsConstructor
 class OptionalBookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements EndPointFactory<J> {
     final String pattern;
-    final Function<String, From> reqFn;
+    final BiFunction<ServiceRequest, String, From> reqFn;
     final Function<From, CompletableFuture<Optional<To>>> fn;
 
     @Override public EndPoint apply(EndpointContext<J> context) {

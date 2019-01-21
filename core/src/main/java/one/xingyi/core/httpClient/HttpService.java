@@ -52,10 +52,14 @@ class DefaultHttpService implements HttpService {
     primitiveGet(IXingYiClientMaker<Entity, View> clientMaker, String url, Function<View, Result> fn) {
         ServiceRequest serviceRequest = new ServiceRequest("get", protocolAndHost + url, List.of(), "");
         return service.apply(serviceRequest).thenApply(serviceResponse -> {
-            DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-            IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
-            Object mirror = xingYi.parse(dataAndJavaScript.data);
-            return fn.apply(clientMaker.create(xingYi, mirror));
+            try {
+                DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
+                IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
+                Object mirror = xingYi.parse(dataAndJavaScript.data);
+                return fn.apply(clientMaker.create(xingYi, mirror));
+            } catch (Exception e) {
+                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
+            }
         });
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(IXingYiClientMaker<Entity, View> clientMaker, String id, Function<View, Result> fn) {
