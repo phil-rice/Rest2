@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface HttpService {
 
-    public static HttpService defaultService(String protocolAndHost, Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
+    static HttpService defaultService(String protocolAndHost, Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
         return new DefaultHttpService(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter);
     }
 
@@ -25,8 +25,9 @@ public interface HttpService {
             IXingYiClientMaker<Entity, View> clientMaker,
             String url,
             Function<View, Result> fn);
+
     default CompletableFuture<String> getUrlPattern(String bookmark) {
-        return UrlPattern.get(this, bookmark, UrlPattern::urlPattern);
+        return UrlPattern.getPrimitive(this, bookmark, UrlPattern::urlPattern);
     }
 
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(
@@ -48,9 +49,9 @@ class DefaultHttpService implements HttpService {
     final IXingYiFactory factory;
     final IXingYiResponseSplitter splitter;
 
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result>
-    primitiveGet(IXingYiClientMaker<Entity, View> clientMaker, String url, Function<View, Result> fn) {
-        ServiceRequest serviceRequest = new ServiceRequest("get", protocolAndHost + url, List.of(), "");
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitiveGet(IXingYiClientMaker<Entity, View> clientMaker, String url, Function<View, Result> fn) {
+        String fullUrl = url.startsWith("/") ? protocolAndHost + url : url;
+        ServiceRequest serviceRequest = new ServiceRequest("get", fullUrl, List.of(), "");
         return service.apply(serviceRequest).thenApply(serviceResponse -> {
             try {
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
@@ -63,7 +64,10 @@ class DefaultHttpService implements HttpService {
         });
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(IXingYiClientMaker<Entity, View> clientMaker, String id, Function<View, Result> fn) {
-        return null;
+        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> {
+            return primitiveGet(clientMaker, urlPattern.replace("<id>", id), fn);//TODO UrlEncoding
+        });
+
     }
 }
 

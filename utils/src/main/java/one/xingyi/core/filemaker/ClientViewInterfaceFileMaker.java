@@ -30,20 +30,19 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
     }
 
     List<String> getMethod(ViewDom viewDom) {
-        return List.of("public static <T> CompletableFuture<T> get(HttpService httpService, String id, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
-                Formating.indent + "return httpService.get(" + viewDom.viewNames.clientCompanion.asString() + ".companion,id,fn);",
+        return List.of("public static <T> CompletableFuture<T> get(HttpService service, String id, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
+                Formating.indent + "return " + viewDom.viewNames.clientCompanion.asString() + ".companion.get(service,id,fn);",
                 "}");
-
     }
 
     List<String> getPrimitiveMethod(ViewDom viewDom) {
-        return List.of("public static <T> CompletableFuture<T> getPrimitive(HttpService httpService, String url, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
-                Formating.indent + "return httpService.primitiveGet(" + viewDom.viewNames.clientCompanion.asString() + ".companion,url,fn);",
+        return List.of("public static <T> CompletableFuture<T> getPrimitive(HttpService service, String url, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
+                Formating.indent + "return " + viewDom.viewNames.clientCompanion.asString() + ".companion.getPrimitive(service,url,fn);",
                 "}");
 
     }
     List<String> getUrlPatternMethod(ViewDom viewDom) {
-        return List.of(" static CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPattern.getPrimitive(service, "+ viewDom.viewNames.clientCompanion.asString() + ".companion.bookmark(), UrlPattern::urlPattern); }");
+        return List.of("public static CompletableFuture<String> getUrlPattern(HttpService service) {return  " + viewDom.viewNames.clientCompanion.asString() + ".companion.getUrlPattern(service); }");
 
     }
 

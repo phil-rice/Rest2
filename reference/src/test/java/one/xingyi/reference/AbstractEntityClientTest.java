@@ -45,19 +45,22 @@ abstract class AbstractEntityClientTest {
     static IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
     static JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-    static String javascript = Files.getText("header.js") + EntityCompanion.companion.javascript;
+    static String javascript = Files.getText("header.js") + "\n" + EntityCompanion.companion.javascript + "\n" + PersonCompanion.companion.javascript;
 
     static JavascriptStore javascriptStore = JavascriptStore.constant(javascript);
-    static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC,"http://");
+    static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC, "http://");
 
     static EntityRegister entityRegister = EntityRegister.apply(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion);
     static EndPointFactory<JsonObject> entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
     static EndPoint entityEndpoint = entityFactory.apply(endpointContext);
 
+    static EndPointFactory<JsonObject> personEndpointFactory = EndPointFactory.optionalBookmarked(PersonCompanion.companion.bookmarkAndUrl().urlPattern, (sr, s) -> s, personStore::read);
+    static EndPoint personEndpoint = personEndpointFactory.apply(endpointContext);
+
     EndPoint entityEndpoints() {
         if (entityFactory == null) throw new NullPointerException();
         if (entityEndpoint == null) throw new NullPointerException();
-        return EndPoint.compose(entityEndpoint);
+        return EndPoint.compose(entityEndpoint, personEndpoint);
     }
     ;
 
@@ -116,12 +119,12 @@ abstract class AbstractEntityClientTest {
             assertEquals(404, ((UnexpectedResponse) cause).response.statusCode);
         }
     }
-//
-//    @Test
-//    public void testGetPerson() throws ExecutionException, InterruptedException {
-//        assertEquals("serverName", client.get(IPersonName.class, "id1", IPersonName::name).get());
-//    }
-//
+
+    @Test
+    public void testGetPerson() throws ExecutionException, InterruptedException {
+        assertEquals("serverName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
+    }
+
 //    @Test
 //    public void testGetAddress() throws ExecutionException, InterruptedException {
 //        assertEquals(Optional.of(address), addressStore.read("add1").get());

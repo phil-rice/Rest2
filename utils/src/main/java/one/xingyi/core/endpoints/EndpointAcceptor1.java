@@ -45,8 +45,9 @@ class BookmarkAcceptor<From> implements EndpointAcceptor1<From> {
     private final String endString;
     private final BiFunction<ServiceRequest,String, From> fn;
 
-    public BookmarkAcceptor(String method, String bookmark, BiFunction<ServiceRequest,String, From> fn) {
+    public BookmarkAcceptor(String method, String rawBookmark, BiFunction<ServiceRequest,String, From> fn) {
         this.method = method;
+        String bookmark = rawBookmark.replace("<host>", "");
         int index = bookmark.indexOf("<id>");
         this.fn = fn;
         if (index == -1) throw new IllegalArgumentException("Bookmark: " + bookmark + " is invalid");
