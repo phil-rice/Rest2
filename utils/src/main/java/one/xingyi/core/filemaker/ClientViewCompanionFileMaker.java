@@ -14,7 +14,11 @@ import one.xingyi.core.utils.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+
+
 
     @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
@@ -27,7 +31,8 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + "," +
                                 viewDom.viewNames.clientViewImpl.asString() +
-                                ">", manualImports, IXingYiView.class, XingYiGenerated.class, IXingYiClientViewCompanion.class, IXingYi.class, BookmarkAndUrlPattern.class),
+                                ">", manualImports,
+                        IXingYiView.class, XingYiGenerated.class, IXingYiClientViewCompanion.class, IXingYi.class, BookmarkAndUrlPattern.class, CompletableFuture.class, Function.class),
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),
                 List.of(Formating.indent + "@Override public Class<" + viewDom.viewNames.clientView.asString() + ">getViewClass(){return " + viewDom.viewNames.clientView.asString() + ".class;}"),
                 List.of(Formating.indent + "@Override public String bookmark(){return " + Strings.quote(bookmark.bookmark) + ";}"),

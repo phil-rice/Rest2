@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Entity>> {
-    static EntityRegister apply(HasBookmarkAndUrl... bookmarkAndUrls) { return new SimpleEntityRegister(Arrays.asList(bookmarkAndUrls)); }
+//    static EntityRegister apply(HasBookmarkAndUrl... bookmarkAndUrls) { return new SimpleEntityRegister(Arrays.asList(bookmarkAndUrls)); }
 }
 
 

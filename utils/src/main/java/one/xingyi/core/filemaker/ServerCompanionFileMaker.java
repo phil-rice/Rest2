@@ -21,6 +21,9 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     private List<String> createCompanion(EntityDom entityDom) {
         return List.of("public static " + entityDom.entityName.serverCompanion.asString() + " companion  =new " + entityDom.entityName.serverCompanion.className + "();");
     }
+    private List<String> createEntityEndpoint(EntityDom entityDom) {
+        return List.of("public static " + entityDom.entityName.serverCompanion.asString() + " companion  =new " + entityDom.entityName.serverCompanion.className + "();");
+    }
     private List<String> createJavascript(EntityDom entityDom) {
 
         List<String> result = new ArrayList<>();

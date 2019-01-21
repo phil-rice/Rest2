@@ -23,6 +23,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 //
 //    }
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
+        if (original == null) throw new NullPointerException();
         return sr -> {
             try {
                 return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.notFound(sr.toString()))).exceptionally(e -> internalError(e));
@@ -38,16 +39,16 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
 
 
-    static <J, From extends EndpointRequest, To extends HasJson<ContextForJson>> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
+    static <J, From, To extends HasJson<ContextForJson>> EndPoint json(JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn);
     }
-    static <J, From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> EndPoint javascriptAndJson
-            (JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn, JavascriptStore javascriptStore) {
-        return new JavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple);
+    static <J, From, To extends HasJson<ContextForJson>> EndPoint javascriptAndJson
+            (JsonTC<J> jsonTC, int status, Function<ServiceRequest, Optional<From>> acceptor, Function<From, CompletableFuture<To>> fn, JavascriptStore javascriptStore) {
+        return new JavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple);
     }
-    static <J, From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> EndPoint optionalJavascriptAndJson
+    static <J, From, To extends HasJson<ContextForJson>> EndPoint optionalJavascriptAndJson
             (JsonTC<J> jsonTC, int status, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, JavascriptStore javascriptStore) {
-        return new OptionalJavascriptAndJsonEndPoint<>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple);
+        return new OptionalJavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple);
     }
 
 
@@ -116,7 +117,7 @@ class ComposeEndPoints implements EndPoint {
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class JsonEndPoint<From extends EndpointRequest, To extends HasJson<ContextForJson>> implements EndPoint {
+class JsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint {
 
     final JsonTC<? extends Object> jsonTc;
     final int status;
@@ -131,7 +132,7 @@ class JsonEndPoint<From extends EndpointRequest, To extends HasJson<ContextForJs
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> implements EndPoint {
+class JavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint {
     static public String makeJavascript(JavascriptStore javascriptStore, JavascriptDetailsToString javascriptDetailsToString, AcceptHeaderParser parser, ServiceRequest serviceRequest) {
         List<String> lensNames = serviceRequest.header("accept").map(header -> parser.apply(header).lensNames).orElse(List.of());
         return javascriptDetailsToString.apply(javascriptStore.find(lensNames));
@@ -140,7 +141,7 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
     final AcceptHeaderParser parser = AcceptHeaderParser.parser;
     final JsonTC<? extends Object> jsonTc;
     final int status;
-    final EndpointAcceptor1<From> acceptor;
+    final Function<ServiceRequest, Optional<From>> acceptor;
     final Function<From, CompletableFuture<To>> fn;
     final JavascriptStore javascriptStore;
     final JavascriptDetailsToString javascriptDetailsToString;
@@ -157,7 +158,7 @@ class JavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To exte
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface, To extends HasJson<ContextForJson>> implements EndPoint {
+class OptionalJavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint {
 
     final JsonTC<? extends Object> jsonTc;
     final int status;
@@ -169,7 +170,7 @@ class OptionalJavascriptAndJsonEndPoint<From extends EndpointRequest, Interface,
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         Optional<From> optFrom = acceptor.apply(serviceRequest);
         if (optFrom.isEmpty()) return CompletableFuture.completedFuture(Optional.empty());
-        String javascript = JavascriptAndJsonEndPoint.makeJavascript(javascriptStore, javascriptDetailsToString,AcceptHeaderParser.parser, serviceRequest);
+        String javascript = JavascriptAndJsonEndPoint.makeJavascript(javascriptStore, javascriptDetailsToString, AcceptHeaderParser.parser, serviceRequest);
         From from = optFrom.get();
         return fn.apply(from).thenApply(x -> x.map(to -> ServiceResponse.javascriptAndJson(jsonTc, ContextForJson.forServiceRequest(serviceRequest), 200, to, javascript)));
 

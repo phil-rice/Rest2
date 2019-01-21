@@ -42,15 +42,20 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
                 "}");
 
     }
+    List<String> getUrlPatternMethod(ViewDom viewDom) {
+        return List.of(" static CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPattern.getPrimitive(service, one.xingyi.core.httpClient.client.companion.UrlPatternCompanion.companion.bookmark(), UrlPattern::urlPattern); }");
+
+    }
 
     @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
-        List<String> manualImports = Lists.insert("one.xingyi.core.httpClient.HttpService",Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName())));
+        List<String> manualImports = Lists.append(List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"), Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName())));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class, CompletableFuture.class),
                 Formating.indent(getPrimitiveMethod(viewDom)),
+                Formating.indent(getUrlPatternMethod(viewDom)),
                 Formating.indent(getMethod(viewDom)),
                 List.of(),
                 Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),

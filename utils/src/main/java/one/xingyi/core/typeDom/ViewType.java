@@ -17,6 +17,6 @@ public class ViewType implements TypeDom {
     @Override public String forView() { return forView; }
     @Override public TypeDom nested() { return this; }
     @Override public boolean primitive() { return false; }
-    @Override public String forJson(String fieldName) { return fieldName + ".toJson(jsonTc,context)"; }
+    @Override public String forJson(String fieldName) { return fieldName + ".jsonTC(jsonTc,context)"; }
     @Override public String viewCompanion() { return viewCompanion; }
 }

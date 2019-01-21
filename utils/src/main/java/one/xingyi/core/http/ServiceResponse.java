@@ -19,7 +19,10 @@ public class ServiceResponse {
     public final List<Header> headers;
 
     public static <J> ServiceResponse json(JsonTC<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity) {
-        return new ServiceResponse(status, jsonTc.toJson(entity, context), Arrays.asList(new Header("Content-type", "application/json")));
+        return jsonString(status, jsonTc.toJson(entity, context));
+    }
+    public static <J> ServiceResponse jsonString(int status, String json) {
+        return new ServiceResponse(status, json, Arrays.asList(new Header("Content-type", "application/json")));
     }
     public static <J> ServiceResponse javascriptAndJson(JsonTC<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity, String javascript) {
         return new ServiceResponse(status, javascript + IXingYiResponseSplitter.marker + jsonTc.toJson(entity, context), Arrays.asList(new Header("Content-type", "application/json")));

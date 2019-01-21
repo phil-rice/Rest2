@@ -23,8 +23,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 public class UrlPatternWithHttpServiceMockingBackendTest {
     static Function<UrlPattern, String> getFn = UrlPattern::urlPattern;
-    static String bookmark = "bookmarkAndUrl";
-    static String url = "http://someHost:9000/" + bookmark;
+    static String bookmark = "/bookmarkAndUrl";
+    static String protocolAndHost = "http://someHost:9000";
+    static String url = protocolAndHost + bookmark;
     static ServiceRequest serviceRequest = new ServiceRequest("get", url, List.of(), "");
     static ContextForJson context = ContextForJson.forServiceRequest(serviceRequest);
     static JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
@@ -37,7 +38,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     @Test
     public void testCanGet_checkingTheActualServiceRequestAndResponse() throws ExecutionException, InterruptedException {
         Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate = mock(Function.class);
-        HttpService service = HttpService.defaultService(delegate);
+        HttpService service = HttpService.defaultService(protocolAndHost, delegate);
         when(delegate.apply(serviceRequest)).thenReturn(CompletableFuture.completedFuture(serviceResponse));
 
         assertEquals("http://someHost:9000/someUrlPattern<id>", service.primitiveGet(UrlPatternCompanion.companion, url, getFn).get());
