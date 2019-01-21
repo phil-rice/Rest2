@@ -58,10 +58,6 @@ abstract class AbstractEntityClientTest {
         return new ServiceRequest("get", protocolHostAndPort + url, List.of(), "");
 
     }
-    @Test
-    public void testCompanion() throws ExecutionException, InterruptedException {
-        assertEquals(200, PersonCompanion.companion.entityEndpoint().apply(sr(protocolHostAndPort + "/person")).get().get().statusCode);
-    }
 
     @Test
     public void testDummyToBeDeleted() throws ExecutionException, InterruptedException {

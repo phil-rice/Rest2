@@ -16,7 +16,7 @@ public class EndpointAcceptor1Test {
     ServiceRequest sr(String method, String url) { return new ServiceRequest(method, url, List.of(), "");}
     @Test
     public void testBookmarkedJustStartSpecified() {
-        assertEquals(Optional.of("123"), start.apply(sr("get", "/some/123")));
+        assertEquals(Optional.of("/some/123..123"), start.apply(sr("get", "/some/123")));
 
         assertEquals(Optional.empty(), start.apply(sr("get", "/")));
         assertEquals(Optional.empty(), start.apply(sr("get", "/some/123/asdk")));

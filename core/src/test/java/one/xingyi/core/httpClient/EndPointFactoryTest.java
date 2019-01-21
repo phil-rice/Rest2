@@ -22,9 +22,9 @@ import static org.junit.Assert.*;
 public class EndPointFactoryTest {
 
     EndPointFactory<JsonObject> factory = EndPointFactory.<JsonObject, EntityDetailsRequest, Entity>bookmarked("/<id>", EntityDetailsRequest::create,
-            req -> CompletableFuture.completedFuture(new Entity("faked/" + req.entityName)));
+            req -> CompletableFuture.completedFuture(new Entity("faked" + req.entityName)));
     EndPointFactory<JsonObject> optionalFactory = EndPointFactory.<JsonObject, EntityDetailsRequest, Entity>optionalBookmarked("/<id>", EntityDetailsRequest::create,
-            req -> CompletableFuture.completedFuture(Optional.of(new Entity("faked/" + req.entityName))));
+            req -> CompletableFuture.completedFuture(Optional.of(new Entity("faked" + req.entityName))));
     EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonTC.cheapJson);
 
     @Test
