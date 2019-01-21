@@ -1,0 +1,19 @@
+package one.xingyi.core.endpoints;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import one.xingyi.core.javascript.JavascriptStore;
+import one.xingyi.core.marshelling.JsonTC;
+import one.xingyi.core.sdk.IXingYiServerCompanion;
+@RequiredArgsConstructor
+@ToString
+@EqualsAndHashCode
+public class EndpointConfig<J> {
+    public final String rootJavascript;
+    public final JsonTC<J> jsonTC;
+    public final String protocol;
+
+   public EndpointContext<J> from(IXingYiServerCompanion<?, ?>... companions) {
+        return new EndpointContext<>(JavascriptStore.fromEntities(rootJavascript, companions), jsonTC, protocol);
+    }
+}

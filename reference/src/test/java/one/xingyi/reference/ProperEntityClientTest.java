@@ -24,7 +24,7 @@ public class ProperEntityClientTest extends AbstractEntityClientTest {
     @Override protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() {
         if (server == null) {
             executorService = Executors.newFixedThreadPool(20);
-            server = new SimpleServer(executorService, new EndpointHandler(entityEndpoints()), 9000);
+            server = new SimpleServer(executorService, new EndpointHandler(entityEndpoints), 9000);
             server.start();
         }
         return JavaHttpClient.client;

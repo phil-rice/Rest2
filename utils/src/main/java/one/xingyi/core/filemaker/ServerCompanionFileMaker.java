@@ -18,6 +18,8 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
         return Optionals.fold(entityDom.bookmark, () -> List.of(), b -> List.of("@Override public BookmarkAndUrlPattern bookmarkAndUrl(){return new BookmarkAndUrlPattern(" + Strings.quote(b.bookmark) + "," + Strings.quote(b.urlPattern) + ");}"));
     }
 
+
+
     private List<String> createCompanion(EntityDom entityDom) {
         return List.of("public static " + entityDom.entityName.serverCompanion.asString() + " companion  =new " + entityDom.entityName.serverCompanion.className + "();");
     }
@@ -27,6 +29,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     private List<String> createJavascript(EntityDom entityDom) {
 
         List<String> result = new ArrayList<>();
+        result.add("public String javascript(){return javascript;}");
         result.add("final public String javascript = " + Strings.quote(""));
         result.addAll(Formating.indent(entityDom.fields.map(fd -> "+ " + Strings.quote("function " + fd.lensName + "(){ return lens('" + fd.lensPath + "');};\\n"))));
         result.add(";");

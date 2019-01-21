@@ -3,7 +3,7 @@ package one.xingyi.reference;
 
 import one.xingyi.core.access.IEntityStore;
 import one.xingyi.core.endpoints.EndPoint;
-import one.xingyi.core.endpoints.EndpointAcceptor1;
+import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
@@ -11,7 +11,7 @@ import one.xingyi.core.httpClient.*;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.httpClient.server.companion.EntityCompanion;
-import one.xingyi.core.javascript.JavascriptStore;
+import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
 import one.xingyi.reference.address.client.view.AddressLine12View;
@@ -21,8 +21,10 @@ import one.xingyi.reference.person.client.view.PersonNameView;
 import one.xingyi.reference.person.domain.Person;
 import one.xingyi.reference.person.server.companion.PersonCompanion;
 import one.xingyi.reference.telephone.domain.TelephoneNumber;
+import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -44,25 +46,18 @@ abstract class AbstractEntityClientTest {
     static IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
     static IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
 
-    static JsonTC<JsonObject> jsonTC = JsonTC.cheapJson;
-    static String javascript = Files.getText("header.js") + "\n" + EntityCompanion.companion.javascript + "\n" + PersonCompanion.companion.javascript;
+    static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonTC.cheapJson, "http://");
 
-    static JavascriptStore javascriptStore = JavascriptStore.constant(javascript);
-    static EndpointContext<JsonObject> endpointContext = new EndpointContext<>(javascriptStore, jsonTC, "http://");
-
+    static EndpointContext<JsonObject> endpointContext = config.from(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion, TelephoneNumberCompanion.companion);
     static EntityRegister entityRegister = EntityRegister.apply(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion);
-    static EndPointFactory<JsonObject> entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
-    static EndPoint entityEndpoint = entityFactory.apply(endpointContext);
 
-    static EndPointFactory<JsonObject> personEndpointFactory = EndPointFactory.optionalBookmarked(PersonCompanion.companion.bookmarkAndUrl().urlPattern, (sr, s) -> s, personStore::read);
-    static EndPoint personEndpoint = personEndpointFactory.apply(endpointContext);
+    static EndPointFactory entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
+    static EndPointFactory personEndpointFactory = EndPointFactory.optionalBookmarked(PersonCompanion.companion.bookmarkAndUrl().urlPattern, (sr, s) -> s, personStore::read);
 
-    EndPoint entityEndpoints() {
-        if (entityFactory == null) throw new NullPointerException();
-        if (entityEndpoint == null) throw new NullPointerException();
-        return EndPoint.compose(entityEndpoint, personEndpoint);
-    }
-    ;
+    static EndPoint entityEndpoint = entityFactory.create(endpointContext);
+    static EndPoint personEndpoint = personEndpointFactory.create(endpointContext);
+
+   static EndPoint entityEndpoints = EndPoint.compose(entityEndpoint, personEndpoint);
 
     HttpService rawService;
     HttpService service() {
@@ -73,26 +68,27 @@ abstract class AbstractEntityClientTest {
         return new ServiceRequest("get", protocolHostAndPort + url, List.of(), "");
     }
 
+    String javascript = JavascriptDetailsToString.simple.apply(endpointContext.javascriptStore.find(Arrays.asList()));
     @Test
     public void testDummyToBeDeleted() throws ExecutionException, InterruptedException {
-        EndPointFactory<JsonObject> factory = EndPointFactory.optionalBookmarked("/person/<id>", (sr, s) -> s, personStore::read);
-        EndPoint endPoint = factory.apply(endpointContext);
+        EndPointFactory factory = EndPointFactory.optionalBookmarked("/person/<id>", (sr, s) -> s, personStore::read);
+        EndPoint endPoint = factory.create(endpointContext);
         ServiceResponse serviceResponse = endPoint.apply(sr("/person/id1")).get().get();
         assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
         DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
         assertEquals(javascript, dataAndJavaScript.javascript);
-        assertEquals(person.toJsonString(jsonTC, ContextForJson.nullContext), dataAndJavaScript.data);
+        assertEquals(person.toJsonString(JsonTC.cheapJson, ContextForJson.nullContext), dataAndJavaScript.data);
 
     }
     @Test
     public void testDummy2ToBeDeleted() throws ExecutionException, InterruptedException {
-        EndPointFactory<JsonObject> factory = EndPointFactory.optionalBookmarked("/<id>", (sr, s) -> s, personStore::read);
-        EndPoint endPoint = factory.apply(endpointContext);
+        EndPointFactory factory = EndPointFactory.optionalBookmarked("/<id>", (sr, s) -> s, personStore::read);
+        EndPoint endPoint = factory.create(endpointContext);
         ServiceResponse serviceResponse = endPoint.apply(sr("/id1")).get().get();
         assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
         DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
         assertEquals(javascript, dataAndJavaScript.javascript);
-        assertEquals(person.toJsonString(jsonTC, ContextForJson.nullContext), dataAndJavaScript.data);
+        assertEquals(person.toJsonString(JsonTC.cheapJson, ContextForJson.nullContext), dataAndJavaScript.data);
 
     }
 

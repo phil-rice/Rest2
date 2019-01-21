@@ -21,15 +21,15 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.*;
 public class EndPointFactoryTest {
 
-    EndPointFactory<JsonObject> factory = EndPointFactory.<JsonObject, EntityDetailsRequest, Entity>bookmarked("/<id>", EntityDetailsRequest::create,
+    EndPointFactory factory = EndPointFactory.<EntityDetailsRequest, Entity>bookmarked("/<id>", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(new Entity("faked" + req.entityName)));
-    EndPointFactory<JsonObject> optionalFactory = EndPointFactory.<JsonObject, EntityDetailsRequest, Entity>optionalBookmarked("/<id>", EntityDetailsRequest::create,
+    EndPointFactory optionalFactory = EndPointFactory.<EntityDetailsRequest, Entity>optionalBookmarked("/<id>", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(Optional.of(new Entity("faked" + req.entityName))));
     EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonTC.cheapJson, "http://");
 
     @Test
     public void testBookmarked() throws ExecutionException, InterruptedException {
-        EndPoint endPoint = factory.apply(context);
+        EndPoint endPoint = factory.create(context);
         ServiceResponse serviceResponse = endPoint.apply(new ServiceRequest("get", "/person", List.of(), "")).get().get();
         assertEquals(200, serviceResponse.statusCode);
         DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
@@ -38,7 +38,7 @@ public class EndPointFactoryTest {
     }
     @Test
     public void testOptionalBookmarked() throws ExecutionException, InterruptedException {
-        EndPoint endPoint = optionalFactory.apply(context);
+        EndPoint endPoint = optionalFactory.create(context);
         ServiceResponse serviceResponse = endPoint.apply(new ServiceRequest("get", "/person", List.of(), "")).get().get();
         assertEquals(200, serviceResponse.statusCode);
         DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);

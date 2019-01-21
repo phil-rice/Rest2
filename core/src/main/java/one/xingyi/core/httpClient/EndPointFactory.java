@@ -10,23 +10,24 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-public interface EndPointFactory<J> extends Function<EndpointContext<J>, EndPoint> {
-    static <J, From, To extends HasJson<ContextForJson>> EndPointFactory<J> bookmarked(String pattern, BiFunction<ServiceRequest,String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
-        return new BookmarkedEndpoint<J, From, To>(pattern, reqFn, fn);
+public interface EndPointFactory {
+    <J> EndPoint create(EndpointContext<J> context);
+    static <From, To extends HasJson<ContextForJson>> EndPointFactory bookmarked(String pattern, BiFunction<ServiceRequest, String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
+        return new BookmarkedEndpoint<>(pattern, reqFn, fn);
     }
-    static <J, From, To extends HasJson<ContextForJson>> EndPointFactory<J> optionalBookmarked(String pattern, BiFunction<ServiceRequest,String, From> reqFn, Function<From, CompletableFuture<Optional<To>>> fn) {
+    static <From, To extends HasJson<ContextForJson>> EndPointFactory optionalBookmarked(String pattern, BiFunction<ServiceRequest, String, From> reqFn, Function<From, CompletableFuture<Optional<To>>> fn) {
         return new OptionalBookmarkedEndpoint<>(pattern, reqFn, fn);
     }
 
 }
 
 @RequiredArgsConstructor
-class BookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements EndPointFactory<J> {
+class BookmarkedEndpoint< From, To extends HasJson<ContextForJson>> implements EndPointFactory {
     final String pattern;
-    final BiFunction<ServiceRequest,String, From> reqFn;
+    final BiFunction<ServiceRequest, String, From> reqFn;
     final Function<From, CompletableFuture<To>> fn;
 
-    @Override public EndPoint apply(EndpointContext<J> context) {
+    @Override public <J>EndPoint create(EndpointContext<J> context) {
         return EndPoint.<J, From, To>javascriptAndJson(
                 context.jsonTC,
                 200,
@@ -37,12 +38,12 @@ class BookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements
     }
 }
 @RequiredArgsConstructor
-class OptionalBookmarkedEndpoint<J, From, To extends HasJson<ContextForJson>> implements EndPointFactory<J> {
+class OptionalBookmarkedEndpoint<From, To extends HasJson<ContextForJson>> implements EndPointFactory {
     final String pattern;
     final BiFunction<ServiceRequest, String, From> reqFn;
     final Function<From, CompletableFuture<Optional<To>>> fn;
 
-    @Override public EndPoint apply(EndpointContext<J> context) {
+    @Override public <J>EndPoint create(EndpointContext<J> context) {
         return EndPoint.<J, From, To>optionalJavascriptAndJson(
                 context.jsonTC,
                 200,

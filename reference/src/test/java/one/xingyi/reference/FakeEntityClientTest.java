@@ -14,6 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class FakeEntityClientTest extends AbstractEntityClientTest {
 
-    @Override protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints()); }
+    @Override protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
     @Override protected String expectedHost() { return ""; }
 }
