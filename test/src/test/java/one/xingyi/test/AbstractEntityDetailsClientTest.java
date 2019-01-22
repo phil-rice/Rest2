@@ -27,7 +27,7 @@ abstract class AbstractEntityDetailsClientTest {
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
 
-    static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonTC.cheapJson, "http://");
+    static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://");
 
     static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 

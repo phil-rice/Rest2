@@ -5,7 +5,7 @@ import lombok.ToString;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
-import one.xingyi.core.marshelling.JsonTC;
+import one.xingyi.core.marshelling.JsonWriter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,13 +18,13 @@ public class ServiceResponse {
     public final String body;
     public final List<Header> headers;
 
-    public static <J> ServiceResponse json(JsonTC<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity) {
+    public static <J> ServiceResponse json(JsonWriter<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity) {
         return jsonString(status, jsonTc.toJson(entity, context));
     }
     public static <J> ServiceResponse jsonString(int status, String json) {
         return new ServiceResponse(status, json, Arrays.asList(new Header("Content-type", "application/json")));
     }
-    public static <J> ServiceResponse javascriptAndJson(JsonTC<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity, String javascript) {
+    public static <J> ServiceResponse javascriptAndJson(JsonWriter<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity, String javascript) {
         return new ServiceResponse(status, javascript + IXingYiResponseSplitter.marker + jsonTc.toJson(entity, context), Arrays.asList(new Header("Content-type", "application/json")));
     }
 

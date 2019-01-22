@@ -1,6 +1,6 @@
 package one.xingyi.core.marshelling;
 import java.util.LinkedHashMap;
-public interface JsonTC<J> {
+public interface JsonWriter<J> {
 
     default <Context> String toJson(HasJson<Context> hasJson, Context context) {
         return fromJ(hasJson.toJson(this, context));
@@ -13,12 +13,13 @@ public interface JsonTC<J> {
     J liftString(String string);
     String fromJ(J j);
 
-    static JsonTC<Object> forMaps = new JsonTCForMaps();
-    static JsonTC<JsonObject> cheapJson = new CheapJson();
-}
+
+    static JsonWriter<Object> forMaps = new JsonWriterForMaps();
+    static JsonWriter<JsonObject> cheapJson = new CheapJson();
+    }
 
 
-class JsonTCForMaps implements JsonTC<Object> {
+class JsonWriterForMaps implements JsonWriter<Object> {
 
     @Override public Object makeObject(Object... namesAndValues) {
         if (namesAndValues.length % 2 != 0)

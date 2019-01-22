@@ -1,6 +1,6 @@
 package one.xingyi.core.marshelling;
 import one.xingyi.core.utils.Strings;
-class CheapJson implements JsonTC<JsonObject> {
+class CheapJson implements JsonWriter<JsonObject> {
     public String jsonValueFor(Object obj){
         if (obj instanceof JsonObject) return ((JsonObject) obj).string;
         if (obj instanceof Integer) return obj.toString();

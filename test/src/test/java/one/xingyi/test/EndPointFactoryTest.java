@@ -10,7 +10,7 @@ import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.JsonObject;
-import one.xingyi.core.marshelling.JsonTC;
+import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.server.EndPointFactorys;
 import org.junit.Assert;
@@ -26,7 +26,7 @@ public class EndPointFactoryTest {
             req -> CompletableFuture.completedFuture(new EntityDetails("faked" + req.entityName)));
     EndPointFactory optionalFactory = EndPointFactorys.<EntityDetailsRequest, EntityDetails>optionalBookmarked("/<id>", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(Optional.of(new EntityDetails("faked" + req.entityName))));
-    EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonTC.cheapJson, "http://");
+    EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonWriter.cheapJson, "http://");
 
     @Test
     public void testBookmarked() throws ExecutionException, InterruptedException {

@@ -1,8 +1,8 @@
 package one.xingyi.reference.person;
 
 import one.xingyi.core.access.IEntityStore;
-import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.annotations.Get;
+import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.sdk.IXingYiGet;
 import one.xingyi.reference.address.domain.Address;
 import one.xingyi.reference.person.domain.Person;
@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Get
 public class PersonGet implements IXingYiGet<String, IPersonDefn, Person> {

@@ -9,7 +9,7 @@ import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
-import one.xingyi.core.marshelling.JsonTC;
+import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Optionals;
 
 import java.util.Arrays;
@@ -39,15 +39,15 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
 
 
-    static <J, From, To extends HasJson<ContextForJson>> EndPoint json(JsonTC<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
+    static <J, From, To extends HasJson<ContextForJson>> EndPoint json(JsonWriter<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
         return new JsonEndPoint<>(jsonTC, status, acceptor, fn, protocol);
     }
     static <J, From, To extends HasJson<ContextForJson>> EndPoint javascriptAndJson
-            (JsonTC<J> jsonTC, int status, String protocol, Function<ServiceRequest, Optional<From>> acceptor, Function<From, CompletableFuture<To>> fn, JavascriptStore javascriptStore) {
+            (JsonWriter<J> jsonTC, int status, String protocol, Function<ServiceRequest, Optional<From>> acceptor, Function<From, CompletableFuture<To>> fn, JavascriptStore javascriptStore) {
         return new JavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple, protocol);
     }
     static <J, From, To extends HasJson<ContextForJson>> EndPoint optionalJavascriptAndJson
-            (JsonTC<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, JavascriptStore javascriptStore) {
+            (JsonWriter<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, JavascriptStore javascriptStore) {
         return new OptionalJavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple, protocol);
     }
 
@@ -126,7 +126,7 @@ class ComposeEndPoints implements EndPoint {
 @RequiredArgsConstructor
 class JsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint {
 
-    final JsonTC<? extends Object> jsonTc;
+    final JsonWriter<? extends Object> jsonTc;
     final int status;
     final EndpointAcceptor1<From> acceptor;
     final Function<From, CompletableFuture<To>> fn;
@@ -147,7 +147,7 @@ class JavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implem
     }
 
     final AcceptHeaderParser parser = AcceptHeaderParser.parser;
-    final JsonTC<? extends Object> jsonTc;
+    final JsonWriter<? extends Object> jsonTc;
     final int status;
     final Function<ServiceRequest, Optional<From>> acceptor;
     final Function<From, CompletableFuture<To>> fn;
@@ -169,7 +169,7 @@ class JavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implem
 @RequiredArgsConstructor
 class OptionalJavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint {
 
-    final JsonTC<? extends Object> jsonTc;
+    final JsonWriter<? extends Object> jsonTc;
     final int status;
     final EndpointAcceptor1<From> acceptor;
     final Function<From, CompletableFuture<Optional<To>>> fn;

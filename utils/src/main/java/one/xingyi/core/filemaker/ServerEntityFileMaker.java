@@ -5,7 +5,7 @@ import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.FieldListDom;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
-import one.xingyi.core.marshelling.JsonTC;
+import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
@@ -46,7 +46,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     List<String> makeJson(FieldListDom dom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
-        result.add("public <J> J toJson(JsonTC<J> jsonTc, ContextForJson context) {");
+        result.add("public <J> J toJson(JsonWriter<J> jsonTc, ContextForJson context) {");
         result.add(Formating.indent + "return jsonTc.makeObject(" + dom.mapJoin(",", fd -> "\"" + fd.name + "\", " + fd.typeDom.forJson(fd.name, fd.templated)) + ");");
         result.add("}");
         return result;
@@ -86,7 +86,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     @Override public FileDefn apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), entityDom.entityName.originalDefn,"class", entityDom.entityName.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityName.serverInterface.asString(),
-                        List.of(), XingYiGenerated.class, Objects.class, JsonTC.class, ContextForJson.class, HasJson.class, ContextForJson.class),
+                        List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, ContextForJson.class, HasJson.class, ContextForJson.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),
                 Formating.indent(allFieldsAccessors(entityDom.entityName.serverEntity.className, entityDom.fields)),

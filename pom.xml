@@ -15,6 +15,8 @@
         <module>core</module>
         <module>client</module>
         <module>test</module>
+        <module>trafficlights</module>
+        <module>json</module>
     </modules>
     <build>
         <plugins>
@@ -32,6 +34,31 @@
                 <version>3.8.0</version>
                 <configuration>
                     <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                        <manifestEntries>
+                            <mode>development</mode>
+                            <url>${project.url}</url>
+                            <key>value</key>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>

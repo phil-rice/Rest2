@@ -1,3 +1,3 @@
 package one.xingyi.core.annotations;
-public @interface Get {
- }
+public @interface Post {
+}
