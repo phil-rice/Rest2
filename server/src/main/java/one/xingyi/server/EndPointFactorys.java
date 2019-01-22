@@ -17,18 +17,23 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 public interface EndPointFactorys {
 
-    static <J> EndPoint create(EndpointConfig<J> config, List<EndPointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
-        List<IXingYiServerCompanion<?, ?>> companions = Lists.append(
-                List.of(EntityDetailsCompanion.companion),
-                Lists.map(details, d -> (IXingYiServerCompanion<?, ?>) d.companion),
-                companionsWithoutEndpoint);
-        EndpointContext<J> context = config.from(companions);
-        List<HasBookmarkAndUrl> companionsWithEndpoints = Lists.map(details, d -> d.companion);
-        EntityRegister entityRegister = EntityRegister.apply(companionsWithEndpoints);
+
+    static <J> EndPoint entityEndpoint(EndpointConfig<J> config, List<HasBookmarkAndUrl> companions) {
+        EntityRegister entityRegister = EntityRegister.apply(companions);
         EndPointFactory entityFactory = EndPointFactorys.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
-        List<EndPointFactory> factories = Lists.insert(entityFactory, Lists.map(details, EndPointDetails::make));
-        List<EndPoint> endpoints = Lists.map(factories, f -> f.create(context));
-        return EndPoint.compose(endpoints);
+        return entityFactory.create(config.from(List.of(EntityDetailsCompanion.companion)));
+    }
+
+    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<EndPointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
+        EndpointContext<J> context = config.from(Lists.append(Lists.map(details, d -> (IXingYiServerCompanion<?, ?>) d.companion), companionsWithoutEndpoint));
+        List<EndPointFactory> factories = Lists.map(details, EndPointDetails::make);
+        return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
+
+    }
+    static <J> EndPoint create(EndpointConfig<J> config, List<EndPointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
+        return EndPoint.compose(List.of(
+                entityEndpoint(config, Lists.map(details, d -> d.companion)),
+                companionEndpoint(config, details, companionsWithoutEndpoint)));
     }
 
     static <From, To extends HasJson<ContextForJson>> EndPointFactory bookmarked(String pattern, BiFunction<ServiceRequest, String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
