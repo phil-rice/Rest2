@@ -9,7 +9,6 @@ import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.utils.Lists;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -24,13 +23,13 @@ public interface EndPointFactorys {
         return entityFactory.create(config.from(List.of(EntityDetailsCompanion.companion)));
     }
 
-    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<EndPointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
+    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
         EndpointContext<J> context = config.from(Lists.append(Lists.map(details, d -> (IXingYiServerCompanion<?, ?>) d.companion), companionsWithoutEndpoint));
-        List<EndPointFactory> factories = Lists.map(details, EndPointDetails::make);
+        List<EndPointFactory> factories = Lists.map(details, GetEntityEndpointDetails::make);
         return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
 
     }
-    static <J> EndPoint create(EndpointConfig<J> config, List<EndPointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
+    static <J> EndPoint create(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
         return EndPoint.compose(List.of(
                 entityEndpoint(config, Lists.map(details, d -> d.companion)),
                 companionEndpoint(config, details, companionsWithoutEndpoint)));

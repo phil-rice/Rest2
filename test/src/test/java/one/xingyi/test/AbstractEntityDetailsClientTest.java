@@ -3,16 +3,12 @@ package one.xingyi.test;
 
 import one.xingyi.core.access.IEntityStore;
 import one.xingyi.core.endpoints.EndPoint;
-import one.xingyi.core.endpoints.EndPointFactory;
 import one.xingyi.core.endpoints.EndpointConfig;
-import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion;
-import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
 import one.xingyi.reference.address.client.view.AddressLine12View;
@@ -23,12 +19,10 @@ import one.xingyi.reference.person.domain.Person;
 import one.xingyi.reference.person.server.companion.PersonCompanion;
 import one.xingyi.reference.telephone.domain.TelephoneNumber;
 import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
-import one.xingyi.server.EndPointDetails;
+import one.xingyi.server.GetEntityEndpointDetails;
 import one.xingyi.server.EndPointFactorys;
-import one.xingyi.server.EntityRegister;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -53,8 +47,8 @@ abstract class AbstractEntityDetailsClientTest {
 
     static EndPoint entityEndpoints = EndPointFactorys.create(config,
             List.of(
-                    new EndPointDetails<>(PersonCompanion.companion, (sr, s) -> s, personStore::read),
-                    new EndPointDetails<>(AddressCompanion.companion, (sr, s) -> s, addressStore::read)),
+                    new GetEntityEndpointDetails<>(PersonCompanion.companion, (sr, s) -> s, personStore::read),
+                    new GetEntityEndpointDetails<>(AddressCompanion.companion, (sr, s) -> s, addressStore::read)),
             List.of(TelephoneNumberCompanion.companion));
 
     static String protocolHostAndPort = "http://localhost:9000";
