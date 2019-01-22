@@ -11,19 +11,10 @@ import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
 import one.xingyi.reference.PersonServer;
-import one.xingyi.reference.address.AddressGet;
 import one.xingyi.reference.address.client.view.AddressLine12View;
-import one.xingyi.reference.address.server.companion.AddressCompanion;
-import one.xingyi.reference.person.PersonGet;
-import one.xingyi.reference.person.client.view.PersonAddress12View;
 import one.xingyi.reference.person.client.view.PersonNameView;
-import one.xingyi.reference.person.server.companion.PersonCompanion;
-import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
-import one.xingyi.server.GetEntityEndpointDetails;
-import one.xingyi.server.EndPointFactorys;
 import org.junit.Test;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -40,9 +31,8 @@ abstract class AbstractEntityDetailsClientTest {
 
     static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
-    static String protocolHostAndPort = "http://localhost:9000";
     HttpService rawService;
-    HttpService service() { if (rawService == null) rawService = HttpService.defaultService(protocolHostAndPort, httpClient()); return rawService; }
+    HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
