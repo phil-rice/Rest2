@@ -48,11 +48,14 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
     static <J, From, To extends HasJson<ContextForJson>> EndPoint optionalJavascriptAndJson
             (JsonTC<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, JavascriptStore javascriptStore) {
-        return new OptionalJavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple,protocol);
+        return new OptionalJavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple, protocol);
     }
 
 
-    static EndPoint compose(EndPoint... endPoints) {return new ComposeEndPoints(Arrays.asList(endPoints));}
+    static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints);}
+    static <J> EndPoint create(EndpointContext<J> context, EndPoint... endPoints) {return new ComposeEndPoints(Arrays.asList(endPoints));}
+
+
     static EndPoint staticEndpoint(EndpointAcceptor0 acceptor, ServiceResponse serviceResponse) {
         return sr -> CompletableFuture.completedFuture(Optionals.from(acceptor.apply(sr), () -> serviceResponse));
     }
@@ -179,7 +182,7 @@ class OptionalJavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>
         if (optFrom.isEmpty()) return CompletableFuture.completedFuture(Optional.empty());
         String javascript = JavascriptAndJsonEndPoint.makeJavascript(javascriptStore, javascriptDetailsToString, AcceptHeaderParser.parser, serviceRequest);
         From from = optFrom.get();
-        return fn.apply(from).thenApply(x -> x.map(to -> ServiceResponse.javascriptAndJson(jsonTc, ContextForJson.forServiceRequest(protocol,serviceRequest), 200, to, javascript)));
+        return fn.apply(from).thenApply(x -> x.map(to -> ServiceResponse.javascriptAndJson(jsonTc, ContextForJson.forServiceRequest(protocol, serviceRequest), 200, to, javascript)));
 
 
     }

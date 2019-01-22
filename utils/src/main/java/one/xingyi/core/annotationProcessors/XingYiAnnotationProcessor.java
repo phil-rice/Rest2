@@ -41,6 +41,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
+        log.info("Processing XingYi Annotations");
         try {
             Set<? extends Element> elements = env.getElementsAnnotatedWith(Entity.class);
             log.info("Found these entities: " + elements);
@@ -50,6 +51,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
 
             List<EntityDom> entityDoms = Result.successes(entityDomResults);
+            log.info("Made entityDoms: " + entityDoms);
 
 
             List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());

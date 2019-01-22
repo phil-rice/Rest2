@@ -1,4 +1,4 @@
-package one.xingyi.reference;
+package one.xingyi.test;
 import one.xingyi.core.http.JavaHttpClient;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
-public class ProperEntityClientTest extends AbstractEntityClientTest {
+public class ProperEntityDetailsClientTest extends AbstractEntityDetailsClientTest {
 
     private static SimpleServer server;
     private static ExecutorService executorService;

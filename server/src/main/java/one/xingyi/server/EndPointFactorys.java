@@ -1,17 +1,36 @@
-package one.xingyi.core.httpClient;
+package one.xingyi.server;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.endpoints.*;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.httpClient.domain.Entity;
+import one.xingyi.core.httpClient.EntityDetailsRequest;
+import one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
+import one.xingyi.core.sdk.IXingYiServerCompanion;
+import one.xingyi.core.utils.Lists;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-public interface EndPointFactory {
-    <J> EndPoint create(EndpointContext<J> context);
+public interface EndPointFactorys {
+
+    static <J> EndPoint create(EndpointConfig<J> config, List<EndPointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
+        List<IXingYiServerCompanion<?, ?>> companions = Lists.append(
+                List.of(EntityDetailsCompanion.companion),
+                Lists.map(details, d -> (IXingYiServerCompanion<?, ?>) d.companion),
+                companionsWithoutEndpoint);
+        EndpointContext<J> context = config.from(companions);
+        List<HasBookmarkAndUrl> companionsWithEndpoints = Lists.map(details, d -> d.companion);
+        EntityRegister entityRegister = EntityRegister.apply(companionsWithEndpoints);
+        EndPointFactory entityFactory = EndPointFactorys.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
+        List<EndPointFactory> factories = Lists.insert(entityFactory, Lists.map(details, EndPointDetails::make));
+        List<EndPoint> endpoints = Lists.map(factories, f -> f.create(context));
+        return EndPoint.compose(endpoints);
+    }
+
     static <From, To extends HasJson<ContextForJson>> EndPointFactory bookmarked(String pattern, BiFunction<ServiceRequest, String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
         return new BookmarkedEndpoint<>(pattern, reqFn, fn);
     }
@@ -20,14 +39,13 @@ public interface EndPointFactory {
     }
 
 }
-
 @RequiredArgsConstructor
-class BookmarkedEndpoint< From, To extends HasJson<ContextForJson>> implements EndPointFactory {
+class BookmarkedEndpoint<From, To extends HasJson<ContextForJson>> implements EndPointFactory {
     final String pattern;
     final BiFunction<ServiceRequest, String, From> reqFn;
     final Function<From, CompletableFuture<To>> fn;
 
-    @Override public <J>EndPoint create(EndpointContext<J> context) {
+    @Override public <J> EndPoint create(EndpointContext<J> context) {
         return EndPoint.<J, From, To>javascriptAndJson(
                 context.jsonTC,
                 200,
@@ -43,7 +61,7 @@ class OptionalBookmarkedEndpoint<From, To extends HasJson<ContextForJson>> imple
     final BiFunction<ServiceRequest, String, From> reqFn;
     final Function<From, CompletableFuture<Optional<To>>> fn;
 
-    @Override public <J>EndPoint create(EndpointContext<J> context) {
+    @Override public <J> EndPoint create(EndpointContext<J> context) {
         return EndPoint.<J, From, To>optionalJavascriptAndJson(
                 context.jsonTC,
                 200,

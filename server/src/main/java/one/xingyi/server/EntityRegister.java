@@ -1,8 +1,9 @@
-package one.xingyi.core.httpClient;
+package one.xingyi.server;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
-import one.xingyi.core.httpClient.domain.Entity;
+import one.xingyi.core.httpClient.EntityDetailsRequest;
+import one.xingyi.core.httpClient.domain.EntityDetails;
 import one.xingyi.core.utils.Lists;
 
 import java.util.Arrays;
@@ -11,7 +12,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Optional<Entity>>> {
+public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Optional<EntityDetails>>> {
+    static EntityRegister apply(List<HasBookmarkAndUrl> bookmarkAndUrls) { return new SimpleEntityRegister(bookmarkAndUrls); }
     static EntityRegister apply(HasBookmarkAndUrl... bookmarkAndUrls) { return new SimpleEntityRegister(Arrays.asList(bookmarkAndUrls)); }
 }
 
@@ -27,11 +29,11 @@ class SimpleEntityRegister implements EntityRegister {
     final List<HasBookmarkAndUrl> companions;
 
     @Override
-    public CompletableFuture<Optional<Entity>> apply(EntityDetailsRequest entityDetailsRequest) {
-        Optional<Entity> entity = Lists.find(companions, c -> c.bookmarkAndUrl().bookmark.equals(entityDetailsRequest.entityName)).
+    public CompletableFuture<Optional<EntityDetails>> apply(EntityDetailsRequest entityDetailsRequest) {
+        Optional<EntityDetails> entity = Lists.find(companions, c -> c.bookmarkAndUrl().bookmark.equals(entityDetailsRequest.entityName)).
                 map(b ->
                         b.bookmarkAndUrl().urlPattern).
-                map(Entity::new);
+                map(EntityDetails::new);
         return CompletableFuture.completedFuture(entity);
     }
 }

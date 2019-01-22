@@ -1,16 +1,17 @@
-package one.xingyi.reference;
+package one.xingyi.test;
 //
 
 import one.xingyi.core.access.IEntityStore;
 import one.xingyi.core.endpoints.EndPoint;
+import one.xingyi.core.endpoints.EndPointFactory;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.httpClient.*;
+import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.httpClient.server.companion.EntityCompanion;
+import one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
@@ -22,6 +23,9 @@ import one.xingyi.reference.person.domain.Person;
 import one.xingyi.reference.person.server.companion.PersonCompanion;
 import one.xingyi.reference.telephone.domain.TelephoneNumber;
 import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
+import one.xingyi.server.EndPointDetails;
+import one.xingyi.server.EndPointFactorys;
+import one.xingyi.server.EntityRegister;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,8 +38,7 @@ import java.util.function.Function;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-abstract class AbstractEntityClientTest {
-    static String protocolHostAndPort = "http://localhost:9000";
+abstract class AbstractEntityDetailsClientTest {
 
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
@@ -48,49 +51,18 @@ abstract class AbstractEntityClientTest {
 
     static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonTC.cheapJson, "http://");
 
-    static EndpointContext<JsonObject> endpointContext = config.from(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion, TelephoneNumberCompanion.companion);
-    static EntityRegister entityRegister = EntityRegister.apply(EntityCompanion.companion, PersonCompanion.companion, AddressCompanion.companion);
+    static EndPoint entityEndpoints = EndPointFactorys.create(config,
+            List.of(
+                    new EndPointDetails<>(PersonCompanion.companion, (sr, s) -> s, personStore::read),
+                    new EndPointDetails<>(AddressCompanion.companion, (sr, s) -> s, addressStore::read)),
+            List.of(TelephoneNumberCompanion.companion));
 
-    static EndPointFactory entityFactory = EndPointFactory.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
-    static EndPointFactory personEndpointFactory = EndPointFactory.optionalBookmarked(PersonCompanion.companion.bookmarkAndUrl().urlPattern, (sr, s) -> s, personStore::read);
-
-    static EndPoint entityEndpoint = entityFactory.create(endpointContext);
-    static EndPoint personEndpoint = personEndpointFactory.create(endpointContext);
-
-   static EndPoint entityEndpoints = EndPoint.compose(entityEndpoint, personEndpoint);
-
+    static String protocolHostAndPort = "http://localhost:9000";
     HttpService rawService;
-    HttpService service() {
-        if (rawService == null) rawService = HttpService.defaultService(protocolHostAndPort, httpClient());
-        return rawService;
-    }
-    static ServiceRequest sr(String url) {
-        return new ServiceRequest("get", protocolHostAndPort + url, List.of(), "");
-    }
+    HttpService service() { if (rawService == null) rawService = HttpService.defaultService(protocolHostAndPort, httpClient()); return rawService; }
 
-    String javascript = JavascriptDetailsToString.simple.apply(endpointContext.javascriptStore.find(Arrays.asList()));
-    @Test
-    public void testDummyToBeDeleted() throws ExecutionException, InterruptedException {
-        EndPointFactory factory = EndPointFactory.optionalBookmarked("/person/<id>", (sr, s) -> s, personStore::read);
-        EndPoint endPoint = factory.create(endpointContext);
-        ServiceResponse serviceResponse = endPoint.apply(sr("/person/id1")).get().get();
-        assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
-        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
-        assertEquals(javascript, dataAndJavaScript.javascript);
-        assertEquals(person.toJsonString(JsonTC.cheapJson, ContextForJson.nullContext), dataAndJavaScript.data);
 
-    }
-    @Test
-    public void testDummy2ToBeDeleted() throws ExecutionException, InterruptedException {
-        EndPointFactory factory = EndPointFactory.optionalBookmarked("/<id>", (sr, s) -> s, personStore::read);
-        EndPoint endPoint = factory.create(endpointContext);
-        ServiceResponse serviceResponse = endPoint.apply(sr("/id1")).get().get();
-        assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
-        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
-        assertEquals(javascript, dataAndJavaScript.javascript);
-        assertEquals(person.toJsonString(JsonTC.cheapJson, ContextForJson.nullContext), dataAndJavaScript.data);
-
-    }
+    static ServiceRequest sr(String url) { return new ServiceRequest("get", protocolHostAndPort + url, List.of(), ""); }
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {

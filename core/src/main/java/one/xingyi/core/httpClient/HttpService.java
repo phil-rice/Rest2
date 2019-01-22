@@ -2,10 +2,10 @@ package one.xingyi.core.httpClient;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.client.IXingYiFactory;
+import one.xingyi.core.http.JavaHttpClient;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.httpClient.domain.Entity;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.sdk.IXingYiClientEntity;
@@ -20,6 +20,7 @@ public interface HttpService {
     static HttpService defaultService(String protocolAndHost, Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
         return new DefaultHttpService(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter);
     }
+    static HttpService defaultServiceWithSimpleJavaclint(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
 
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitiveGet(
             IXingYiClientMaker<Entity, View> clientMaker,
