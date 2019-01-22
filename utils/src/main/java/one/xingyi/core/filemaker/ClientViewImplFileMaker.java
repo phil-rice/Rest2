@@ -54,7 +54,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), "class", viewDom.viewNames.clientViewImpl,
+                Formating.javaFile(getClass(),viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientViewImpl,
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class, Lens.class),

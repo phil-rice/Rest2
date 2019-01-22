@@ -9,6 +9,7 @@ import javax.lang.model.element.Element;
 @ToString
 @Entity
 public class ServerDom {
+    public final PackageAndClassName originalDefn;
     public final PackageAndClassName serverName;
     public final int port;
     public final CodeDom codeDom;
@@ -16,7 +17,8 @@ public class ServerDom {
     public static ServerDom create(Element element, CodeDom codeDom) {
         Server server = element.getAnnotation(Server.class);
         String rawName = element.asType().toString();
-        PackageAndClassName serverName = new PackageAndClassName(rawName).mapName(s -> s.substring(1, s.length() - 4));
-        return new ServerDom(serverName, server.port(), codeDom);
+        PackageAndClassName originalDefn = new PackageAndClassName(rawName);
+        PackageAndClassName serverName = originalDefn.mapName(s -> s.substring(1, s.length() - 4));
+        return new ServerDom(originalDefn, serverName, server.port(), codeDom);
     }
 }

@@ -36,7 +36,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
 
         List<String> result = Lists.append(
-                Formating.javaFile(getClass(),"class", packageAndClassName, "", manualImports),
+                Formating.javaFile(getClass(),viewDom.viewNames.originalDefn,"class", packageAndClassName, "", manualImports),
                 List.of("/*"),
                 viewDebugInfo(viewDom),
                 List.of(""),

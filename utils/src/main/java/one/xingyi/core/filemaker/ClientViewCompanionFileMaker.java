@@ -43,7 +43,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
 //        String afterClassString = "<Entity extends IXingYiEntity, IOps extends IXingYiView<Entity>, Impl extends IXingYiClientImpl<Entity, IOps>> extends IXingYiClientMaker<Entity, IOps>"
         BookmarkAndUrlPattern bookmark = viewDomAndItsEntityDom.entityDom.flatMap(ed -> ed.bookmark).orElse(BookmarkAndUrlPattern.invalid);
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), "class", viewDom.viewNames.clientCompanion,
+                Formating.javaFile(getClass(),viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientCompanion,
                         " implements IXingYiClientViewCompanion<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + "," +

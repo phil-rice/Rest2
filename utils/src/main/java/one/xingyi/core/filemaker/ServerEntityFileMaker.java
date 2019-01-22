@@ -85,7 +85,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     @Override public FileDefn apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), "class", entityDom.entityName.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityName.serverInterface.asString(),
+                Formating.javaFile(getClass(), entityDom.entityName.originalDefn,"class", entityDom.entityName.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityName.serverInterface.asString(),
                         List.of(), XingYiGenerated.class, Objects.class, JsonTC.class, ContextForJson.class, HasJson.class, ContextForJson.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),

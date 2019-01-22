@@ -34,7 +34,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     }
     @Override public FileDefn apply(ServerDom serverDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), "class", serverDom.serverName, "",
+                Formating.javaFile(getClass(),serverDom.originalDefn, "class", serverDom.serverName, "",
                         List.of(), XingYiGenerated.class),
 //                Formating.indent(generateRegister(serverDom)),
                 Formating.indent(createEndPoints(serverDom)),

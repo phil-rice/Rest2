@@ -10,10 +10,7 @@ import one.xingyi.reference.telephone.ITelephoneNumberDefn;
 public interface IPersonDefn extends IXingYiEntityDefn {
     @Field(readOnly = true)
     String name();
-
     Integer age();
-
     IAddressDefn address();
-
     ITelephoneNumberDefn telephone();
 }

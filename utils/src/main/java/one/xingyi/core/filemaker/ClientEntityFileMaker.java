@@ -18,10 +18,10 @@ public class ClientEntityFileMaker implements IFileMaker<ViewDomAndItsEntityDom>
     @Override public FileDefn apply(ViewDomAndItsEntityDom viewAndEntityDom) {
         ViewDom viewDom = viewAndEntityDom.viewDom;
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),"interface", viewDom.viewNames.clientEntity,
+                Formating.javaFile(getClass(), viewAndEntityDom.viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientEntity,
                         " extends IXingYiClientEntity", List.of(),
                         IXingYiClientEntity.class, XingYiGenerated.class),
-                 List.of("}")
+                List.of("}")
         ), "\n");
         return new FileDefn(viewDom.viewNames.clientEntity, result);
     }

@@ -40,7 +40,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     @Override public FileDefn apply(EntityDom entityDom) {
         String implementsString = (entityDom.bookmark.isEmpty() ?"IXingYiServerCompanion": "IXingYiServesEntityCompanion") + "<" + entityDom.entityName.originalDefn.asString() + "," + entityDom.entityName.serverEntity.asString() + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), "class", entityDom.entityName.serverCompanion,
+                Formating.javaFile(getClass(),entityDom.entityName.originalDefn, "class", entityDom.entityName.serverCompanion,
                         " implements " + implementsString, List.of(), IXingYiServerCompanion.class, IXingYiServesEntityCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(entityDom)),
