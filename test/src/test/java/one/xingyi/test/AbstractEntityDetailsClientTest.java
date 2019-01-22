@@ -1,7 +1,6 @@
 package one.xingyi.test;
 //
 
-import one.xingyi.core.access.IEntityStore;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
@@ -11,20 +10,20 @@ import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
+import one.xingyi.reference.PersonServer;
+import one.xingyi.reference.address.AddressGet;
 import one.xingyi.reference.address.client.view.AddressLine12View;
-import one.xingyi.reference.address.domain.Address;
 import one.xingyi.reference.address.server.companion.AddressCompanion;
+import one.xingyi.reference.person.PersonGet;
+import one.xingyi.reference.person.client.view.PersonAddress12View;
 import one.xingyi.reference.person.client.view.PersonNameView;
-import one.xingyi.reference.person.domain.Person;
 import one.xingyi.reference.person.server.companion.PersonCompanion;
-import one.xingyi.reference.telephone.domain.TelephoneNumber;
 import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
 import one.xingyi.server.GetEntityEndpointDetails;
 import one.xingyi.server.EndPointFactorys;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -37,26 +36,13 @@ abstract class AbstractEntityDetailsClientTest {
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
 
-    static TelephoneNumber number = new TelephoneNumber("someNumber");
-    static Address address = new Address("someLine1", "someLine2", "somePostCode");
-    static Person person = new Person("serverName", 23, address, number);
-    static IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
-    static IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
-
     static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonTC.cheapJson, "http://");
 
-    static EndPoint entityEndpoints = EndPointFactorys.create(config,
-            List.of(
-                    new GetEntityEndpointDetails<>(PersonCompanion.companion, (sr, s) -> s, personStore::read),
-                    new GetEntityEndpointDetails<>(AddressCompanion.companion, (sr, s) -> s, addressStore::read)),
-            List.of(TelephoneNumberCompanion.companion));
+    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
     static String protocolHostAndPort = "http://localhost:9000";
     HttpService rawService;
     HttpService service() { if (rawService == null) rawService = HttpService.defaultService(protocolHostAndPort, httpClient()); return rawService; }
-
-
-    static ServiceRequest sr(String url) { return new ServiceRequest("get", protocolHostAndPort + url, List.of(), ""); }
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
@@ -72,8 +58,7 @@ abstract class AbstractEntityDetailsClientTest {
     }
     @Test
     public void testGetUrlPatternWhenEntityNotRegistered() throws ExecutionException, InterruptedException {
-        try {
-            UrlPattern.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
+        try {            UrlPattern.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
             fail();
         } catch (Exception e) {
             Throwable cause = e.getCause().getCause();
@@ -84,7 +69,7 @@ abstract class AbstractEntityDetailsClientTest {
 
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
-        assertEquals("serverName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
+        assertEquals("someName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
     }
 
 //    @Test

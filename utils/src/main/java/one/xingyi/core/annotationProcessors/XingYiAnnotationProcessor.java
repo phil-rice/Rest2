@@ -1,6 +1,8 @@
 package one.xingyi.core.annotationProcessors;
 
+import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.Entity;
+import one.xingyi.core.annotations.Get;
 import one.xingyi.core.annotations.Server;
 import one.xingyi.core.annotations.View;
 import one.xingyi.core.codeDom.*;
@@ -18,6 +20,9 @@ import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
 import java.util.*;
+import lombok.val;
+
+        @RequiredArgsConstructor
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
     ElementToBundle bundle = ElementToBundle.simple;
@@ -61,20 +66,24 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                             bundle.elementToViewDom(vn).apply((TypeElement) v)
                     )
             );
-            List<ViewDom> viewDoms = Result.successes(viewDomResults);
+            val viewDoms = Result.successes(viewDomResults);
             log.info("Made viewDoms: " + viewDoms);
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 
             CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
 
-            List<FileDefn> codeContent = makeContent(codeDom);
-            List<? extends Element> serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
-            List<FileDefn> serverContent = Lists.map(serverElements, e -> makeServer(e, codeDom));
+            val codeContent = makeContent(codeDom);
+           val serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
+            val getElements = Sets.toList((Set<TypeElement>) env.getElementsAnnotatedWith(Get.class));
+
+            List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, getElements, codeDom));
+            List<ServerDom> serverDoms = Result.successes(serverDomResults);
+            List<FileDefn> serverContent = Lists.map(serverDoms, sd -> makeServer(sd));
 
             for (FileDefn fileDefn : Lists.append(codeContent, serverContent))
                 makeClassFile(fileDefn);
-            for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults)))
+            for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults), Result.failures(serverDomResults)))
                 Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
 
 
@@ -83,9 +92,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         }
         return false;
     }
-    FileDefn makeServer(Element e, CodeDom codeDom) {
-        ServerDom dom = ServerDom.create(e, codeDom);
-        return new ServerFileMaker().apply(dom);
+    FileDefn makeServer(ServerDom serverDom) {
+        return new ServerFileMaker().apply(serverDom);
     }
 
     List<FileDefn> makeContent(CodeDom codeDom) {
@@ -117,5 +125,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     @Override public SourceVersion getSupportedSourceVersion() { return SourceVersion.latestSupported(); }
-    @Override public Set<String> getSupportedAnnotationTypes() {return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName()); }
+    @Override public Set<String> getSupportedAnnotationTypes() {
+        return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName(), Get.class.getName());
+    }
 }

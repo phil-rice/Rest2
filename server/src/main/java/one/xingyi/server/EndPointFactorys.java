@@ -6,7 +6,7 @@ import one.xingyi.core.httpClient.EntityDetailsRequest;
 import one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
-import one.xingyi.core.sdk.IXingYiServerCompanion;
+import one.xingyi.core.sdk.*;
 import one.xingyi.core.utils.Lists;
 
 import java.util.List;
@@ -23,17 +23,18 @@ public interface EndPointFactorys {
         return entityFactory.create(config.from(List.of(EntityDetailsCompanion.companion)));
     }
 
-    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
-        EndpointContext<J> context = config.from(Lists.append(Lists.map(details, d -> (IXingYiServerCompanion<?, ?>) d.companion), companionsWithoutEndpoint));
+    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
+        EndpointContext<J> context = config.from( allCompanions);
         List<EndPointFactory> factories = Lists.map(details, GetEntityEndpointDetails::make);
         return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
 
     }
-    static <J> EndPoint create(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?>> details, List<IXingYiServerCompanion<?, ?>> companionsWithoutEndpoint) {
+    static <J> EndPoint create(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
         return EndPoint.compose(List.of(
                 entityEndpoint(config, Lists.map(details, d -> d.companion)),
-                companionEndpoint(config, details, companionsWithoutEndpoint)));
+                companionEndpoint(config, details, allCompanions)));
     }
+
 
     static <From, To extends HasJson<ContextForJson>> EndPointFactory bookmarked(String pattern, BiFunction<ServiceRequest, String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
         return new BookmarkedEndpoint<>(pattern, reqFn, fn);
