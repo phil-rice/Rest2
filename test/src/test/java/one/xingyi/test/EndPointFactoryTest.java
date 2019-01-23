@@ -22,9 +22,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 public class EndPointFactoryTest {
 
-    EndPointFactory factory = EndPointFactorys.<EntityDetailsRequest, EntityDetails>bookmarked("/<id>", EntityDetailsRequest::create,
+    EndPointFactory factory = EndPointFactorys.<EntityDetailsRequest, EntityDetails>bookmarked("/{id}", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(new EntityDetails("faked" + req.entityName)));
-    EndPointFactory optionalFactory = EndPointFactorys.<EntityDetailsRequest, EntityDetails>optionalBookmarked("/<id>", EntityDetailsRequest::create,
+    EndPointFactory optionalFactory = EndPointFactorys.<EntityDetailsRequest, EntityDetails>optionalBookmarked("/{id}", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(Optional.of(new EntityDetails("faked" + req.entityName))));
     EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonWriter.cheapJson, "http://");
 

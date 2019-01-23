@@ -36,15 +36,15 @@ abstract class AbstractEntityDetailsClientTest {
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/<id>", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
-        assertEquals(expectedHost() + "/person/<id>", UrlPattern.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
+        assertEquals(expectedHost() + "/person/{id}", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
+        assertEquals(expectedHost() + "/person/{id}", UrlPattern.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
     }
 
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/<id>", PersonNameView.getUrlPattern(service()).get());
-        assertEquals(expectedHost() + "/address/<id>", AddressLine12View.getUrlPattern(service()).get());
+        assertEquals(expectedHost() + "/person/{id}", PersonNameView.getUrlPattern(service()).get());
+        assertEquals(expectedHost() + "/address/{id}", AddressLine12View.getUrlPattern(service()).get());
     }
     @Test
     public void testGetUrlPatternWhenEntityNotRegistered() throws ExecutionException, InterruptedException {

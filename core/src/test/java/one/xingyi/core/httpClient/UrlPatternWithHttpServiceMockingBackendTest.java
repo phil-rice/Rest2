@@ -29,7 +29,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     static ContextForJson context = ContextForJson.forServiceRequest("http://", serviceRequest);
     static JsonWriter<JsonObject> jsonTC = JsonWriter.cheapJson;
     static String javascript = Files.getText("header.js") + EntityDetailsCompanion.companion.javascript;
-    static String json = new EntityDetails("http://someHost:9000/someUrlPattern<id>").toJsonString(jsonTC, context);
+    static String json = new EntityDetails("http://someHost:9000/someUrlPattern{id}").toJsonString(jsonTC, context);
 
     static String responseBody = javascript + IXingYiResponseSplitter.marker + json;
     static ServiceResponse serviceResponse = new ServiceResponse(200, responseBody, List.of());
@@ -40,7 +40,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
         HttpService service = HttpService.defaultService(protocolAndHost, delegate);
         when(delegate.apply(serviceRequest)).thenReturn(CompletableFuture.completedFuture(serviceResponse));
 
-        assertEquals("http://someHost:9000/someUrlPattern<id>", service.primitiveGet(UrlPatternCompanion.companion, bookmark, getFn).get());
+        assertEquals("http://someHost:9000/someUrlPattern{id}", service.primitiveGet(UrlPatternCompanion.companion, bookmark, getFn).get());
     }
 }
 

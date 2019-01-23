@@ -19,7 +19,7 @@ public interface EndPointFactorys {
 
     static <J> EndPoint entityEndpoint(EndpointConfig<J> config, List<HasBookmarkAndUrl> companions) {
         EntityRegister entityRegister = EntityRegister.apply(companions);
-        EndPointFactory entityFactory = EndPointFactorys.optionalBookmarked("/<id>", EntityDetailsRequest::create, entityRegister);
+        EndPointFactory entityFactory = EndPointFactorys.optionalBookmarked("/{id}", EntityDetailsRequest::create, entityRegister);
         return entityFactory.create(config.from(List.of(EntityDetailsCompanion.companion)));
     }
 

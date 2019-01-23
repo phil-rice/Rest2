@@ -6,7 +6,7 @@ import one.xingyi.core.sdk.IXingYiEntityDefn;
 import one.xingyi.reference.address.IAddressDefn;
 import one.xingyi.reference.telephone.ITelephoneNumberDefn;
 
-@Entity(bookmark = "/person", getUrl = "<host>/person/<id>")
+@Entity(bookmark = "/person", getUrl = "<host>/person/{id}")
 public interface IPersonDefn extends IXingYiEntityDefn {
     @Field(readOnly = true)
     String name();

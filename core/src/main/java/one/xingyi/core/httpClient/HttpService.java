@@ -39,7 +39,7 @@ public interface HttpService {
 //    <Interface extends IXingYiView<?>> CompletableFuture<String> getUrlPattern(Class<Interface> interfaceClass);
 //
 //    default <Interface extends IXingYiView<?>, Result> CompletableFuture<Result> get(Class<Interface> interfaceClass, String id, Function<Interface, Result> fn) {
-//        return getUrlPattern(interfaceClass).thenCompose(url -> primitiveGet(interfaceClass, url.replace("<id>", URLEncoder.encode(id)), fn));
+//        return getUrlPattern(interfaceClass).thenCompose(url -> primitiveGet(interfaceClass, url.replace("{id}", URLEncoder.encode(id)), fn));
 //    }
 }
 
@@ -66,7 +66,7 @@ class DefaultHttpService implements HttpService {
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(IXingYiClientMaker<Entity, View> clientMaker, String id, Function<View, Result> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> {
-            return primitiveGet(clientMaker, urlPattern.replace("<id>", id), fn);//TODO UrlEncoding
+            return primitiveGet(clientMaker, urlPattern.replace("{id}", id), fn);//TODO UrlEncoding
         });
 
     }

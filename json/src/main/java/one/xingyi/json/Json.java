@@ -6,6 +6,7 @@ import one.xingyi.core.marshelling.JsonWriter;
 import org.json.JSONObject;
 import org.json.JSONString;
 public class Json implements JsonWriter<Object>, JsonParser<Object> {
+    public static Json simple = new Json();
     @Override public Object makeObject(Object... namesAndValues) {
         val result = new JSONObject();
         for (int i = 0; i < namesAndValues.length; i += 2)

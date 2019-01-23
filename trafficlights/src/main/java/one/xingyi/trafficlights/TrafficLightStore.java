@@ -22,7 +22,6 @@ public class TrafficLightStore implements IXingYiGet<String, ITrafficLightsDefn,
         lights.put("4", "flashing");
     }
 
-
     @Override public BiFunction<ServiceRequest, String, String> makeId() { return IXingYiGet.makeIdFromString; }
     @Override public CompletableFuture<Optional<TrafficLights>> apply(String id) {
         return CompletableFuture.completedFuture(Optional.ofNullable(lights.get(id)).map(c -> new TrafficLights(id, c)));
