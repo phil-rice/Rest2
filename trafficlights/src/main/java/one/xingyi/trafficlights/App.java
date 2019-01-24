@@ -1,34 +1,16 @@
 package one.xingyi.trafficlights;
-import lombok.val;
-import one.xingyi.core.annotations.Entity;
-import one.xingyi.core.annotations.Post;
-import one.xingyi.core.annotations.State;
-import one.xingyi.core.endpointDefn.EndPointDefnFactory;
-import one.xingyi.core.endpointDefn.LinkData;
-import one.xingyi.core.endpointDefn.LinkDataToJson;
-import one.xingyi.core.http.Header;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.JsonWriter;
-import one.xingyi.core.sdk.IXingYiEntity;
-import one.xingyi.core.sdk.IXingYiEntityDefn;
-import one.xingyi.core.utils.Lists;
-import one.xingyi.json.Json;
-import one.xingyi.trafficlights.domain.TrafficLights;
+import one.xingyi.trafficlights.server.domain.TrafficLights;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import static one.xingyi.trafficlights.TrafficLightState.*;
 
 //We have to create this manually because this IS the API
 //All the wiring is done. The links are created for us, and the visitors are available in the generated interfaces so the client has access to us
 //All the state methods can only be accessed after a get, because only then do we know what state we are in
 //Which means we should ship the state with the data
 //We need to have a function that defines the state
-class TrafficLightStuff implements HowToDoColourView {
+class TrafficLightStuff implements HowToDoTrafficLights {
     TrafficLightStore store = new TrafficLightStore();
 
     CompletableFuture<TrafficLights> sideeffect(String id, Runnable runnable) {

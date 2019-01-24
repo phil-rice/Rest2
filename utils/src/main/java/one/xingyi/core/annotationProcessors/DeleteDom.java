@@ -6,5 +6,4 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class DeleteDom {
-    public final String path;
 }

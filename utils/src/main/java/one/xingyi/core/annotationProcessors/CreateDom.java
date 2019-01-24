@@ -6,5 +6,4 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class CreateDom {
-    public final String path;
 }

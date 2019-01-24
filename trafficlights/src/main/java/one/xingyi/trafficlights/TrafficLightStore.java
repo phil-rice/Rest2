@@ -2,7 +2,7 @@ package one.xingyi.trafficlights;
 import one.xingyi.core.annotations.Get;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.sdk.IXingYiGet;
-import one.xingyi.trafficlights.domain.TrafficLights;
+import one.xingyi.trafficlights.server.domain.TrafficLights;
 
 import java.util.Collections;
 import java.util.HashMap;

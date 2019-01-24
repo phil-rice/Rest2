@@ -9,6 +9,6 @@ public @interface Entity {
 
     /* Where the client goes for service discovery. */
     String bookmark() default "";
-    /* Where the server has the 'get' url. This is only available on the client: the server has to go to the bookmarkAndUrl to find it*/
-    String getUrl() default "";
+    /* The root url for the end points about this resource. The client does not have access to this except through the book marked url*/
+    String rootUrl() default "";
 }

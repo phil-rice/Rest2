@@ -18,6 +18,7 @@ public class CodeDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
                 Formating.javaFile(getClass(),entityDom.entityName.originalDefn,"class", packageAndClassName, "", List.of()),
                 List.of("/*"),
                 entityDebugInfo(entityDom),
+                actionsDomInfo(entityDom.actionsDom),
                 List.of("*/}"));
         return new FileDefn(packageAndClassName, Lists.join(result, "\n"));
     }

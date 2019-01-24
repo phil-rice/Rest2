@@ -1,4 +1,5 @@
 package one.xingyi.core.filemaker;
+import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.names.EntityNames;
@@ -45,6 +46,16 @@ public class AbstracDebugFileMaker {
                         "Fields: " + entityDom.fields.allFields.size()
                 ),
                 Formating.indent(Lists.<FieldDom, String>flatMap(entityDom.fields.allFields, this::fieldDebugInfo))
+        );
+    }
+    List<String> actionsDomInfo(ActionsDom actionsDom){
+        return List.of(
+                "Get        " + actionsDom.getDom,
+                "Put        " + actionsDom.putDom,
+                "Create     " + actionsDom.createDom,
+                "CreateNoId " + actionsDom.createWithoutIdDom,
+                "De;ete     " + actionsDom.deleteDom,
+                "Posts:     "+actionsDom.postDoms
         );
     }
 }

@@ -16,7 +16,6 @@ import one.xingyi.core.validation.Result;
 public class ViewDom {
     //    public final EntityDom entityDom;
     public final ViewNames viewNames;
-    public final ActionsDom actionsDom;
     public final FieldListDom fields;
 
 }

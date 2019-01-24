@@ -3,7 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
 import one.xingyi.core.httpClient.EntityDetailsRequest;
-import one.xingyi.core.httpClient.domain.EntityDetails;
+import one.xingyi.core.httpClient.server.domain.EntityDetails;
 import one.xingyi.core.utils.Lists;
 
 import java.util.Arrays;

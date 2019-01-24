@@ -1,9 +1,6 @@
 package one.xingyi.test;
 //
 
-import one.xingyi.core.access.IEntityStore;
-import one.xingyi.core.endpointDefn.EndPointDefnData;
-import one.xingyi.core.endpointDefn.EndPointDefnFactory;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
@@ -11,25 +8,22 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.httpClient.domain.EntityDetails;
-import one.xingyi.core.marshelling.*;
+import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonWriter;
+import one.xingyi.core.marshelling.UnexpectedResponse;
 import one.xingyi.core.utils.Files;
 import one.xingyi.reference.address.AddressGet;
 import one.xingyi.reference.address.client.view.AddressLine12View;
-import one.xingyi.reference.address.domain.Address;
 import one.xingyi.reference.address.server.companion.AddressCompanion;
 import one.xingyi.reference.person.PersonGet;
 import one.xingyi.reference.person.client.view.PersonNameView;
-import one.xingyi.reference.person.domain.Person;
 import one.xingyi.reference.person.server.companion.PersonCompanion;
-import one.xingyi.reference.telephone.domain.TelephoneNumber;
 import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
 import one.xingyi.server.EndPointFactorys;
 import one.xingyi.server.GetEntityEndpointDetails;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;

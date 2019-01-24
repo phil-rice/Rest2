@@ -1,9 +1,8 @@
 package one.xingyi.trafficlights;
-import one.xingyi.core.functions.Functions;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.trafficlights.client.view.ColourView;
-import one.xingyi.trafficlights.domain.TrafficLights;
+import one.xingyi.trafficlights.server.domain.TrafficLights;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -13,7 +12,7 @@ import java.util.function.Function;
 //For server side
 //This would be created, and then I need to implement it.
 //Each item was created by an annotation
-interface HowToDoColourView {
+interface HowToDoTrafficLights {
     CompletableFuture<TrafficLights> put(String id, TrafficLights ColourView);
     CompletableFuture<TrafficLights> get(String id);
     CompletableFuture<Boolean> delete(String id);

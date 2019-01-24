@@ -29,15 +29,6 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
                 Formating.indent(Lists.<FieldDom, String>flatMap(viewDom.fields.allFields, this::fieldDebugInfo))
         );
     }
-    List<String> actionsDomInfo(ActionsDom actionsDom){
-        return List.of(
-                "Get        " + actionsDom.getDom,
-                "Put        " + actionsDom.putDom,
-                "Create     " + actionsDom.createDom,
-                "CreateNoId " + actionsDom.createWithoutIdDom,
-                "De;ete     " + actionsDom.deleteDom
-        );
-    }
 
     @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
@@ -47,7 +38,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         List<String> result = Lists.append(
                 Formating.javaFile(getClass(),viewDom.viewNames.originalDefn,"class", packageAndClassName, "", manualImports),
                 List.of("/*"),
-                actionsDomInfo(viewDom.actionsDom),
+
                 viewDebugInfo(viewDom),
                 List.of(""),
                 Optionals.fold(viewDomAndItsEntityDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),

@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Optional;
 @RequiredArgsConstructor
 @EqualsAndHashCode
@@ -13,4 +14,5 @@ public class ActionsDom {
     public final Optional<DeleteDom> deleteDom;
     public final Optional<CreateDom> createDom;
     public final Optional<CreateWithoutIdDom> createWithoutIdDom;
+    public final List<PostDom> postDoms;
 }

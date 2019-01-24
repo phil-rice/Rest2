@@ -14,6 +14,7 @@ class SimpleClassSimpleNameStrategy implements IClassNameStrategy {
     @Override public String toClientViewInterface(String entityDefn) { return entityDefn; }
     @Override public String toClientViewImpl(String entityDefn) { return entityDefn + "Impl"; }
     @Override public String toServerInterfaceForDomain(String entityDefn) { return "I" + entityDefn; }
+    @Override public String toServerController(String entityDefn) { return entityDefn + "Controller"; }
     @Override public String toClientEntityDefn(String entityDefn) { return "I" + entityDefn + "ClientEntity"; }
     @Override public String toClientCompanion(String entityDefn) { return entityDefn + "Companion"; }
     @Override public String toServerImplForDomain(String entityDefn) { return entityDefn; }

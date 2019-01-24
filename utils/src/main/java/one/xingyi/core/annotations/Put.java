@@ -7,5 +7,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
         // Need to keep them around for testing
 public @interface Put {
-    String value() default "";
-}
+    }

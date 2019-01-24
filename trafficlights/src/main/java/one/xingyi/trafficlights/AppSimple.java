@@ -9,7 +9,7 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.json.Json;
-import one.xingyi.trafficlights.domain.TrafficLights;
+import one.xingyi.trafficlights.server.domain.TrafficLights;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -5,7 +5,7 @@ import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.EntityDetailsRequest;
-import one.xingyi.core.httpClient.domain.EntityDetails;
+import one.xingyi.core.httpClient.server.domain.EntityDetails;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;

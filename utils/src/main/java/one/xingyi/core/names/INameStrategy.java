@@ -8,5 +8,6 @@ public interface INameStrategy {
     String toClientCompanion(String entityDefn);
     String toServerImplForDomain(String entityDefn);
     String toServerInterfaceForDomain(String entityDefn);
+    String toServerController(String entityDefn);
 
 }

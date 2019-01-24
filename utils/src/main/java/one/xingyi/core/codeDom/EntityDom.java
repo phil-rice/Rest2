@@ -3,6 +3,7 @@ package one.xingyi.core.codeDom;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
@@ -18,10 +19,11 @@ public class EntityDom {
     public final EntityNames entityName;
     public final Optional<BookmarkAndUrlPattern> bookmark;
     public final FieldListDom fields;
+    public final ActionsDom actionsDom;
 
-    static public Result<String, EntityDom> create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
-
-        return name.entityName(interfaceDefnName).map(entityNames ->
-                new EntityDom(entityNames, name.bookmarkAndUrl(entityNames, entity.bookmark(), entity.getUrl()), fields));
-    }
+//    static public Result<String, EntityDom> create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
+//
+//        return name.entityName(interfaceDefnName).map(entityNames ->
+//                new EntityDom(entityNames, name.bookmarkAndUrl(entityNames, entity.bookmark(), entity.rootUrl()), fields));
+//    }
 }
