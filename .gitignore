@@ -26,3 +26,4 @@ logs/
 /.nb-gradle/
 
 /out/
+/lib/

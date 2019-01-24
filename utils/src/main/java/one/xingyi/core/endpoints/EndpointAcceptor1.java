@@ -3,6 +3,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.Strings;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -41,27 +42,18 @@ class NameThenid<From> implements EndpointAcceptor1<From> {
 @ToString
 class BookmarkAcceptor<From> implements EndpointAcceptor1<From> {
     private final String method;
-    private final String startString;
-    private final String endString;
-    private final BiFunction<ServiceRequest,String, From> fn;
+    private final Function<String, Optional<String>> ripper;
+    private final BiFunction<ServiceRequest, String, From> fn;
 
-    public BookmarkAcceptor(String method, String rawBookmark, BiFunction<ServiceRequest,String, From> fn) {
+    public BookmarkAcceptor(String method, String rawBookmark, BiFunction<ServiceRequest, String, From> fn) {
         this.method = method;
-        String bookmark = rawBookmark.replace("<host>", "");
-        int index = bookmark.indexOf("{id}");
+        this.ripper = Strings.ripIdFromPath(rawBookmark.replace("{host}",""));
         this.fn = fn;
-        if (index == -1) throw new IllegalArgumentException("Bookmark: " + bookmark + " is invalid");
-        startString = bookmark.substring(0, index);
-        endString = bookmark.substring(index + 4);
     }
+
     @Override public Optional<From> apply(ServiceRequest serviceRequest) {
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
         String url = serviceRequest.url.getPath();
-        if (url.startsWith(startString) && url.endsWith(endString)) {
-            String substring = url.substring(startString.length(), url.length() - endString.length());
-            if (substring.indexOf("/") != -1)return Optional.empty();
-            return Optional.of(fn.apply(serviceRequest, substring));
-        }
-        return Optional.empty();
+        return ripper.apply(serviceRequest.url.getPath()).map(id -> fn.apply(serviceRequest, id));
     }
 }

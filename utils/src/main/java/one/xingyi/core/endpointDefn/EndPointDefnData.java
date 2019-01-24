@@ -2,24 +2,16 @@ package one.xingyi.core.endpointDefn;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.core.functions.Functions;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.JsonWriter;
-import one.xingyi.core.sdk.IXingYiEntity;
-import one.xingyi.core.utils.Function3;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class EndPointDefnData<Entity extends IXingYiEntity, State, Req, Res> implements LinkData<State> {
+public class EndPointDefnData<State, Req, Res> implements LinkData<State> {
     final String name;
     final String method;
     final String templatedPath;

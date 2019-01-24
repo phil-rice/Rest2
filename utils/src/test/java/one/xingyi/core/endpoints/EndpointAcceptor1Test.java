@@ -11,7 +11,7 @@ public class EndpointAcceptor1Test {
 
     EndpointAcceptor1<String> startEnd = EndpointAcceptor1.bookmarkAcceptor("get", "/some/{id}/atend", (sr,s)->sr.url.getPath() + ".." + s);
     EndpointAcceptor1<String> start = EndpointAcceptor1.bookmarkAcceptor("get", "/some/{id}", (sr,s)->sr.url.getPath() + ".." + s);
-    EndpointAcceptor1<String> startWithHost = EndpointAcceptor1.bookmarkAcceptor("get", "<host>/some/{id}", (sr,s)->sr.url.getPath() + ".." + s);
+    EndpointAcceptor1<String> startWithHost = EndpointAcceptor1.bookmarkAcceptor("get", "{host}/some/{id}", (sr,s)->sr.url.getPath() + ".." + s);
     EndpointAcceptor1<String> end = EndpointAcceptor1.bookmarkAcceptor("get", "{id}/end", (sr,s)->sr.url.getPath() + ".." + s);
 
     ServiceRequest sr(String method, String url) { return new ServiceRequest(method, url, List.of(), "");}

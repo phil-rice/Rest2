@@ -18,6 +18,6 @@ public class ViewDom {
     public final FieldListDom fields;
 
     static public Result<String, ViewDom> create(IServerNames name, String viewInterfaceDefnName, String entityClassName, View view, FieldListDom fields) {
-        return name.viewName(viewInterfaceDefnName, entityClassName, view.viewName()).map(viewNames -> new ViewDom(viewNames, "haven't wired up bookmarkAndUrl", fields));
+        return name.viewName(viewInterfaceDefnName, entityClassName).map(viewNames -> new ViewDom(viewNames, "haven't wired up bookmarkAndUrl", fields));
     }
 }

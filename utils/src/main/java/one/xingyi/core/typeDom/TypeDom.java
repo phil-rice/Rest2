@@ -38,10 +38,10 @@ public interface TypeDom {
         if (fullTypeName.startsWith(embeddedClassName))
             return create(names, Strings.extractFromOptionalEnvelope(embeddedClassName + "<", ">", fullTypeName)).map(nested -> new EmbeddedType(fullTypeName, nested));
         if (fullTypeName.indexOf("<") == -1) {
-            return names.entityName(fullTypeName, "").flatMap(tr -> {
+            return names.entityName(fullTypeName).flatMap(tr -> {
                 String serviceInterface = tr.serverInterface.asString();
                 String serviceClass = tr.originalDefn.asString();
-                return names.viewName(fullTypeName, serviceClass, "").map(
+                return names.viewName(fullTypeName, serviceClass).map(
                         vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(),vn.clientCompanion.asString()));
             });
         }

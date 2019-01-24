@@ -2,17 +2,24 @@ package one.xingyi.core.http;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Strings;
 
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @ToString
 @EqualsAndHashCode
 
 public class ServiceRequest {
+    public static Function<ServiceRequest, String> ripId(String bookmark, Function<ServiceRequest, RuntimeException> ifNotPresent) {
+        Function<String, Optional<String>> ripper = Strings.ripIdFromPath(bookmark);
+        return from -> ripper.apply(from.url.getPath()).orElseThrow(() -> ifNotPresent.apply(from));
+    }
     final public String method;
     final public URI url;
     final public List<Header> headers;

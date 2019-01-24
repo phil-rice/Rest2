@@ -15,7 +15,6 @@ class SimpleElementToEntityName implements IElementToEntityNames {
     final IServerNames serverNames;
     @Override public Result<ElementFail, EntityNames> apply(Element element) {
         String className = element.asType().toString();
-        String annotationEntityname = element.getAnnotation(Entity.class).entityName();
-        return serverNames.entityName(className, annotationEntityname).failMap(s -> new ElementFail(s, element));
+        return serverNames.entityName(className).failMap(s -> new ElementFail(s, element));
     }
 }

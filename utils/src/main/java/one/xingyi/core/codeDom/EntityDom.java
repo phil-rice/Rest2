@@ -21,7 +21,7 @@ public class EntityDom {
 
     static public Result<String, EntityDom> create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
 
-        return name.entityName(interfaceDefnName, entity.entityName()).map(entityNames ->
+        return name.entityName(interfaceDefnName).map(entityNames ->
                 new EntityDom(entityNames, name.bookmarkAndUrl(entityNames, entity.bookmark(), entity.getUrl()), fields));
     }
 }

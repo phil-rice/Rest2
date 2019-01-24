@@ -17,6 +17,21 @@ public class Strings {
     public static String noWhitespace(String s) {return s.replaceAll("\\se*", ""); }
     public static String changeQuotes(String s) {return s.replace('\'', '"'); }
 
+    public static Function<String, Optional<String>> ripIdFromPath(String bookmark) {
+        int index = bookmark.indexOf("{id}");
+        if (index == -1) throw new IllegalArgumentException("Bookmark: " + bookmark + " is invalid");
+        String startString = bookmark.substring(0, index);
+        String endString = bookmark.substring(index + 4);
+        return path -> {
+            if (path.startsWith(startString) && path.endsWith(endString)) {
+                String substring = path.substring(startString.length(), path.length() - endString.length());
+                if (substring.indexOf("/") != -1) return Optional.empty();
+                return Optional.of(substring);
+            }
+            return Optional.empty();
+        };
+    }
+
 
     public static Optional<String> from(String s) { return Optionals.from(s != null && s.length() > 0, () -> s); }
     public static String from(String s, String defaultValue) { return s != null && s.length() > 0 ? s : defaultValue; }

@@ -24,21 +24,21 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 "}");
     }
 
-    List<String> createEndPoints(ServerDom serverDom) {
-        return Lists.append(
-                List.of("public static <J> EndPoint entityEndpoints(EndpointConfig<J> config) { return EndPointFactorys.create(config, List.of(",
-                        Lists.join(Formating.indent(Lists.map(serverDom.defnNames,
-                                n -> "new GetEntityEndpointDetails<>(" + n.entityNames.serverCompanion.asString() + ".companion, new " + n.getName + "())")),
-                                ",\n" + Formating.indent) + "),"),
-                List.of("List.of(",
-                        Lists.join(Formating.indent(Lists.map(serverDom.codeDom.entityDoms, ed -> ed.entityName.serverCompanion.asString() + ".companion")), ",\n" + Formating.indent),
-                        "));}"));
-        //    static EndPoint entityEndpoints = EndPointFactorys.create(config,
-        //            List.of(
-        //                    new GetEntityEndpointDetails<>(PersonCompanion.companion, new PersonGet()),
-        //                    new GetEntityEndpointDetails<>(AddressCompanion.companion, new AddressGet())),
-        //            List.of(TelephoneNumberCompanion.companion));
-    }
+//    List<String> createEndPoints(ServerDom serverDom) {
+//        return Lists.append(
+//                List.of("public static <J> EndPoint entityEndpoints(EndpointConfig<J> config) { return EndPointFactorys.create(config, List.of(",
+//                        Lists.join(Formating.indent(Lists.map(serverDom.defnNames,
+//                                n -> "new GetEntityEndpointDetails<>(" + n.entityNames.serverCompanion.asString() + ".companion, new " + n.getName + "())")),
+//                                ",\n" + Formating.indent) + "),"),
+//                List.of("List.of(",
+//                        Lists.join(Formating.indent(Lists.map(serverDom.codeDom.entityDoms, ed -> ed.entityName.serverCompanion.asString() + ".companion")), ",\n" + Formating.indent),
+//                        "));}"));
+//        //    static EndPoint entityEndpoints = EndPointFactorys.create(config,
+//        //            List.of(
+//        //                    new GetEntityEndpointDetails<>(PersonCompanion.companion, new PersonGet()),
+//        //                    new GetEntityEndpointDetails<>(AddressCompanion.companion, new AddressGet())),
+//        //            List.of(TelephoneNumberCompanion.companion));
+//    }
     @Override public FileDefn apply(ServerDom serverDom) {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), serverDom.originalDefn, "class", serverDom.serverName, "",
@@ -47,11 +47,11 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class,
                         JsonObject.class, JsonWriter.class, Files.class),
 //                Formating.indent(generateRegister(serverDom)),
-                Formating.indent(createEndPoints(serverDom)),
-                Formating.indent(makeSimpleServer(serverDom)),
+//                Formating.indent(createEndPoints(serverDom)),
+//                Formating.indent(makeSimpleServer(serverDom)),
                 List.of("/*" + serverDom),
-                List.of("//gets"),
-                Formating.indent(Lists.map(serverDom.defnNames, Objects::toString)),
+//                List.of("//gets"),
+//                Formating.indent(Lists.map(serverDom.defnNames, Objects::toString)),
                 List.of("//entities"),
                 Formating.indent(Lists.map(serverDom.codeDom.entityDoms, Objects::toString)),
                 List.of("*/"),

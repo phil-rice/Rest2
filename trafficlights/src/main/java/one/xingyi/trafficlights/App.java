@@ -1,54 +1,69 @@
 package one.xingyi.trafficlights;
 import lombok.val;
-import one.xingyi.core.endpointDefn.EndPointDefnData;
+import one.xingyi.core.annotations.Entity;
+import one.xingyi.core.annotations.Post;
+import one.xingyi.core.annotations.State;
 import one.xingyi.core.endpointDefn.EndPointDefnFactory;
 import one.xingyi.core.endpointDefn.LinkData;
 import one.xingyi.core.endpointDefn.LinkDataToJson;
 import one.xingyi.core.http.Header;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.JsonWriter;
+import one.xingyi.core.sdk.IXingYiEntity;
+import one.xingyi.core.sdk.IXingYiEntityDefn;
 import one.xingyi.core.utils.Lists;
-import one.xingyi.core.utils.Sets;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.domain.TrafficLights;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static one.xingyi.trafficlights.TrafficLightState.*;
+
+//We have to create this manually because this IS the API
+//All the wiring is done. The links are created for us, and the visitors are available in the generated interfaces so the client has access to us
+//All the state methods can only be accessed after a get, because only then do we know what state we are in
+//Which means we should ship the state with the data
+//We need to have a function that defines the state
+class TrafficLightStuff implements HowToDoColourView {
+    TrafficLightStore store = new TrafficLightStore();
+
+    CompletableFuture<TrafficLights> sideeffect(String id, Runnable runnable) {
+        runnable.run();
+        return getFn(id);
+    }
+    private CompletableFuture<TrafficLights> getFn(String id) {
+        return CompletableFuture.completedFuture(new TrafficLights(id, store.lights.get(id)));
+    }
+
+    @Override public CompletableFuture<TrafficLights> put(String id, TrafficLights entity) { return sideeffect(id, () -> store.lights.putIfAbsent(id, entity.color())); }
+    @Override public CompletableFuture<TrafficLights> get(String id) { return getFn(id); }
+    @Override public CompletableFuture<Boolean> delete(String id) { return CompletableFuture.completedFuture(store.lights.remove(id) != null); }
+    @Override public CompletableFuture<TrafficLights> createWithid(String id, TrafficLights trafficLights) { return put(id, trafficLights); }
+    @Override public CompletableFuture<IdAndValue<TrafficLights>> create(TrafficLights trafficLights) {
+        String id = Integer.toString(store.lights.size());
+        return createWithid(id, trafficLights).thenApply(tl -> new IdAndValue<>(id, tl));
+    }
+    @Override public CompletableFuture<TrafficLights> changeOrange(String id) { return sideeffect(id, () -> store.lights.put(id, "orange")); }
+    @Override public CompletableFuture<TrafficLights> changeGreen(String id) { return sideeffect(id, () -> store.lights.put(id, "green")); }
+    @Override public CompletableFuture<TrafficLights> changeRed(String id) { return sideeffect(id, () -> store.lights.put(id, "red")); }
+    @Override public CompletableFuture<TrafficLights> changeFlashing(String id) { return sideeffect(id, () -> store.lights.put(id, "flashing")); }
+}
+
 public class App {
 
     static Function<ServiceRequest, String> extractId() {return sr -> "";}
 
+
     public static void main(String[] args) {
         TrafficLightStore store = new TrafficLightStore();
 
-        final val make = new EndPointDefnFactory<TrafficLights, String, String, TrafficLights>("<host>/light", extractId(), id -> CompletableFuture.completedFuture(new TrafficLights(id, store.lights.get(id))));
+        TrafficLightStuff theActualApi = new TrafficLightStuff();
 
-        val get = make.get("_self", "/{id}", id -> store.lights.get(id));
-        val create = make.post("create new, when know new id", "/{id}", id -> store.lights.put(id, "red"));
-        val delete = make.delete("delete", "/{id}", List.of(), id -> {store.lights.remove(id); return true;});
-        val changeRed = make.postState("change to be red", "/{id}/red", List.of("flashing"), id -> store.lights.put(id, "red"));
-        val changeOng = make.postState("change to be red", "/{id}/orange", List.of("red"), id -> store.lights.put(id, "orange"));
-        val changeGrn = make.postState("change to be red", "/{id}/green", List.of("orange"), id -> store.lights.put(id, "green"));
-        val changeFls = make.postState("change to be red", "/{id}/flashing", List.of("green"), id -> store.lights.put(id, "flashing"));
-
-
-        List<LinkData<String>> defns = List.of(get, create, delete, changeRed, changeOng, changeGrn, changeFls);
-        JsonWriter<Object> writer = Json.simple;
-        BiFunction<ContextForJson,LinkData<String>, Object> toJson = (contextm,ld) -> writer.makeObject(ld.name(), writer.makeObject("href", contextm.template(ld.templatedPath())), "method", ld.method(), "states", ld.legalStates()); ;
-        LinkDataToJson<Object, TrafficLights, String> linkDataToJson = LinkDataToJson.<Object, TrafficLights, String>fromLinkdata(TrafficLights::color, defns, toJson);
-
-        System.out.println(create);
-        System.out.println(changeRed);
-        System.out.println(changeOng);
-        ContextForJson contextForJson = ContextForJson.forServiceRequest("http://", new ServiceRequest("get", "/someurl", List.of(new Header("host", "someHost")), ""));
-        System.out.println(Lists.map(linkDataToJson.apply(contextForJson,new TrafficLights("1", store.lights.get("1"))), t -> writer.fromJ(t)));
-        System.out.println(Lists.map(linkDataToJson.apply(contextForJson,new TrafficLights("2", store.lights.get("2"))), t -> writer.fromJ(t)));
-        System.out.println(Lists.map(linkDataToJson.apply(contextForJson,new TrafficLights("3", store.lights.get("3"))), t -> writer.fromJ(t)));
+        //TrafficLightServer.use(someConfigAboutPortsAndStuff,theStateFn,theActualApi)
 
 //        TrafficLightServer.simple().start();
         System.out.println("Started traffic lights");

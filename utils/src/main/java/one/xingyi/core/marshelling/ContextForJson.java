@@ -17,7 +17,7 @@ class NullContext implements ContextForJson {
     @Override public String protocol() {
         return "";
     }
-    @Override public String template(String raw) { return raw.replaceAll("<host>", ""); }
+    @Override public String template(String raw) { return raw.replace("{host}", ""); }
 }
 
 @RequiredArgsConstructor
@@ -28,6 +28,6 @@ class ServiceRequestContextForJson implements ContextForJson {
     final ServiceRequest serviceRequest;
     public String protocol() { return protocol;}
     @Override public String template(String raw) {
-        return raw.replaceAll("<host>", serviceRequest.header("host").map(s -> protocol + s).orElse(""));
+        return raw.replace("{host}", serviceRequest.header("host").map(s -> protocol + s).orElse(""));
     }
 }

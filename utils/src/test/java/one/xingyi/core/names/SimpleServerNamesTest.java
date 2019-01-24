@@ -19,7 +19,7 @@ public class SimpleServerNamesTest {
 
 
     @Test public void testEntityNameWhenClassStartsWithIAndEndInDefn() {
-        EntityNames actual = serverNames.entityName("original.package.IEntityDefn", "").result().get();
+        EntityNames actual = serverNames.entityName("original.package.IEntityDefn").result().get();
         assertEquals(new PackageAndClassName("original.package.IEntityDefn"), actual.originalDefn);
         assertEquals(new PackageAndClassName("original.package.domain.IEntity"), actual.serverInterface);
         assertEquals(new PackageAndClassName("original.package.domain.Entity"), actual.serverEntity);
@@ -27,33 +27,21 @@ public class SimpleServerNamesTest {
         assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientEntity);
         assertEquals("Entity", actual.entityNameForLens);
     }
-    @Test public void testEntityNameWhenRootDefinedInAnnotationStartingWithI() {
-        EntityNames actual = serverNames.entityName("original.package.Something", "IEntity").result().get();
-        assertEquals(new PackageAndClassName("original.package.Something"), actual.originalDefn);
-        assertEquals(new PackageAndClassName("original.package.domain.IEntity"), actual.serverInterface);
-        assertEquals(new PackageAndClassName("original.package.domain.Entity"), actual.serverEntity);
-        assertEquals(new PackageAndClassName("original.package.server.companion.EntityCompanion"), actual.serverCompanion);
-        assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientEntity);
-        assertEquals("Entity", actual.entityNameForLens);
-        serverNames.entityName("original.package.className", "IEntity");
-
-    }
 
     @Test public void testEntityNameWhenRootDoesntStartWithI() {
-        assertEquals(List.of("Entity [EntityDefn] Should start with an I"), serverNames.entityName("original.package.EntityDefn", "").fails());
-        assertEquals(List.of("Entity annotation [Override] in [EntityDefn] doesn't start with an I"), serverNames.entityName("original.package.EntityDefn", "Override").fails());
+        assertEquals(List.of("Entity [EntityDefn] Should start with an I"), serverNames.entityName("original.package.EntityDefn").fails());
     }
 
 
     @Test public void testViewName() {
-        Result<String, ViewNames> actual = serverNames.viewName("original.package.class", " a.b.c.IEntityDefn", "IViewRoot");
-        assertEquals(new PackageAndClassName("original.package.class"), actual.result().get().originalDefn);
-//        assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.clientView);
+        Result<String, ViewNames> actual = serverNames.viewName("original.package.IViewRootDefn", " a.b.c.IEntityDefn");
+        assertEquals(new PackageAndClassName("original.package.IViewRootDefn"), actual.result().get().originalDefn);
+        assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.result().get().clientView);
 //        assertEquals(new PackageAndClassName("original.package.client.companion.ViewRootCompanion"), actual.clientCompanion);
     }
     @Test public void testViewNameWithoutAnI() {
-        assertEquals(List.of("View annotation [ViewRoot] in [class] doesn't start with an I"),
-                serverNames.viewName("original.package.class", "EntityClassName", "ViewRoot").fails());
+        assertEquals(List.of("View [class] Should start with an I", "View [class] Should end with Defn"),
+                serverNames.viewName("original.package.class", "EntityClassName").fails());
     }
 
     @Test public void testLensName() {

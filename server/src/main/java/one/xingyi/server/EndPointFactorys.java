@@ -24,12 +24,14 @@ public interface EndPointFactorys {
     }
 
     static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
-        EndpointContext<J> context = config.from( allCompanions);
+        EndpointContext<J> context = config.from( Lists.append(Lists.map(details, d->d.companion),allCompanions));
         List<EndPointFactory> factories = Lists.map(details, GetEntityEndpointDetails::make);
         return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
 
     }
-    static <J> EndPoint create(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
+    static <J> EndPoint create(EndpointConfig<J> config,
+                               List<GetEntityEndpointDetails<?, ?, ?>> details,
+                               List<IXingYiServerCompanion<?, ?>> allCompanions) {
         return EndPoint.compose(List.of(
                 entityEndpoint(config, Lists.map(details, d -> d.companion)),
                 companionEndpoint(config, details, allCompanions)));

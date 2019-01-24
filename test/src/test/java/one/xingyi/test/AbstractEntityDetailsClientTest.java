@@ -1,6 +1,9 @@
 package one.xingyi.test;
 //
 
+import one.xingyi.core.access.IEntityStore;
+import one.xingyi.core.endpointDefn.EndPointDefnData;
+import one.xingyi.core.endpointDefn.EndPointDefnFactory;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
@@ -8,13 +11,25 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
+import one.xingyi.core.httpClient.domain.EntityDetails;
 import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Files;
-import one.xingyi.reference.PersonServer;
+import one.xingyi.reference.address.AddressGet;
 import one.xingyi.reference.address.client.view.AddressLine12View;
+import one.xingyi.reference.address.domain.Address;
+import one.xingyi.reference.address.server.companion.AddressCompanion;
+import one.xingyi.reference.person.PersonGet;
 import one.xingyi.reference.person.client.view.PersonNameView;
+import one.xingyi.reference.person.domain.Person;
+import one.xingyi.reference.person.server.companion.PersonCompanion;
+import one.xingyi.reference.telephone.domain.TelephoneNumber;
+import one.xingyi.reference.telephone.server.companion.TelephoneNumberCompanion;
+import one.xingyi.server.EndPointFactorys;
+import one.xingyi.server.GetEntityEndpointDetails;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -27,9 +42,28 @@ abstract class AbstractEntityDetailsClientTest {
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
 
+//    TelephoneNumber number = new TelephoneNumber("someNumber");
+//    Address address = new Address("someLine1", "someLine2", "postcode");
+//    Person person = new Person("serverName", 23, address, number);
+//    IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
+//    IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
+
+//    EndPointDefnFactory<String, String, Person> make = new EndPointDefnFactory<String, String, Person>(
+//            "/person",
+//            ServiceRequest.ripId("", sr -> new RuntimeException("")),
+//            id -> personStore.read(id).thenApply(p -> p.orElseThrow(() -> new RuntimeException("Cannot find id " + id))));
+
+//    EndPointDefnData<String, String, Person> getPerson = make.get("_self", "/{id}");
+
     static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://");
 
-    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
+    static EndPoint entityEndpoints = EndPointFactorys.<JsonObject>create(config,
+            List.of(
+                    new GetEntityEndpointDetails<>(PersonCompanion.companion, new PersonGet()),
+                    new GetEntityEndpointDetails<>(AddressCompanion.companion, new AddressGet())),
+            List.of(TelephoneNumberCompanion.companion));
+
+//    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
     HttpService rawService;
     HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
@@ -48,7 +82,8 @@ abstract class AbstractEntityDetailsClientTest {
     }
     @Test
     public void testGetUrlPatternWhenEntityNotRegistered() throws ExecutionException, InterruptedException {
-        try {            UrlPattern.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
+        try {
+            UrlPattern.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
             fail();
         } catch (Exception e) {
             Throwable cause = e.getCause().getCause();

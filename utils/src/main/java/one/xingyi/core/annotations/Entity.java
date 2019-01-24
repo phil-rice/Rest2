@@ -6,11 +6,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME) // Need to keep them around for testing
 public @interface Entity {
-    /** The name of the view.
-     * <ul><li>If the name of the interface it marks is IEntity this defaults to Entity. (it's </li>
-     * <ul><li>If the name of the interface it marks is Ilowcase this defaults to Entity. IlowcaseEntity </li>
-     * <li>If the name of the interface it marks is Entity this defaults to EntityEntity.</li></ul>     */
-    String entityName() default "";
 
     /* Where the client goes for service discovery. */
     String bookmark() default "";

@@ -75,9 +75,9 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             val codeContent = makeContent(codeDom);
            val serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
-            val getElements = Sets.toList((Set<TypeElement>) env.getElementsAnnotatedWith(Get.class));
+//            val getElements = Sets.toList((Set<TypeElement>) env.getElementsAnnotatedWith(Get.class));
 
-            List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, getElements, codeDom));
+            List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, codeDom));
             List<ServerDom> serverDoms = Result.successes(serverDomResults);
             List<FileDefn> serverContent = Lists.map(serverDoms, sd -> makeServer(sd));
 

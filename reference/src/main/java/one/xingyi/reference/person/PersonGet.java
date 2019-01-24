@@ -19,7 +19,7 @@ public class PersonGet implements IXingYiGet<String, IPersonDefn, Person> {
     public static TelephoneNumber number = new TelephoneNumber("someNumber");
     public static Person person = new Person("someName", 23, address, number);
 
-    IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
+   public static  IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
 
     @Override public BiFunction<ServiceRequest, String,  String> makeId() { return makeIdFromString;}
     @Override public CompletableFuture<Optional<Person>> apply(String s) { return personStore.read(s); }
