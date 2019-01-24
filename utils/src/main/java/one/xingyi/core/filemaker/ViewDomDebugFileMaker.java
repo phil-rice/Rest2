@@ -1,4 +1,5 @@
 package one.xingyi.core.filemaker;
+import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.utils.Formating;
@@ -23,10 +24,18 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         return Lists.<String>append(
                 viewNameInfo(viewDom.viewNames),
                 List.of(
-                        "bookmarkAndUrl " + viewDom.bookmark,
                         "Fields: " + viewDom.fields.allFields.size()
                 ),
                 Formating.indent(Lists.<FieldDom, String>flatMap(viewDom.fields.allFields, this::fieldDebugInfo))
+        );
+    }
+    List<String> actionsDomInfo(ActionsDom actionsDom){
+        return List.of(
+                "Get        " + actionsDom.getDom,
+                "Put        " + actionsDom.putDom,
+                "Create     " + actionsDom.createDom,
+                "CreateNoId " + actionsDom.createWithoutIdDom,
+                "De;ete     " + actionsDom.deleteDom
         );
     }
 
@@ -38,6 +47,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         List<String> result = Lists.append(
                 Formating.javaFile(getClass(),viewDom.viewNames.originalDefn,"class", packageAndClassName, "", manualImports),
                 List.of("/*"),
+                actionsDomInfo(viewDom.actionsDom),
                 viewDebugInfo(viewDom),
                 List.of(""),
                 Optionals.fold(viewDomAndItsEntityDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),

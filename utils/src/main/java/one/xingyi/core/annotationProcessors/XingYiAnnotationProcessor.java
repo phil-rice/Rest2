@@ -20,9 +20,10 @@ import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 import java.io.PrintWriter;
 import java.util.*;
+
 import lombok.val;
 
-        @RequiredArgsConstructor
+@RequiredArgsConstructor
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
     ElementToBundle bundle = ElementToBundle.simple;
@@ -54,7 +55,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
 
-
             List<EntityDom> entityDoms = Result.successes(entityDomResults);
             log.info("Made entityDoms: " + entityDoms);
 
@@ -74,7 +74,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
 
             val codeContent = makeContent(codeDom);
-           val serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
+            val serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
 //            val getElements = Sets.toList((Set<TypeElement>) env.getElementsAnnotatedWith(Get.class));
 
             List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, codeDom));
