@@ -10,6 +10,12 @@ import one.xingyi.core.sdk.IXingYiViewDefn;
 @Create("/{id}/new")
 @View
 public interface IColourViewDefn extends IXingYiViewDefn<ITrafficLightsDefn> {
+    @Field(readOnly = true)
     String id();
+
+    @Field(readOnly = true)
     String color();
+
+    @Post(value = "/{id}/orange", state = "red")
+    IColourViewDefn orange();
 }
