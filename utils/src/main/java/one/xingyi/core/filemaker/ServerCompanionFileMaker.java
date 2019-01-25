@@ -23,10 +23,10 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
 
 
     private List<String> createCompanion(EntityDom entityDom) {
-        return List.of("public static " + entityDom.entityName.serverCompanion.asString() + " companion  =new " + entityDom.entityName.serverCompanion.className + "();");
+        return List.of("public static " + entityDom.entityNames.serverCompanion.asString() + " companion  =new " + entityDom.entityNames.serverCompanion.className + "();");
     }
     private List<String> createEntityEndpoint(EntityDom entityDom) {
-        return List.of("public static " + entityDom.entityName.serverCompanion.asString() + " companion  =new " + entityDom.entityName.serverCompanion.className + "();");
+        return List.of("public static " + entityDom.entityNames.serverCompanion.asString() + " companion  =new " + entityDom.entityNames.serverCompanion.className + "();");
     }
     private List<String> createJavascript(EntityDom entityDom) {
 
@@ -39,16 +39,16 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     }
 
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
-        String implementsString = (entityDom.bookmark.isEmpty() ?"IXingYiServerCompanion": "IXingYiServesEntityCompanion") + "<" + entityDom.entityName.originalDefn.asString() + "," + entityDom.entityName.serverEntity.asString() + ">";
+        String implementsString = (entityDom.bookmark.isEmpty() ?"IXingYiServerCompanion": "IXingYiServesEntityCompanion") + "<" + entityDom.entityNames.originalDefn.asString() + "," + entityDom.entityNames.serverEntity.asString() + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),entityDom.entityName.originalDefn, "class", entityDom.entityName.serverCompanion,
+                Formating.javaFile(getClass(),entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverCompanion,
                         " implements " + implementsString, List.of(), IXingYiServerCompanion.class, IXingYiServesEntityCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
-//                Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
+//                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(entityDom)),
                 Formating.indent(createCompanion(entityDom)),
                 Formating.indent(createJavascript(entityDom)),
                 List.of("}")
         ), "\n");
-        return Result.succeed( new FileDefn(entityDom.entityName.serverCompanion, result));
+        return Result.succeed( new FileDefn(entityDom.entityNames.serverCompanion, result));
     }
 }

@@ -85,7 +85,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, codeDom));
             List<ServerDom> serverDoms = Result.successes(serverDomResults);
-            List<Result<String,FileDefn>> serverContentResult = Lists.map(serverDoms, sd -> makeServer(sd));
+            List<Result<String, FileDefn>> serverContentResult = Lists.map(serverDoms, sd -> makeServer(sd));
             for (String issue : Result.failures(serverContentResult))
                 log.error(issue);
             List<FileDefn> serverContent = Result.successes(serverContentResult);
@@ -110,7 +110,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
                 new ServerEntityFileMaker(),
-                new ServerCompanionFileMaker());
+                new ServerCompanionFileMaker(),
+                new ServerControllerFileMaker());
         List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
         List<FileDefn> fromCodeDom = Result.successes(fromCodeDomResults);
         List<String> fromCodeDomIssues = Result.failures(fromCodeDomResults);

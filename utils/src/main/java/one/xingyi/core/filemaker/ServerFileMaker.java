@@ -32,7 +32,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
 //                                n -> "new GetEntityEndpointDetails<>(" + n.entityNames.serverCompanion.asString() + ".companion, new " + n.getName + "())")),
 //                                ",\n" + Formating.indent) + "),"),
 //                List.of("List.of(",
-//                        Lists.join(Formating.indent(Lists.map(serverDom.codeDom.entityDoms, ed -> ed.entityName.serverCompanion.asString() + ".companion")), ",\n" + Formating.indent),
+//                        Lists.join(Formating.indent(Lists.map(serverDom.codeDom.entityDoms, ed -> ed.entityNames.serverCompanion.asString() + ".companion")), ",\n" + Formating.indent),
 //                        "));}"));
 //        //    static EndPoint entityEndpoints = EndPointFactorys.create(config,
 //        //            List.of(

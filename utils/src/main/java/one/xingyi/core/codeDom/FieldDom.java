@@ -22,9 +22,9 @@ public class FieldDom {
     public final String lensPath;
     public final String javascript;
     public final boolean templated;
-//    public static FieldDom create(IServerNames names, EntityNames entityName, TypeDom typeDom, String fieldName, Field field) {
-//        String lensName = names.entityLensName(entityName, fieldName, field.lensName());
-//        String lensPath = names.entityLensPath(entityName, fieldName, field.lensPath());
+//    public static FieldDom create(IServerNames names, EntityNames entityNames, TypeDom typeDom, String fieldName, Field field) {
+//        String lensName = names.entityLensName(entityNames, fieldName, field.lensName());
+//        String lensPath = names.entityLensPath(entityNames, fieldName, field.lensPath());
 //        String javascript = Strings.from(field.javascript(), "function lens_" + lensName + "(){ return lens('" + lensPath + "');};");
 //        return new FieldDom(typeDom, fieldName, field.readOnly(), lensName, lensPath, javascript);
 //

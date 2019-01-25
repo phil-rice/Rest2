@@ -27,11 +27,11 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         List<String> manualImports = Lists.unique(entityDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),entityDom.entityName.originalDefn,"interface", entityDom.entityName.serverInterface,
+                Formating.javaFile(getClass(),entityDom.entityNames.originalDefn,"interface", entityDom.entityNames.serverInterface,
                         " extends IXingYiEntity", manualImports, IXingYiEntity.class, XingYiGenerated.class),
-                Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
+                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 List.of("}")
         ), "\n");
-        return Result.succeed(new FileDefn(entityDom.entityName.serverInterface, result));
+        return Result.succeed(new FileDefn(entityDom.entityNames.serverInterface, result));
     }
 }

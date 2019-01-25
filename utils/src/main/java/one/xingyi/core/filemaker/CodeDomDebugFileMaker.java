@@ -9,9 +9,9 @@ import java.util.List;
 public class CodeDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<EntityDom> {
 
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
-        PackageAndClassName packageAndClassName = entityDom.entityName.serverEntity.mapName(e -> e + "DebugInfo");
+        PackageAndClassName packageAndClassName = entityDom.entityNames.serverEntity.mapName(e -> e + "DebugInfo");
         List<String> result = Lists.append(
-                Formating.javaFile(getClass(),entityDom.entityName.originalDefn,"class", packageAndClassName, "", List.of()),
+                Formating.javaFile(getClass(),entityDom.entityNames.originalDefn,"class", packageAndClassName, "", List.of()),
                 List.of("/*"),
                 entityDebugInfo(entityDom),
                 actionsDomInfo(entityDom.actionsDom),

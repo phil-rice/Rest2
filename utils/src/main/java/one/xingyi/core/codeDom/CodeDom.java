@@ -11,6 +11,6 @@ public class CodeDom {
     public CodeDom(List<EntityDom> entityDoms, List<ViewDom> viewDoms) {
         this.entityDoms = entityDoms;
         this.viewDoms = viewDoms;
-        viewsAndDoms = Lists.map(viewDoms, vd -> new ViewDomAndItsEntityDom(vd, Lists.find(entityDoms, ed -> ed.entityName.originalDefn.equals(vd.viewNames.entityNames.originalDefn))));
+        viewsAndDoms = Lists.map(viewDoms, vd -> new ViewDomAndItsEntityDom(vd, Lists.find(entityDoms, ed -> ed.entityNames.originalDefn.equals(vd.viewNames.entityNames.originalDefn))));
     }
 }

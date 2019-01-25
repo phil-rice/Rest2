@@ -27,7 +27,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     List<String> constructor(EntityDom dom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
-        result.add("public " + dom.entityName.serverEntity.className + "(" + dom.fields.mapJoin(",", nv -> nv.typeDom.forEntity() + " " + nv.name) + "){");
+        result.add("public " + dom.entityNames.serverEntity.className + "(" + dom.fields.mapJoin(",", nv -> nv.typeDom.forEntity() + " " + nv.name) + "){");
         result.addAll(dom.fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
         return result;
@@ -59,7 +59,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         result.add("@Override public boolean equals(Object o) {");
         result.add(Formating.indent + "if (this == o) return true;");
         result.add(Formating.indent + "if (o == null || getClass() != o.getClass()) return false;");
-        result.add(Formating.indent + entityDom.entityName.serverEntity.className + " other = (" + entityDom.entityName.serverEntity.className + ") o;");
+        result.add(Formating.indent + entityDom.entityNames.serverEntity.className + " other = (" + entityDom.entityNames.serverEntity.className + ") o;");
         result.add(Formating.indent + "return " + entityDom.fields.mapJoin(" && ", fd -> "Objects.equals(" + fd.name + ",other." + fd.name + ")") + ";");
         result.add("}");
         return result;
@@ -76,7 +76,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public String toString(){");
-        result.add(Formating.indent + "return " + Strings.quote(entityDom.entityName.serverEntity.className + "(") + "+" +
+        result.add(Formating.indent + "return " + Strings.quote(entityDom.entityNames.serverEntity.className + "(") + "+" +
                 entityDom.fields.mapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
         result.add("}");
         return result;
@@ -86,11 +86,11 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), entityDom.entityName.originalDefn,"class", entityDom.entityName.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityName.serverInterface.asString(),
+                Formating.javaFile(getClass(), entityDom.entityNames.originalDefn,"class", entityDom.entityNames.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityNames.serverInterface.asString(),
                         List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, ContextForJson.class, HasJson.class, ContextForJson.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),
-                Formating.indent(allFieldsAccessors(entityDom.entityName.serverEntity.className, entityDom.fields)),
+                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverEntity.className, entityDom.fields)),
                 Formating.indent(makeJson(entityDom.fields)),
                 Formating.indent(createEquals(entityDom)),
                 Formating.indent(createHashcode(entityDom)),
@@ -98,6 +98,6 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
                 List.of("/*" + entityDom + "*/"),
                 List.of("}")
         ), "\n");
-        return Result.succeed(new FileDefn(entityDom.entityName.serverEntity, result));
+        return Result.succeed(new FileDefn(entityDom.entityNames.serverEntity, result));
     }
 }

@@ -16,14 +16,14 @@ import java.util.Optional;
 @ToString
 @EqualsAndHashCode
 public class EntityDom {
-    public final EntityNames entityName;
+    public final EntityNames entityNames;
     public final Optional<BookmarkAndUrlPattern> bookmark;
     public final FieldListDom fields;
     public final ActionsDom actionsDom;
 
 //    static public Result<String, EntityDom> create(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
 //
-//        return name.entityName(interfaceDefnName).map(entityNames ->
+//        return name.entityNames(interfaceDefnName).map(entityNames ->
 //                new EntityDom(entityNames, name.bookmarkAndUrl(entityNames, entity.bookmark(), entity.rootUrl()), fields));
 //    }
 }

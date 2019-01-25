@@ -40,7 +40,7 @@ public class AbstracDebugFileMaker {
 
     List<String> entityDebugInfo(EntityDom entityDom) {
         return Lists.<String>append(
-                entityNameInfo(entityDom.entityName),
+                entityNameInfo(entityDom.entityNames),
                 List.of(
                         "bookmarkAndUrl " + entityDom.bookmark,
                         "Fields: " + entityDom.fields.allFields.size()

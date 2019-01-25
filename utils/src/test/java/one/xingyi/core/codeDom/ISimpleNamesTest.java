@@ -3,7 +3,7 @@ public class ISimpleNamesTest {
 
 
 
-//    EntityNames entityName(PackageAndClassName entityElementName, String annotationEntityname);
+//    EntityNames entityNames(PackageAndClassName entityElementName, String annotationEntityname);
 //    PackageAndClassName viewName(PackageAndClassName viewElementName, String viewEntityname);
 //    String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
 //    String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
