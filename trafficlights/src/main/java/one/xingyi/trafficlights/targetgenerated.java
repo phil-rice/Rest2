@@ -1,6 +1,7 @@
 package one.xingyi.trafficlights;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.trafficlights.client.view.ColourView;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
 

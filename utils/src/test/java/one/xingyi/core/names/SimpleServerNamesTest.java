@@ -24,7 +24,7 @@ public class SimpleServerNamesTest {
         assertEquals(new PackageAndClassName("original.package.server.domain.IEntity"), actual.serverInterface);
         assertEquals(new PackageAndClassName("original.package.server.domain.Entity"), actual.serverEntity);
         assertEquals(new PackageAndClassName("original.package.server.companion.EntityCompanion"), actual.serverCompanion);
-        assertEquals(new PackageAndClassName("original.package.server.controller.EntityController"), actual.serverController);
+        assertEquals(new PackageAndClassName("original.package.server.controller.IEntityController"), actual.serverController);
         assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientEntity);
         assertEquals("Entity", actual.entityNameForLens);
     }

@@ -1,5 +1,6 @@
 package one.xingyi.trafficlights;
 import one.xingyi.core.http.ServiceRequest;
+import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
 
 import java.util.concurrent.CompletableFuture;
