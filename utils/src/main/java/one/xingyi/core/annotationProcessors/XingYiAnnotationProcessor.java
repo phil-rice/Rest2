@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import lombok.val;
+import one.xingyi.core.validation.ResultAndFailures;
 
 @RequiredArgsConstructor
 public class XingYiAnnotationProcessor extends AbstractProcessor {
@@ -45,6 +46,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     static <T extends Element> Comparator<T> comparator() {return (a, b) -> a.asType().toString().compareTo(b.asType().toString());}
 
     @Override
+    //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
         log.info("Processing XingYi Annotations");
@@ -73,13 +75,20 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
 
-            val codeContent = makeContent(codeDom);
+            ResultAndFailures<String, List<FileDefn>> codeContentAndIssues = makeContent(codeDom);
+            for (String issue : codeContentAndIssues.failures) {
+                log.error(issue);
+            }
+            List<FileDefn> codeContent = codeContentAndIssues.t;
             val serverElements = Sets.toList(env.getElementsAnnotatedWith(Server.class));
 //            val getElements = Sets.toList((Set<TypeElement>) env.getElementsAnnotatedWith(Get.class));
 
             List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, codeDom));
             List<ServerDom> serverDoms = Result.successes(serverDomResults);
-            List<FileDefn> serverContent = Lists.map(serverDoms, sd -> makeServer(sd));
+            List<Result<String,FileDefn>> serverContentResult = Lists.map(serverDoms, sd -> makeServer(sd));
+            for (String issue : Result.failures(serverContentResult))
+                log.error(issue);
+            List<FileDefn> serverContent = Result.successes(serverContentResult);
 
             for (FileDefn fileDefn : Lists.append(codeContent, serverContent))
                 makeClassFile(fileDefn);
@@ -92,17 +101,19 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         }
         return false;
     }
-    FileDefn makeServer(ServerDom serverDom) {
+    Result<String, FileDefn> makeServer(ServerDom serverDom) {
         return new ServerFileMaker().apply(serverDom);
     }
 
-    List<FileDefn> makeContent(CodeDom codeDom) {
+    ResultAndFailures<String, List<FileDefn>> makeContent(CodeDom codeDom) {
         List<IFileMaker<EntityDom>> entityFileMakes = Arrays.asList(
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
                 new ServerEntityFileMaker(),
                 new ServerCompanionFileMaker());
-        List<FileDefn> fromCodeDom = Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
+        List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
+        List<FileDefn> fromCodeDom = Result.successes(fromCodeDomResults);
+        List<String> fromCodeDomIssues = Result.failures(fromCodeDomResults);
 
         List<IFileMaker<ViewDomAndItsEntityDom>> viewFileMakers = List.of(
                 new ViewDomDebugFileMaker(),
@@ -111,9 +122,11 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ClientViewCompanionFileMaker(),
                 new ClientViewImplFileMaker()
         );
-        List<FileDefn> fromViewDom = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));
+        List<Result<String, FileDefn>> fromViewDomResults = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));
+        List<String> fromViewDomIssues = Result.failures(fromViewDomResults);
+        List<FileDefn> fromViewDom = Result.successes(fromViewDomResults);
 
-        return Lists.<FileDefn>append(fromCodeDom, fromViewDom);
+        return new ResultAndFailures<>(Lists.append(fromCodeDomIssues, fromViewDomIssues), Lists.<FileDefn>append(fromCodeDom, fromViewDom));
     }
 
     void makeClassFile(FileDefn fileDefn) {

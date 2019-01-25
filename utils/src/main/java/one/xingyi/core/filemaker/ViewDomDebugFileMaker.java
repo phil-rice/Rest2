@@ -1,10 +1,10 @@
 package one.xingyi.core.filemaker;
-import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.validation.Result;
 
 import java.util.List;
 public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
@@ -30,7 +30,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         );
     }
 
-    @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         PackageAndClassName packageAndClassName = viewDom.viewNames.clientView.mapName(e -> e + "DebugInfo");
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
@@ -43,6 +43,6 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
                 List.of(""),
                 Optionals.fold(viewDomAndItsEntityDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),
                 List.of("*/}"));
-        return new FileDefn(packageAndClassName, Lists.join(result, "\n"));
+        return Result.succeed(new FileDefn(packageAndClassName, Lists.join(result, "\n")));
     }
 }

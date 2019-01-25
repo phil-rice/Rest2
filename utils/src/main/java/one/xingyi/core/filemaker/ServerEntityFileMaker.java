@@ -9,6 +9,7 @@ import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
+import one.xingyi.core.validation.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +84,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     }
 
 
-    @Override public FileDefn apply(EntityDom entityDom) {
+    @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), entityDom.entityName.originalDefn,"class", entityDom.entityName.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityName.serverInterface.asString(),
                         List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, ContextForJson.class, HasJson.class, ContextForJson.class),
@@ -97,6 +98,6 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
                 List.of("/*" + entityDom + "*/"),
                 List.of("}")
         ), "\n");
-        return new FileDefn(entityDom.entityName.serverEntity, result);
+        return Result.succeed(new FileDefn(entityDom.entityName.serverEntity, result));
     }
 }

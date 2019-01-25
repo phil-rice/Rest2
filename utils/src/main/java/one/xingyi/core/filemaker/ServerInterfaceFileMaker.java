@@ -6,6 +6,7 @@ import one.xingyi.core.codeDom.FieldListDom;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.validation.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
         return result;
     }
 
-    @Override public FileDefn apply(EntityDom entityDom) {
+    @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         List<String> manualImports = Lists.unique(entityDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(),entityDom.entityName.originalDefn,"interface", entityDom.entityName.serverInterface,
@@ -31,6 +32,6 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
                 Formating.indent(allFieldsAccessors(entityDom.entityName.serverInterface.className, entityDom.fields)),
                 List.of("}")
         ), "\n");
-        return new FileDefn(entityDom.entityName.serverInterface, result);
+        return Result.succeed(new FileDefn(entityDom.entityName.serverInterface, result));
     }
 }

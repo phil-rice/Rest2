@@ -9,6 +9,7 @@ import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
+import one.xingyi.core.validation.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
         return result;
     }
 
-    @Override public FileDefn apply(EntityDom entityDom) {
+    @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         String implementsString = (entityDom.bookmark.isEmpty() ?"IXingYiServerCompanion": "IXingYiServesEntityCompanion") + "<" + entityDom.entityName.originalDefn.asString() + "," + entityDom.entityName.serverEntity.asString() + ">";
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(),entityDom.entityName.originalDefn, "class", entityDom.entityName.serverCompanion,
@@ -48,6 +49,6 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
                 Formating.indent(createJavascript(entityDom)),
                 List.of("}")
         ), "\n");
-        return new FileDefn(entityDom.entityName.serverCompanion, result);
+        return Result.succeed( new FileDefn(entityDom.entityName.serverCompanion, result));
     }
 }

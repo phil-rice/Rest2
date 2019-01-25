@@ -6,8 +6,8 @@ import one.xingyi.core.optics.Lens;
 import one.xingyi.core.sdk.IXingYiClientImpl;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
-import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
+import one.xingyi.core.validation.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         return List.of("public " + classname + "(IXingYi xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
     }
 
-    @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
@@ -65,6 +65,6 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");
-        return new FileDefn(viewDom.viewNames.clientViewImpl, result);
+        return Result.succeed(new FileDefn(viewDom.viewNames.clientViewImpl, result));
     }
 }

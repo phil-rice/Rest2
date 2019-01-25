@@ -1,7 +1,8 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.utils.LoggerAdapter;
+import one.xingyi.core.validation.Result;
 
 import java.util.List;
 public interface IFileMaker<T> {
-    FileDefn apply(T t);
+    Result<String, FileDefn> apply(T t);
 }

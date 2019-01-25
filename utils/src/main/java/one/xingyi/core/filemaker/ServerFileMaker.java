@@ -10,6 +10,7 @@ import one.xingyi.core.server.SimpleServer;
 import one.xingyi.core.utils.Files;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.validation.Result;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +40,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
 //        //                    new GetEntityEndpointDetails<>(AddressCompanion.companion, new AddressGet())),
 //        //            List.of(TelephoneNumberCompanion.companion));
 //    }
-    @Override public FileDefn apply(ServerDom serverDom) {
+    @Override public Result<String, FileDefn> apply(ServerDom serverDom) {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), serverDom.originalDefn, "class", serverDom.serverName, "",
                         List.of("one.xingyi.server.EndPointFactorys", "one.xingyi.server.GetEntityEndpointDetails"),
@@ -57,6 +58,6 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 List.of("*/"),
                 List.of("}")
         ), "\n");
-        return new FileDefn(serverDom.serverName, result);
+        return Result.succeed(new FileDefn(serverDom.serverName, result));
     }
 }

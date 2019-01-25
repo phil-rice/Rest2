@@ -1,8 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IXingYi;
-import one.xingyi.core.codeDom.FieldDom;
-import one.xingyi.core.codeDom.FieldListDom;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.codeDom.ViewDomAndItsEntityDom;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
@@ -11,8 +9,8 @@ import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
+import one.xingyi.core.validation.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -35,7 +33,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
     }
 
 
-    @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.append(
                 List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
@@ -60,6 +58,6 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
                 List.of(Formating.indent + "@Override public " + viewDom.viewNames.clientView.asString() + " create(IXingYi xingYi, Object mirror){return new " + viewDom.viewNames.clientViewImpl.asString() + "(xingYi,mirror);} "),
                 List.of("}")
         ), "\n");
-        return new FileDefn(viewDom.viewNames.clientCompanion, result);
+        return Result.succeed(new FileDefn(viewDom.viewNames.clientCompanion, result));
     }
 }

@@ -9,6 +9,7 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.validation.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +47,11 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
 
     }
 
-    @Override public FileDefn apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.append(List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"), Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName())));
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
+                Formating.javaFile(getClass(), viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class, CompletableFuture.class),
                 Formating.indent(getPrimitiveMethod(viewDom)),
@@ -60,7 +61,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
                 Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");
-        return new FileDefn(viewDom.viewNames.clientView, result);
+        return Result.succeed(new FileDefn(viewDom.viewNames.clientView, result));
     }
 
 

@@ -9,13 +9,14 @@ import one.xingyi.core.sdk.IXingYiClientImpl;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.validation.Result;
 
 import java.util.ArrayList;
 import java.util.List;
 public class ClientEntityFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
 
 
-    @Override public FileDefn apply(ViewDomAndItsEntityDom viewAndEntityDom) {
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewAndEntityDom) {
         ViewDom viewDom = viewAndEntityDom.viewDom;
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewAndEntityDom.viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientEntity,
@@ -23,6 +24,6 @@ public class ClientEntityFileMaker implements IFileMaker<ViewDomAndItsEntityDom>
                         IXingYiClientEntity.class, XingYiGenerated.class),
                 List.of("}")
         ), "\n");
-        return new FileDefn(viewDom.viewNames.clientEntity, result);
+        return Result.succeed(new FileDefn(viewDom.viewNames.clientEntity, result));
     }
 }
