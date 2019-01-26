@@ -36,14 +36,19 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 fn, EndpointResult.<Boolean>create(200, r -> r.toString()));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
-            EndpointContext<J> context, String templatedPath, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier) {
-        return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", templatedPath),
-                s -> idAndValueSupplier.get(), EndpointResult.<J, Entity>createForIdAndvalue(context, 200));
+            EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier) {
+        return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", path),
+                s -> idAndValueSupplier.get(), EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("put", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<J, Entity>create(context, 201));
+    }
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> postEntity(
+            EndpointContext<J> context, String templatedPath, List<String> states, Function<String, CompletableFuture<Entity>> fn) {
+        return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
+                fn, EndpointResult.<J, Entity>create(context, 200));
     }
 
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {

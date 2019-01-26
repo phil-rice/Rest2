@@ -19,7 +19,7 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
                 Optionals.toList(actionsDom.deleteDom, dom -> "CompletableFuture<Boolean> delete(String id);"),
                 Optionals.toList(actionsDom.createWithoutIdDom, dom -> "CompletableFuture<" + result + "> create(String id);"),
                 Optionals.toList(actionsDom.createDom, dom -> "CompletableFuture<IdAndValue<" + result + ">> create();"),
-                Lists.map(actionsDom.postDoms, pd -> "CompletableFuture<" + result + "> " + pd.action + "(); //" + pd.path + "    " +pd.states)
+                Lists.map(actionsDom.postDoms, pd -> "CompletableFuture<" + result + "> " + pd.action + "(String id); //" + pd.path + "    " +pd.states)
         );
 
         //    CompletableFuture<TrafficLights> put(String id, TrafficLights ColourView);

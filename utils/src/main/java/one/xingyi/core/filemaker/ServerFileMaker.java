@@ -78,6 +78,12 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark) + ", " + function + ");",
                 "}"));
     }
+    List<String> createPostEndpoint(String methodName, List<String> states, String bookmark, String function) {
+        return Lists.append(List.of(
+                "public EndPoint " + methodName + "() {",
+                Formating.indent + "return EndPoint.postEntity(context, " + Strings.quote(bookmark) + ", " + "List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + ");",
+                "}"));
+    }
     List<String> createEndpoints(ServerDom serverDom) {
         return Lists.flatMap(serverDom.codeDom.entityDoms, ed -> {
             String className = ed.entityNames.serverEntity.className;
@@ -86,8 +92,9 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                     List.of("//EntityDom: " + ed.bookmark),
                     Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::create")),
                     Optionals.flatMap(ed.actionsDom.getDom, dom -> createEndpoint("get" + className, "getEntity", b.urlPattern, controllerName + "::get")),
-                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
-                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("post" + className, "createEntity", b.urlPattern, controllerName + "::create"))));
+                    Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
+                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpoint("create" + className, "createEntity", dom.path, controllerName + "::create")),
+                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern, controllerName + "::" + dom.action))));
         });
 
 
