@@ -9,7 +9,7 @@ public class JavascriptDetails {
     final String name;
     final String digest;
     final String javascriptFragment;
-//    public static JavascriptDetails create(String name, String javascript) {
+//    public static JavascriptDetails apply(String name, String javascript) {
 //        return new JavascriptDetails(name, javascript.hashCode() + "", javascript);
 //    }
 }

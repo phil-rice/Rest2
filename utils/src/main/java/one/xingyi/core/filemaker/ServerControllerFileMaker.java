@@ -26,7 +26,7 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
         //    CompletableFuture<TrafficLights> get(String id);
         //    CompletableFuture<Boolean> delete(String id);
         //    CompletableFuture<TrafficLights> createWithid(String id, TrafficLights ColourView);
-        //    CompletableFuture<IdAndValue<TrafficLights>> create(TrafficLights trafficLights);
+        //    CompletableFuture<IdAndValue<TrafficLights>> apply(TrafficLights trafficLights);
         //    CompletableFuture<TrafficLights> changeOrange(String id);
         //    CompletableFuture<TrafficLights> changeGreen(String id);
         //    CompletableFuture<TrafficLights> changeRed(String id);

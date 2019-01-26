@@ -10,15 +10,41 @@ import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.JsonWriter;
+import one.xingyi.core.sdk.IXingYiEntity;
+import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Optionals;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Supplier;
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> {
-
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
+            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn) {
+        return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
+                fn, EndpointResult.<J, Entity>createForOptional(context, 200));
+    }
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> getEntity(
+            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn) {
+        return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
+                fn, EndpointResult.<J, Entity>create(context, 200));
+    }
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Boolean> deleteEntity(
+            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Boolean>> fn) {
+        return new ResourceEndPoint<J, Entity, String, Boolean>(IResourceEndpointAcceptor.<String>apply("delete", templatedPath, (sr, s) -> s),
+                fn, EndpointResult.<Boolean>create(200, r -> r.toString()));
+    }
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
+            EndpointContext<J> context, String templatedPath, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier) {
+        return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", templatedPath),
+                s -> idAndValueSupplier.get(), EndpointResult.<J, Entity>createForIdAndvalue(context, 200));
+    }
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
+            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn) {
+        return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("put", templatedPath, (sr, s) -> s),
+                fn, EndpointResult.<J, Entity>create(context, 201));
+    }
 
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
         if (original == null) throw new NullPointerException();
@@ -182,3 +208,5 @@ class OptionalJavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>
 
     }
 }
+
+

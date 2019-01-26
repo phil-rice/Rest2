@@ -25,7 +25,7 @@ public class AppSimple {
         final val make = new EndPointDefnFactory<String, String, TrafficLights>("{host}/light", extractId(), id -> CompletableFuture.completedFuture(new TrafficLights(id, store.lights.get(id))));
 
         val get = make.get("_self", "/{id}");
-        val create = make.post("create new, when know new id", "/{id}", id -> store.lights.put(id, "red"));
+        val create = make.post("apply new, when know new id", "/{id}", id -> store.lights.put(id, "red"));
         val delete = make.delete("delete", "/{id}", List.of(), id -> {store.lights.remove(id); return true;});
         val changeRed = make.postState("change to be red", "/{id}/red", List.of("flashing"), id -> store.lights.put(id, "red"));
         val changeOng = make.postState("change to be red", "/{id}/orange", List.of("red"), id -> store.lights.put(id, "orange"));

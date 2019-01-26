@@ -54,7 +54,7 @@ class BookmarkedEndpoint<From, To extends HasJson<ContextForJson>> implements En
 
     @Override public <J> EndPoint create(EndpointContext<J> context) {
         return EndPoint.<J, From, To>javascriptAndJson(
-                context.jsonTC,
+                context.jsonWriter,
                 200,
                 context.protocol,
                 EndpointAcceptor1.bookmarkAcceptor("get", pattern, reqFn),
@@ -70,7 +70,7 @@ class OptionalBookmarkedEndpoint<From, To extends HasJson<ContextForJson>> imple
 
     @Override public <J> EndPoint create(EndpointContext<J> context) {
         return EndPoint.<J, From, To>optionalJavascriptAndJson(
-                context.jsonTC,
+                context.jsonWriter,
                 200,
                 context.protocol,
                 EndpointAcceptor1.bookmarkAcceptor("get", pattern, reqFn),

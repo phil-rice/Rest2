@@ -29,14 +29,14 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
 
 //    List<String> createEndPoints(ServerDom serverDom) {
 //        return Lists.append(
-//                List.of("public static <J> EndPoint entityEndpoints(EndpointConfig<J> config) { return EndPointFactorys.create(config, List.of(",
+//                List.of("public static <J> EndPoint entityEndpoints(EndpointConfig<J> config) { return EndPointFactorys.apply(config, List.of(",
 //                        Lists.join(Formating.indent(Lists.map(serverDom.defnNames,
 //                                n -> "new GetEntityEndpointDetails<>(" + n.entityNames.serverCompanion.asString() + ".companion, new " + n.getName + "())")),
 //                                ",\n" + Formating.indent) + "),"),
 //                List.of("List.of(",
 //                        Lists.join(Formating.indent(Lists.map(serverDom.codeDom.entityDoms, ed -> ed.entityNames.serverCompanion.asString() + ".companion")), ",\n" + Formating.indent),
 //                        "));}"));
-//        //    static EndPoint entityEndpoints = EndPointFactorys.create(config,
+//        //    static EndPoint entityEndpoints = EndPointFactorys.apply(config,
 //        //            List.of(
 //        //                    new GetEntityEndpointDetails<>(PersonCompanion.companion, new PersonGet()),
 //        //                    new GetEntityEndpointDetails<>(AddressCompanion.companion, new AddressGet())),
@@ -73,24 +73,21 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     }
 
     List<String> createEndpoint(String methodName, String method, String bookmark, String function) {
-        return Lists.append(List.of("public EndPoint " + methodName + "() {"),
-                Formating.indent(List.of(
-                        "return EndPoint.javascriptAndJson(context.jsonTC, 200, context.protocol,",
-                        "EndpointAcceptor1.<String>bookmarkAcceptor(" + Strings.quote(method) + ", " + Strings.quote(bookmark) + ", (sr, s) -> s),",
-                        function + ", context.javascriptStore);")),
-                List.of("}"));
+        return Lists.append(List.of(
+                "public EndPoint " + methodName + "() {",
+                Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark) + ", " + function + ");",
+                "}"));
     }
     List<String> createEndpoints(ServerDom serverDom) {
         return Lists.flatMap(serverDom.codeDom.entityDoms, ed -> {
-            String className = ed.entityNames.serverController.className;
+            String className = ed.entityNames.serverEntity.className;
+            String controllerName = ed.entityNames.serverController.className;
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
-                    Optionals.flatMap(ed.actionsDom.getDom, dom -> createEndpoint("get" + className, "get", b.urlPattern, className + "::get")),
-//                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createEndpoint("put" + className, "put", b.urlPattern, className + "::put")),
-//                    Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "delete", b.urlPattern, className + "::delete")),
-                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("create" + className, "create", b.urlPattern, className + "::create")
-//                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> "//for createWithoutIdDom " + dom),
-                    )));
+                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::create")),
+                    Optionals.flatMap(ed.actionsDom.getDom, dom -> createEndpoint("get" + className, "getEntity", b.urlPattern, controllerName + "::get")),
+                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
+                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("post" + className, "createEntity", b.urlPattern, controllerName + "::create"))));
         });
 
 

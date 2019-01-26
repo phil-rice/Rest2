@@ -6,7 +6,7 @@ import one.xingyi.trafficlights.server.domain.TrafficLights;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-//We have to create this manually because this IS the API
+//We have to apply this manually because this IS the API
 //All the wiring is done. The links are created for us, and the visitors are available in the generated interfaces so the client has access to us
 //All the state methods can only be accessed after a get, because only then do we know what state we are in
 //Which means we should ship the state with the data

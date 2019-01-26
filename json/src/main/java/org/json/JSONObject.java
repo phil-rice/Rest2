@@ -846,7 +846,7 @@ public class JSONObject {
 
     /**
      * Increment a property of a JSONObject. If there is no such property,
-     * create one with a value of 1. If there is such a property, and if it is
+     * apply one with a value of 1. If there is such a property, and if it is
      * an Integer, Long, Double, or Float, then add one to it.
      *
      * @param key
@@ -1855,7 +1855,7 @@ public class JSONObject {
      * Then this method will return the String "c".
      * A JSONPointerException may be thrown from code called by this method.
      *
-     * @param jsonPointer string that can be used to create a JSONPointer
+     * @param jsonPointer string that can be used to apply a JSONPointer
      * @return the item matched by the JSONPointer, otherwise null
      */
     public Object query(String jsonPointer) {
@@ -1877,7 +1877,7 @@ public class JSONObject {
      * Then this method will return the String "c".
      * A JSONPointerException may be thrown from code called by this method.
      *
-     * @param jsonPointer string that can be used to create a JSONPointer
+     * @param jsonPointer string that can be used to apply a JSONPointer
      * @return the item matched by the JSONPointer, otherwise null
      */
     public Object query(JSONPointer jsonPointer) {

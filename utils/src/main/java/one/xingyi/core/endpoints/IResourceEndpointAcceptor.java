@@ -1,0 +1,68 @@
+package one.xingyi.core.endpoints;
+
+import one.xingyi.core.http.ServiceRequest;
+import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.Strings;
+
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest, Optional<From>> {
+    static <From> IResourceEndpointAcceptor<From> apply(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
+        Function<String, Optional<String>> ripper = Strings.ripIdFromPath(templatedPath);
+        return new ResourceWithFromEndpointAcceptor<>(method, templatedPath, fromFn);
+    }
+
+    static IResourceEndpointAcceptor<SuccessfulMatch> apply(String method, String templatedPath) {
+        return new ResourceEndpointNoFromAcceptor(method, templatedPath);
+    }
+
+    String method();
+    String templatedPath();
+
+    default <T> Function<ServiceRequest, CompletableFuture<Optional<T>>> andIfMatches(Function<From, CompletableFuture<T>> fn) {
+        return sr -> Optionals.fold(apply(sr), () -> CompletableFuture.completedFuture(Optional.empty()), from -> fn.apply(from).thenApply(t -> Optional.of(t)));
+    }
+}
+
+class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAcceptor<From> {
+
+    final String method;
+    final String templatedPath;
+    final Function<String, Optional<String>> ripper;
+    final BiFunction<ServiceRequest, String, From> fromFn;
+
+    public ResourceWithFromEndpointAcceptor(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
+        this.method = method;
+        this.templatedPath = templatedPath;
+        this.ripper = Strings.ripIdFromPath(templatedPath);
+        this.fromFn = fromFn;
+    }
+    @Override public String method() { return method; }
+    @Override public String templatedPath() { return templatedPath; }
+    @Override public Optional<From> apply(ServiceRequest serviceRequest) {
+        if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
+        return ripper.apply(serviceRequest.url.getPath()).map(id -> fromFn.apply(serviceRequest, id));
+    }
+}
+
+class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<SuccessfulMatch> {
+
+    final String method;
+    final String templatedPath;
+
+    public ResourceEndpointNoFromAcceptor(String method, String templatedPath) {
+        this.method = method;
+        this.templatedPath = templatedPath;
+    }
+    @Override public String method() { return method; }
+    @Override public String templatedPath() { return templatedPath; }
+    @Override public Optional<SuccessfulMatch> apply(ServiceRequest serviceRequest) {
+        if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
+        if (!serviceRequest.url.getPath().equalsIgnoreCase(templatedPath)) return Optional.empty();
+        return SuccessfulMatch.match;
+    }
+}
+
