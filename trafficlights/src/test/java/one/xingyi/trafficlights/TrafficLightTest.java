@@ -1,8 +1,12 @@
 package one.xingyi.trafficlights;
+import lombok.val;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
+import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
+import one.xingyi.core.marshelling.DataAndJavaScript;
+import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.JsonObject;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.BiConsumerWithException;
@@ -15,6 +19,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 public class TrafficLightTest {
 
     EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple);
@@ -30,11 +35,24 @@ public class TrafficLightTest {
 
     }
 
+    void checkSr(int statusCode, String json, ServiceResponse serviceResponse) {
+        assertEquals(statusCode, serviceResponse.statusCode);
+        String body = serviceResponse.body;
+        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
+        assertTrue(body, body.startsWith(config.rootJavascript));
+        assertEquals(json, dataAndJavaScript.data);
+    }
+
+    void checkSrNotFound(ServiceResponse serviceResponse) {
+        assertEquals(404, serviceResponse.statusCode);
+    }
+
     @Test
-    public void testGet() throws Exception {
+    public void testGetOptional() throws Exception {
         setup((controller, server) -> {
             populate(controller, "someId", "red");
-            assertEquals("", server.getTrafficLights().apply(sr("get", "/lights/someId")).get());
+            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\"}", server.getOptionalTrafficLights().apply(sr("get", "/lights/someId")).get().get());
+            checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }
 }

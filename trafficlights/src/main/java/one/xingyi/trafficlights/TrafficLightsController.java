@@ -4,10 +4,7 @@ import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.trafficlights.server.controller.ITrafficLightsController;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class TrafficLightsController implements ITrafficLightsController {
@@ -26,13 +23,8 @@ public class TrafficLightsController implements ITrafficLightsController {
     @Override public CompletableFuture<TrafficLights> put(IdAndValue<String> idAndTrafficLights) {
         return wrap(idAndTrafficLights.id, () -> lights.put(idAndTrafficLights.id, new TrafficLights(idAndTrafficLights.id, idAndTrafficLights.t)));
     }
-    @Override public CompletableFuture<TrafficLights> get(String id) {
-        return wrap(id, () -> {});
-    }
-    @Override public CompletableFuture<Boolean> delete(String id) {
-        lights.remove(id);
-        return CompletableFuture.completedFuture(true);
-    }
+    @Override public CompletableFuture<Optional<TrafficLights>> getOptional(String id) { return CompletableFuture.completedFuture(Optional.ofNullable(lights.get(id))); }
+    @Override public CompletableFuture<Boolean> delete(String id) { lights.remove(id); return CompletableFuture.completedFuture(true); }
     @Override public CompletableFuture<TrafficLights> create(String id) {
         return wrap(id, () -> lights.put(id, new TrafficLights(id, "red")));
     }
@@ -42,9 +34,7 @@ public class TrafficLightsController implements ITrafficLightsController {
         lights.put(id, light);
         return CompletableFuture.completedFuture(new IdAndValue<>(id, light));
     }
-    @Override public CompletableFuture<TrafficLights> orange(String id) {
-        return map(id, l -> l.withcolor("orange"));
-    }
+    @Override public CompletableFuture<TrafficLights> orange(String id) { return map(id, l -> l.withcolor("orange")); }
     @Override public CompletableFuture<TrafficLights> red(String id) {
         return map(id, l -> l.withcolor("red"));
     }

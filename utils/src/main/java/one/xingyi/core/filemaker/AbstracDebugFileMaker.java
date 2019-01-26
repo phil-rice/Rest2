@@ -48,14 +48,14 @@ public class AbstracDebugFileMaker {
                 Formating.indent(Lists.<FieldDom, String>flatMap(entityDom.fields.allFields, this::fieldDebugInfo))
         );
     }
-    List<String> actionsDomInfo(ActionsDom actionsDom){
+    List<String> actionsDomInfo(ActionsDom actionsDom) {
         return List.of(
-                "Get        " + actionsDom.getDom,
-                "Put        " + actionsDom.putDom,
-                "Create     " + actionsDom.createDom,
-                "CreateNoId " + actionsDom.createWithoutIdDom,
-                "De;ete     " + actionsDom.deleteDom,
-                "Posts:     "+actionsDom.postDoms
+                "Get         " + actionsDom.getDom,
+                "Put         " + actionsDom.putDom,
+                "Create      " + actionsDom.createDom,
+                "CreateNoId  " + actionsDom.createWithoutIdDom,
+                "Delete      " + actionsDom.deleteDom,
+                "Posts:      " + actionsDom.postDoms
         );
     }
 }

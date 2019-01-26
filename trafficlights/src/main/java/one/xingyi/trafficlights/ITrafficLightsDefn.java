@@ -4,8 +4,8 @@ import one.xingyi.core.sdk.IXingYiEntityDefn;
 
 
 @Entity(bookmark = "/lights", rootUrl = "{host}/lights/{id}")
-@Get
 @Delete
+@Get(mustExist = false)
 @Put
 @CreateWithoutId(url = "{host}/lights")
 @Create

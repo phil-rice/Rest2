@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
-@Get
 public class TrafficLightStore implements IXingYiGet<String, ITrafficLightsDefn, TrafficLights> {
 
     public final Map<String, String> lights = Collections.synchronizedMap(new HashMap<>());

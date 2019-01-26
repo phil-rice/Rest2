@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest, Optional<From>> {
     static <From> IResourceEndpointAcceptor<From> apply(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
-        Function<String, Optional<String>> ripper = Strings.ripIdFromPath(templatedPath);
+//        Function<String, Optional<String>> ripper = Strings.ripIdFromPath(templatedPath.replace("{host}", ""));
         return new ResourceWithFromEndpointAcceptor<>(method, templatedPath, fromFn);
     }
 
@@ -37,7 +37,7 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
     public ResourceWithFromEndpointAcceptor(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
         this.method = method;
         this.templatedPath = templatedPath;
-        this.ripper = Strings.ripIdFromPath(templatedPath);
+        this.ripper = Strings.ripIdFromPath(templatedPath.replace("{host}",""));
         this.fromFn = fromFn;
     }
     @Override public String method() { return method; }

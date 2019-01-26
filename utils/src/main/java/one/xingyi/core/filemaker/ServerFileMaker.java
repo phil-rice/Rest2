@@ -91,7 +91,9 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
                     Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::create")),
-                    Optionals.flatMap(ed.actionsDom.getDom, dom -> createEndpoint("get" + className, "getEntity", b.urlPattern, controllerName + "::get")),
+                    Optionals.flatMap(ed.actionsDom.getDom, dom -> dom.mustExist ?
+                            createEndpoint("get" + className, "getEntity", b.urlPattern, controllerName + "::get") :
+                            createEndpoint("getOptional" + className, "getOptionalEntity", b.urlPattern, controllerName + "::getOptional")),
                     Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
                     Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpoint("create" + className, "createEntity", dom.path, controllerName + "::create")),
                     Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern, controllerName + "::" + dom.action))));

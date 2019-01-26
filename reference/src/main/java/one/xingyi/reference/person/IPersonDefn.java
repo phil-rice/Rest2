@@ -6,7 +6,7 @@ import one.xingyi.reference.address.IAddressDefn;
 import one.xingyi.reference.telephone.ITelephoneNumberDefn;
 
 @Entity(bookmark = "/person", rootUrl = "{host}/person/{id}")
-@Get
+@Get(mustExist = false)
 @Delete
 @Put
 @CreateWithoutId(url = "{host}/person")

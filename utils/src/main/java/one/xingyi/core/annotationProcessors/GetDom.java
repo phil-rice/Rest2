@@ -6,4 +6,5 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class GetDom {
+    public final boolean mustExist;
 }
