@@ -22,9 +22,14 @@ public interface EndPointFactorys {
         EndPointFactory entityFactory = EndPointFactorys.optionalBookmarked("/{id}", EntityDetailsRequest::create, entityRegister);
         return entityFactory.create(config.from(List.of(EntityDetailsCompanion.companion)));
     }
+    static <J> EndPoint entityEndpointFromContext(EndpointContext<J> context, List<HasBookmarkAndUrl> companions) {
+        EntityRegister entityRegister = EntityRegister.apply(companions);
+        EndPointFactory entityFactory = EndPointFactorys.optionalBookmarked("/{id}", EntityDetailsRequest::create, entityRegister);
+        return entityFactory.create(context);
+    }
 
     static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
-        EndpointContext<J> context = config.from( Lists.append(Lists.map(details, d->d.companion),allCompanions));
+        EndpointContext<J> context = config.from(Lists.append(Lists.map(details, d -> d.companion), allCompanions));
         List<EndPointFactory> factories = Lists.map(details, GetEntityEndpointDetails::make);
         return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
 

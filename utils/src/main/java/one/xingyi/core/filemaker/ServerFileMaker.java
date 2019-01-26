@@ -1,12 +1,10 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.ServerDom;
-import one.xingyi.core.endpoints.EndPoint;
-import one.xingyi.core.endpoints.EndpointAcceptor1;
-import one.xingyi.core.endpoints.EndpointConfig;
-import one.xingyi.core.endpoints.EndpointContext;
+import one.xingyi.core.endpoints.*;
 import one.xingyi.core.marshelling.JsonObject;
 import one.xingyi.core.marshelling.JsonWriter;
+import one.xingyi.core.sdk.IXingYiServer;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.server.EndpointHandler;
 import one.xingyi.core.server.SimpleServer;
@@ -71,6 +69,12 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent + Lists.mapJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
                 ");}");
     }
+    List<String> createEntityCompanions(ServerDom serverDom) {
+        return List.of(
+                "public List<HasBookmarkAndUrl> entityCompanions(){return List.of(",
+                Formating.indent + Lists.mapJoin(Lists.filter(serverDom.codeDom.entityDoms, e->e.bookmark.isPresent()),",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
+                ");}");
+    }
 
     List<String> createEndpoint(String methodName, String method, String bookmark, String function) {
         return Lists.append(List.of(
@@ -84,6 +88,10 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent + "return EndPoint.postEntity(context, " + Strings.quote(bookmark) + ", " + "List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + ");",
                 "}"));
     }
+    List<String> createEntityEndpoint(ServerDom serverDom) {
+        return List.of("public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}");
+    }
+
     List<String> createEndpoints(ServerDom serverDom) {
         return Lists.flatMap(serverDom.codeDom.entityDoms, ed -> {
             String className = ed.entityNames.serverEntity.className;
@@ -98,20 +106,20 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                     Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpoint("create" + className, "createEntity", dom.path, controllerName + "::create")),
                     Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern, controllerName + "::" + dom.action))));
         });
-
-
     }
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), serverDom.originalDefn, "class", serverDom.serverName, "<J>",
+                Formating.javaFile(getClass(), serverDom.originalDefn, "class", serverDom.serverName, "<J> implements IXingYiServer",
                         List.of("one.xingyi.server.EndPointFactorys", "one.xingyi.server.GetEntityEndpointDetails"),
-                        XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class,
+                        XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class, IXingYiServer.class,
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class, IXingYiServerCompanion.class,
-                        JsonObject.class, JsonWriter.class, Files.class, EndpointAcceptor1.class),
+                        JsonObject.class, JsonWriter.class, Files.class, EndpointAcceptor1.class, HasBookmarkAndUrl.class),
 //                Formating.indent(generateRegister(serverDom)),
                 Formating.indent(createFields(serverDom)),
                 Formating.indent(createConstructor(serverDom)),
+                Formating.indent(createEntityCompanions(serverDom)),
                 Formating.indent(createCompanions(serverDom)),
+                Formating.indent(createEntityEndpoint(serverDom)),
                 Formating.indent(createEndpoints(serverDom)),
 //                Formating.indent(makeSimpleServer(serverDom)),
                 List.of("/*" + serverDom),

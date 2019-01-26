@@ -37,19 +37,6 @@ abstract class AbstractEntityDetailsClientTest {
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
 
-//    TelephoneNumber number = new TelephoneNumber("someNumber");
-//    Address address = new Address("someLine1", "someLine2", "postcode");
-//    Person person = new Person("serverName", 23, address, number);
-//    IEntityStore<Person> personStore = IEntityStore.map(Map.of("id1", person));
-//    IEntityStore<Address> addressStore = IEntityStore.map(Map.of("add1", address));
-
-//    EndPointDefnFactory<String, String, Person> make = new EndPointDefnFactory<String, String, Person>(
-//            "/person",
-//            ServiceRequest.ripId("", sr -> new RuntimeException("")),
-//            id -> personStore.read(id).thenApply(p -> p.orElseThrow(() -> new RuntimeException("Cannot find id " + id))));
-
-//    EndPointDefnData<String, String, Person> getPerson = make.get("_self", "/{id}");
-
     static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple);
 
     static EndPoint entityEndpoints = EndPointFactorys.<JsonObject>create(config,
