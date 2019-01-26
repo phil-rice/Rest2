@@ -25,7 +25,10 @@ public class ServiceResponse {
         return new ServiceResponse(status, json, Arrays.asList(new Header("Content-type", "application/json")));
     }
     public static <J> ServiceResponse javascriptAndJson(JsonWriter<J> jsonTc, ContextForJson context, int status, HasJson<ContextForJson> entity, String javascript) {
-        return new ServiceResponse(status, javascript + IXingYiResponseSplitter.marker + jsonTc.toJson(entity, context), Arrays.asList(new Header("Content-type", "application/json")));
+        return javascriptAndJson(status, javascript,  jsonTc.toJson(entity, context));
+    }
+    public static <J> ServiceResponse javascriptAndJson( int status,  String javascript, String json) {
+        return new ServiceResponse(status, javascript + IXingYiResponseSplitter.marker + json, Arrays.asList(new Header("Content-type", "application/json")));
     }
 
     public static ServiceResponse html(int status, String body) {

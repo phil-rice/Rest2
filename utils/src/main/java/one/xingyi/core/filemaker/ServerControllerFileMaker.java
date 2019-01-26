@@ -9,17 +9,16 @@ import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
 
     List<String> addFromActionsDom(String result, ActionsDom actionsDom) {
         return Lists.append(
-                Optionals.flatMapToList(actionsDom.putDom, dom -> "CompletableFuture<" + result + "> put(String id, " + result + " entity);"),
-                Optionals.flatMapToList(actionsDom.getDom, dom -> "CompletableFuture<" + result + "> get(String id);"),
-                Optionals.flatMapToList(actionsDom.deleteDom, dom -> "CompletableFuture<Boolean> delete(String id);"),
-                Optionals.flatMapToList(actionsDom.createWithoutIdDom, dom -> "CompletableFuture<" + result + "> create(String id);"),
-                Optionals.flatMapToList(actionsDom.createDom, dom -> "CompletableFuture<IdAndValue<" + result + ">> create();"),
+                Optionals.toList(actionsDom.putDom, dom -> "CompletableFuture<" + result + "> put(IdAndValue<String> idAnd" + result + ");"),
+                Optionals.toList(actionsDom.getDom, dom -> "CompletableFuture<" + result + "> get(String id);"),
+                Optionals.toList(actionsDom.deleteDom, dom -> "CompletableFuture<Boolean> delete(String id);"),
+                Optionals.toList(actionsDom.createWithoutIdDom, dom -> "CompletableFuture<" + result + "> create(String id);"),
+                Optionals.toList(actionsDom.createDom, dom -> "CompletableFuture<IdAndValue<" + result + ">> create();"),
                 Lists.map(actionsDom.postDoms, pd -> "CompletableFuture<" + result + "> " + pd.action + "(); //" + pd.path + "    " +pd.states)
         );
 

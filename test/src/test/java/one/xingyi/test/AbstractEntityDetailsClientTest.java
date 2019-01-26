@@ -8,6 +8,7 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
+import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.JsonObject;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.marshelling.UnexpectedResponse;
@@ -49,7 +50,7 @@ abstract class AbstractEntityDetailsClientTest {
 
 //    EndPointDefnData<String, String, Person> getPerson = make.get("_self", "/{id}");
 
-    static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://");
+    static EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple);
 
     static EndPoint entityEndpoints = EndPointFactorys.<JsonObject>create(config,
             List.of(

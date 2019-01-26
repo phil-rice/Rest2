@@ -35,6 +35,10 @@ public class PackageAndClassName {
     public String asString() {
         return packageName + "." + className;
     }
+    public String asVariableDeclaration(){
+        return asString() + " " + className;
+    }
+
     public PackageAndClassName withName(String name) {
         return new PackageAndClassName(packageName, name);
     }

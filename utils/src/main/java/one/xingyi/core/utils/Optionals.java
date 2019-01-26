@@ -13,9 +13,17 @@ public class Optionals {
     public static <T, T1, T2> Optional<T2> chainOpt(T nullable, Function<T, T1> fn1, Function<T1, Optional<T2>> fn2) { return Optional.ofNullable(nullable).map(fn1).flatMap(fn2); }
     public static <T, T1, T2> T2 chain(T nullable, Function<T, T1> fn1, T1 defaultValue, Function<T1, T2> fn2) { return fn2.apply(Optional.ofNullable(nullable).map(fn1).orElse(defaultValue)); }
 
-    public static <T, T1> List<T1> flatMapToList(Optional<T> optT, Function<T, T1> fn) {
+    public static <T, T1> List<T1> toList(Optional<T> optT, Function<T, T1> fn) {
         List<T1> result = new ArrayList<>();
         optT.ifPresent(t -> result.add(fn.apply(t)));
+        return result;
+    }
+    public static <T, T1> List<T1> flatMap(Optional<T> optT, Function<T, List<T1>> fn) {
+        List<T1> result = new ArrayList<>();
+        optT.ifPresent(t -> {
+            for (T1 t1 : fn.apply(t))
+                result.add(t1);
+        });
         return result;
     }
 

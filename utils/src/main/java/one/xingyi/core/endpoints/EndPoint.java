@@ -19,9 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> {
 
-    //    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> wrapWithFakeHostHeader(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
-//
-//    }
+
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
         if (original == null) throw new NullPointerException();
         return sr -> {
@@ -53,15 +51,12 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 
 
     static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints);}
-    static <J> EndPoint create(EndpointContext<J> context, EndPoint... endPoints) {return new ComposeEndPoints(Arrays.asList(endPoints));}
 
 
     static EndPoint staticEndpoint(EndpointAcceptor0 acceptor, ServiceResponse serviceResponse) {
         return sr -> CompletableFuture.completedFuture(Optionals.from(acceptor.apply(sr), () -> serviceResponse));
     }
-    static EndPoint function(EndpointAcceptor0 acceptor, Function<ServiceRequest, ServiceResponse> fn) {
-        return sr -> CompletableFuture.completedFuture(Optionals.from(acceptor.apply(sr), () -> fn.apply(sr)));
-    }
+
     static EndPoint printlnLog(EndPoint endPoint) {
         return sr -> endPoint.apply(sr).thenApply(res -> {
             System.out.println(sr);

@@ -6,6 +6,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.EntityDetailsRequest;
 import one.xingyi.core.httpClient.server.domain.EntityDetails;
+import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
@@ -26,7 +27,7 @@ public class EndPointFactoryTest {
             req -> CompletableFuture.completedFuture(new EntityDetails("faked" + req.entityName)));
     EndPointFactory optionalFactory = EndPointFactorys.<EntityDetailsRequest, EntityDetails>optionalBookmarked("/{id}", EntityDetailsRequest::create,
             req -> CompletableFuture.completedFuture(Optional.of(new EntityDetails("faked" + req.entityName))));
-    EndpointContext<JsonObject> context = new EndpointContext<>(JavascriptStore.constant("someJavascript"), JsonWriter.cheapJson, "http://");
+    EndpointContext<JsonObject> context = new EndpointContext<JsonObject>(JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, JsonWriter.cheapJson, "http://");
 
     @Test
     public void testBookmarked() throws ExecutionException, InterruptedException {

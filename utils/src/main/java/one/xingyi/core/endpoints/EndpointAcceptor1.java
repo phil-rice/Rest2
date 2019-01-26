@@ -6,6 +6,7 @@ import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Optional<From>> {
@@ -47,7 +48,7 @@ class BookmarkAcceptor<From> implements EndpointAcceptor1<From> {
 
     public BookmarkAcceptor(String method, String rawBookmark, BiFunction<ServiceRequest, String, From> fn) {
         this.method = method;
-        this.ripper = Strings.ripIdFromPath(rawBookmark.replace("{host}",""));
+        this.ripper = Strings.ripIdFromPath(rawBookmark.replace("{host}", ""));
         this.fn = fn;
     }
 
