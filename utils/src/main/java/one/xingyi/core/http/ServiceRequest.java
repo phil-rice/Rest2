@@ -20,6 +20,7 @@ public class ServiceRequest {
         Function<String, Optional<String>> ripper = Strings.ripIdFromPath(bookmark);
         return from -> ripper.apply(from.url.getPath()).orElseThrow(() -> ifNotPresent.apply(from));
     }
+    public static ServiceRequest sr(String method, String path ){return new ServiceRequest(method, path, List.of(), "");}
     final public String method;
     final public URI url;
     final public List<Header> headers;

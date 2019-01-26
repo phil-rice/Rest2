@@ -917,7 +917,7 @@ public class JSONObject {
 
     /**
      * Get a set of entries of the JSONObject. These are raw values and may not
-     * match what is returned by the JSONObject get* and opt* functions. Modifying
+     * optMatch what is returned by the JSONObject get* and opt* functions. Modifying
      * the returned EntrySet or the Entry objects contained therein will modify the
      * backing JSONObject. This does not return a clone or a read-only view.
      *
@@ -1841,7 +1841,7 @@ public class JSONObject {
 
     /**
      * Creates a JSONPointer using an initialization string and tries to
-     * match it to an item within this JSONObject. For example, given a
+     * optMatch it to an item within this JSONObject. For example, given a
      * JSONObject initialized with this document:
      * <pre>
      * {
@@ -1863,7 +1863,7 @@ public class JSONObject {
     }
     /**
      * Uses a user initialized JSONPointer  and tries to
-     * match it to an item within this JSONObject. For example, given a
+     * optMatch it to an item within this JSONObject. For example, given a
      * JSONObject initialized with this document:
      * <pre>
      * {
@@ -2397,7 +2397,7 @@ public class JSONObject {
             }
             writer.write(o != null ? o.toString() : quote(value.toString()));
         } else if (value instanceof Number) {
-            // not all Numbers may match actual JSON Numbers. i.e. fractions or Imaginary
+            // not all Numbers may optMatch actual JSON Numbers. i.e. fractions or Imaginary
             final String numberAsString = numberToString((Number) value);
             if(NUMBER_PATTERN.matcher(numberAsString).matches()) {
                 writer.write(numberAsString);

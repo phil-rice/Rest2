@@ -51,18 +51,18 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
 class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<SuccessfulMatch> {
 
     final String method;
-    final String templatedPath;
+    final String path;
 
-    public ResourceEndpointNoFromAcceptor(String method, String templatedPath) {
+    public ResourceEndpointNoFromAcceptor(String method, String path) {
         this.method = method;
-        this.templatedPath = templatedPath;
+        this.path = path;
     }
     @Override public String method() { return method; }
-    @Override public String templatedPath() { return templatedPath; }
+    @Override public String templatedPath() { return path; }
     @Override public Optional<SuccessfulMatch> apply(ServiceRequest serviceRequest) {
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
-        if (!serviceRequest.url.getPath().equalsIgnoreCase(templatedPath)) return Optional.empty();
-        return SuccessfulMatch.match;
+        if (!serviceRequest.url.getPath().equalsIgnoreCase(path)) return Optional.empty();
+        return SuccessfulMatch.optMatch;
     }
 }
 
