@@ -9,6 +9,7 @@ import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Optionals;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -27,4 +28,5 @@ class JsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return Optionals.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> ServiceResponse.json(jsonTc, ContextForJson.forServiceRequest(protocol, serviceRequest), status, to)));
     }
+    @Override public List<MethodAndPath> description() { return acceptor.description(); }
 }

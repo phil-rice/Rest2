@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.utils.Lists;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +22,8 @@ class ComposeEndPoints implements EndPoint {
         if (index >= endpoints.size())
             return CompletableFuture.completedFuture(Optional.empty());
         EndPoint endPoint = endpoints.get(index);
-//        System.out.println("Evaluating " + endPoint + "\nagainst " + serviceRequest.urlSegments());
         return endPoint.apply(serviceRequest).thenCompose(op -> {
-            if (op.isEmpty()) {
-//                System.out.println("  didn't optMatch");
-                return recurse(serviceRequest, index + 1);
-            } else {
-//                System.out.println("  matched: " + op);
-                return CompletableFuture.completedFuture(op);
-            }
+            if (op.isEmpty()) { return recurse(serviceRequest, index + 1); } else { return CompletableFuture.completedFuture(op); }
         });
 
     }
@@ -37,4 +31,5 @@ class ComposeEndPoints implements EndPoint {
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return recurse(serviceRequest, 0);
     }
+    @Override public List<MethodAndPath> description() { return Lists.flatMap(endpoints, EndPoint::description); }
 }

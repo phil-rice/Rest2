@@ -19,7 +19,7 @@ import java.util.function.Function;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-class JavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint {
+class JavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implements EndPoint , MethodAndPathDescription{
     static public String makeJavascript(JavascriptStore javascriptStore, JavascriptDetailsToString javascriptDetailsToString, AcceptHeaderParser parser, ServiceRequest serviceRequest) {
         List<String> lensNames = serviceRequest.header("accept").map(header -> parser.apply(header).lensNames).orElse(List.of());
         return javascriptDetailsToString.apply(javascriptStore.find(lensNames));
@@ -41,5 +41,8 @@ class JavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>> implem
         return Optionals.flip(acceptor.apply(serviceRequest).map(fn)).thenApply(x -> x.map(to -> {
             return ServiceResponse.javascriptAndJson(jsonTc, ContextForJson.forServiceRequest(protocol, serviceRequest), 200, to, javascript);
         }));
+    }
+    @Override public List<MethodAndPath> description() {
+        return List.of(new MethodAndPath("cant do", "this yet"));
     }
 }

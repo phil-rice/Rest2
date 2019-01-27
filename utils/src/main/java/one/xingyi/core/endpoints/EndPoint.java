@@ -20,7 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> {
+public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>>,MethodAndPathDescription{
+    List<MethodAndPath> description();
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn) {
         return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
@@ -86,16 +87,40 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 
 
     static EndPoint staticEndpoint(EndpointAcceptor0 acceptor, ServiceResponse serviceResponse) {
-        return sr -> CompletableFuture.completedFuture(Optionals.from(acceptor.apply(sr), () -> serviceResponse));
+        return new StaticEndpoint(acceptor, serviceResponse);
     }
 
     static EndPoint printlnLog(EndPoint endPoint) {
-        return sr -> endPoint.apply(sr).thenApply(res -> {
+        return new PrintlnEndpoint(endPoint);
+    }
+}
+
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@ToString
+class PrintlnEndpoint implements EndPoint {
+    final EndPoint endPoint;
+    @Override public List<MethodAndPath> description() {
+        return endPoint.description();
+    }
+    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest sr) {
+        return endPoint.apply(sr).thenApply(res -> {
             System.out.println(sr);
             System.out.println(res);
             System.out.println();
             return res;
         });
+    }
+}
 
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@ToString
+class StaticEndpoint implements EndPoint {
+    final EndpointAcceptor0 acceptor;
+    final ServiceResponse serviceResponse;
+    @Override public List<MethodAndPath> description() { return acceptor.description(); }
+    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
+        return CompletableFuture.completedFuture(Optionals.from(acceptor.apply(serviceRequest), () -> serviceResponse));
     }
 }

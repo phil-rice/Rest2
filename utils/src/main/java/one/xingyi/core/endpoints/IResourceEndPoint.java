@@ -4,6 +4,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.sdk.IXingYiEntity;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -22,4 +23,5 @@ class ResourceEndPoint<J, Entity extends IXingYiEntity, Request, Result> impleme
         return acceptor.andIfMatches(from -> fn.apply(from).thenApply(result -> endpointResult.apply(serviceRequest, result))).apply(serviceRequest);
     }
 
+    @Override public List<MethodAndPath> description() { return acceptor.description(); }
 }

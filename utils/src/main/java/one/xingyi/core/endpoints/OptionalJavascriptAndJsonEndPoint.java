@@ -11,6 +11,7 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.JsonWriter;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -37,6 +38,9 @@ class OptionalJavascriptAndJsonEndPoint<From, To extends HasJson<ContextForJson>
         return fn.apply(from).thenApply(x -> x.map(to -> ServiceResponse.javascriptAndJson(jsonTc, ContextForJson.forServiceRequest(protocol, serviceRequest), 200, to, javascript)));
 
 
+    }
+    @Override public List<MethodAndPath> description() {
+        return acceptor.description();
     }
 }
 

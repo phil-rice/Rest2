@@ -4,12 +4,13 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest, Optional<From>> {
+public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest, Optional<From>>, MethodAndPathDescription {
     static <From> IResourceEndpointAcceptor<From> apply(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
 //        Function<String, Optional<String>> ripper = Strings.ripIdFromPath(templatedPath.replace("{host}", ""));
         return new ResourceWithFromEndpointAcceptor<>(method, templatedPath, fromFn);
@@ -37,7 +38,7 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
     public ResourceWithFromEndpointAcceptor(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
         this.method = method;
         this.templatedPath = templatedPath;
-        this.ripper = Strings.ripIdFromPath(templatedPath.replace("{host}",""));
+        this.ripper = Strings.ripIdFromPath(templatedPath.replace("{host}", ""));
         this.fromFn = fromFn;
     }
     @Override public String method() { return method; }
@@ -46,6 +47,7 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
         return ripper.apply(serviceRequest.url.getPath()).map(id -> fromFn.apply(serviceRequest, id));
     }
+    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, templatedPath)); }
 }
 
 class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<SuccessfulMatch> {
@@ -64,5 +66,6 @@ class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<Succes
         if (!serviceRequest.url.getPath().equalsIgnoreCase(path)) return Optional.empty();
         return SuccessfulMatch.optMatch;
     }
+    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, path)); }
 }
 
