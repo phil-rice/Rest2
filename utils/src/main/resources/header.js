@@ -62,8 +62,11 @@ function compose(l1, l2) {
             return l1.set(t, l2.set(l1.get(t), v));
         }
     }
-}
+};
 
+function getField(main, field) {
+    return main[field];
+};
 
 function render_json(t) {
     return JSON.stringify(t)

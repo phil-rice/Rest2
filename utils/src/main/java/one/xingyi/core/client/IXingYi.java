@@ -4,6 +4,7 @@ import one.xingyi.core.optics.Getter;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.core.optics.Setter;
 import one.xingyi.core.sdk.*;
+import one.xingyi.core.utils.IdAndValue;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -11,9 +12,10 @@ import java.util.concurrent.Callable;
 public interface IXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> {
     Object parse(String s);
     Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name);
+    IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker);
 
     <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
-    objectLens(IXingYiClientFactory<Entity, View> maker,IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
+    objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
 
 
 }
@@ -43,12 +45,19 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
         this.inv = (Invocable) engine;
         System.out.println("Duration: " + (System.nanoTime() - time) / 1000000);
     }
-    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse. Strings was \n"+ s, () -> inv.invokeFunction("parse", s)); }
+    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse. Strings was \n" + s, () -> inv.invokeFunction("parse", s)); }
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
         Getter<View, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror()));
         Setter<View, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
+    }
+    @Override public IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker) {
+       return  XingYiExecutionException.wrap("getIdAndValue", () -> {
+            String id = (String) inv.invokeFunction("getField", mirror, "id");
+            Object valueMirror = inv.invokeFunction("getField", mirror, "value");
+            return new IdAndValue<>(id, maker.make(this, valueMirror));
+        });
     }
     @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> maker2, String name) {
         Getter<View, ChildView> getter = t -> XingYiExecutionException.<ChildView>wrap("objectLens.getEntity" + name, () -> maker2.make(this, inv.invokeFunction("getL", name, t.mirror())));

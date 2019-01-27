@@ -35,7 +35,7 @@ public interface HttpService {
             Function<View, Result> fn);
 
     public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url);
-
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url);
     default CompletableFuture<String> getUrlPattern(String bookmark) {
         return UrlPatternCompanion.companion.primitive(this, "get", bookmark, UrlPattern::urlPattern);
     }
@@ -94,6 +94,19 @@ class DefaultHttpService implements HttpService {
             }
         };
     }
+
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, IdAndValue<View>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+        return serviceResponse -> {
+            try {
+
+                DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
+                IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
+                return xingYi.getIdAndValue(xingYi.parse(dataAndJavaScript.data), clientMaker);
+            } catch (Exception e) {
+                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
+            }
+        };
+    }
     Function<ServiceResponse, Boolean> makeBoolean(ServiceRequest serviceRequest) {
         return serviceResponse -> {
             try {
@@ -119,6 +132,10 @@ class DefaultHttpService implements HttpService {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).thenApply(makeBoolean(serviceRequest));
     }
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url) {
+        ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
+        return service.apply(serviceRequest).thenApply(makeIdAndValue(clientMaker, serviceRequest));
+    }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result>
     get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "get", urlPattern.replace("{id}", id), fn));//TODO UrlEncoding
@@ -131,7 +148,7 @@ class DefaultHttpService implements HttpService {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "post", urlPattern.replace("{id}", id), v -> v));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker) {
-        throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
+        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForIdAndValue(clientMaker, "post", urlPattern.replace("/{id}", "")));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForBoolean("delete", urlPattern.replace("{id}", id)));
