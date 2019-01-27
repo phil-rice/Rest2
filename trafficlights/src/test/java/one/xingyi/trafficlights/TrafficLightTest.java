@@ -121,7 +121,7 @@ public class TrafficLightTest {
             populate(controller, "someId", "red");
             assertTrue(controller.lights.containsKey("1"));
             HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
-            assertEquals(Optional.of(true), ColourView.delete(service, "1").get());
+            assertEquals(Boolean.TRUE, ColourView.delete(service, "1").get());
             assertFalse(controller.lights.containsKey("1"));
         });
     }

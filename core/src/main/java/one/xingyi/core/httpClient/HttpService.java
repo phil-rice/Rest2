@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+//TODO This whole class needs sorting out. It is far too big and does too much
 public interface HttpService {
 
     static HttpService defaultService(String protocolAndHost, Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
@@ -32,6 +33,8 @@ public interface HttpService {
             String method,
             String url,
             Function<View, Result> fn);
+
+    public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url);
 
     default CompletableFuture<String> getUrlPattern(String bookmark) {
         return UrlPatternCompanion.companion.primitive(this, "get", bookmark, UrlPattern::urlPattern);
@@ -67,7 +70,7 @@ class DefaultHttpService implements HttpService {
 
 
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, View> makeEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
-        return serviceResponse -> {
+        return serviceResponse -> {//TODO extract the try catch
             try {
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
                 IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
@@ -91,6 +94,15 @@ class DefaultHttpService implements HttpService {
             }
         };
     }
+    Function<ServiceResponse, Boolean> makeBoolean(ServiceRequest serviceRequest) {
+        return serviceResponse -> {
+            try {
+                return Boolean.parseBoolean(serviceResponse.body);
+            } catch (Exception e) {
+                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
+            }
+        };
+    }
 
 
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
@@ -102,6 +114,10 @@ class DefaultHttpService implements HttpService {
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).thenApply(sr -> makeOptionalEntity(clientMaker, serviceRequest).apply(sr).map(fn));
+    }
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url) {
+        ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
+        return service.apply(serviceRequest).thenApply(makeBoolean(serviceRequest));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result>
     get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
@@ -118,7 +134,7 @@ class DefaultHttpService implements HttpService {
         throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
-        throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
+        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForBoolean("delete", urlPattern.replace("{id}", id)));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn) {
         throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
