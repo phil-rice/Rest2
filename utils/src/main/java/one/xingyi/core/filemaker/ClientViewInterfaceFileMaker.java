@@ -52,7 +52,10 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
     }
 
     List<String> getRemoteAccessors(ViewDom viewDom, Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern) {
-        return Optionals.fold(bookmarkAndUrlPattern, () -> List.<String>of(), b -> Lists.<String>append(getPrimitiveMethod(viewDom), getUrlPatternMethod(viewDom), getMethod(viewDom)));
+        return Optionals.fold(bookmarkAndUrlPattern, () -> List.<String>of(), b -> Lists.<String>append(
+//                getPrimitiveMethod(viewDom),
+//                getUrlPatternMethod(viewDom),
+                getMethod(viewDom)));
 
     }
 

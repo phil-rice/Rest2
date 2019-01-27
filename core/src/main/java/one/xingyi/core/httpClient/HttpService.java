@@ -5,6 +5,7 @@ import one.xingyi.core.client.IXingYiFactory;
 import one.xingyi.core.http.JavaHttpClient;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
@@ -29,7 +30,7 @@ public interface HttpService {
             Function<View, Result> fn);
 
     default CompletableFuture<String> getUrlPattern(String bookmark) {
-        return UrlPattern.getPrimitive(this, bookmark, UrlPattern::urlPattern);
+        return UrlPatternCompanion.companion.getPrimitive(this, bookmark, UrlPattern::urlPattern);
     }
 
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(

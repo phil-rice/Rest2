@@ -18,7 +18,7 @@ public class UrlPatternTest {
     public void testDelegatesGetPrimitiveToHttpService() throws ExecutionException, InterruptedException {
         HttpService service = mock(HttpService.class);
         when(service.primitiveGet(UrlPatternCompanion.companion, url, getFn)).thenReturn(CompletableFuture.completedFuture("someUrlPattern"));
-        String actual = UrlPattern.getPrimitive(service, url, getFn).get();
+        String actual = UrlPatternCompanion.companion.getPrimitive(service, url, getFn).get();
         assertEquals("someUrlPattern", actual);
     }
 

@@ -16,6 +16,7 @@ import one.xingyi.core.utils.Files;
 import one.xingyi.reference.PersonServer;
 import one.xingyi.reference.address.client.view.AddressLine12View;
 import one.xingyi.reference.person.PersonController;
+import one.xingyi.reference.person.client.companion.PersonNameViewCompanion;
 import one.xingyi.reference.person.client.view.PersonNameView;
 import org.junit.Test;
 
@@ -44,19 +45,19 @@ abstract class AbstractEntityDetailsClientTest {
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
         assertEquals(expectedHost() + "/person/{id}", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
-        assertEquals(expectedHost() + "/person/{id}", UrlPattern.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
+        assertEquals(expectedHost() + "/person/{id}", UrlPatternCompanion.companion.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
     }
 
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/{id}", PersonNameView.getUrlPattern(service()).get());
+        assertEquals(expectedHost() + "/person/{id}", PersonNameViewCompanion.companion.getUrlPattern(service()).get());
 //        assertEquals(expectedHost() + "/address/{id}", AddressLine12View.getUrlPattern(service()).get());
     }
     @Test
     public void testGetUrlPatternWhenEntityNotRegistered() throws ExecutionException, InterruptedException {
         try {
-            UrlPattern.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
+            UrlPatternCompanion.companion.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
             fail();
         } catch (Exception e) {
             Throwable cause = e.getCause().getCause();

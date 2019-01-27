@@ -31,7 +31,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
 
     }
     List<String> getUrlPatternMethod(ViewDom viewDom) {
-        return List.of("public CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPattern.getPrimitive(service, this.bookmark(), UrlPattern::urlPattern); }");
+        return List.of("public CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPatternCompanion.companion.getPrimitive(service, this.bookmark(), UrlPattern::urlPattern); }");
 
     }
 
@@ -52,7 +52,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
         String parentInterface = Optionals.fold(accessDetails, () -> "IXingYiClientViewCompanion", b -> "IXingYiRemoteClientViewCompanion");
 
         List<String> manualImports = Lists.append(
-                List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
+                List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern", "one.xingyi.core.httpClient.client.companion.UrlPatternCompanion"),
                 Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName())));
 //        String afterClassString = "<Entity extends IXingYiEntity, IOps extends IXingYiView<Entity>, Impl extends IXingYiClientImpl<Entity, IOps>> extends IXingYiClientMaker<Entity, IOps>"
         Optional<BookmarkAndUrlPattern> bookmark = viewDomAndItsEntityDom.entityDom.flatMap(ed -> ed.bookmark);
