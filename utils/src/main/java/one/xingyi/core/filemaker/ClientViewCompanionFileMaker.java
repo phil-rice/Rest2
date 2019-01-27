@@ -25,13 +25,13 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
     }
 
     List<String> getPrimitiveMethod(ViewDom viewDom) {
-        return List.of("public <T> CompletableFuture<T> getPrimitive(HttpService httpService, String url, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
-                Formating.indent + "return httpService.primitiveGet(this.companion,url,fn);",
+        return List.of("public <T> CompletableFuture<T> primitive(HttpService httpService, String method, String url, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
+                Formating.indent + "return httpService.primitive(this.companion, method, url,fn);",
                 "}");
 
     }
     List<String> getUrlPatternMethod(ViewDom viewDom) {
-        return List.of("public CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPatternCompanion.companion.getPrimitive(service, this.bookmark(), UrlPattern::urlPattern); }");
+        return List.of("public CompletableFuture<String> getUrlPattern(HttpService service) {return  UrlPatternCompanion.companion.primitive(service, \"get\",this.bookmark(), UrlPattern::urlPattern); }");
 
     }
 

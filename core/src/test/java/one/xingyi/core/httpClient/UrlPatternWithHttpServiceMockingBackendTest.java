@@ -40,7 +40,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
         HttpService service = HttpService.defaultService(protocolAndHost, delegate);
         when(delegate.apply(serviceRequest)).thenReturn(CompletableFuture.completedFuture(serviceResponse));
 
-        assertEquals("http://someHost:9000/someUrlPattern{id}", service.primitiveGet(UrlPatternCompanion.companion, bookmark, getFn).get());
+        assertEquals("http://someHost:9000/someUrlPattern{id}", service.primitive(UrlPatternCompanion.companion, "get",bookmark, getFn).get());
     }
 }
 

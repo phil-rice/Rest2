@@ -8,13 +8,9 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.JsonObject;
-import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.marshelling.UnexpectedResponse;
-import one.xingyi.core.utils.Files;
 import one.xingyi.reference.PersonServer;
-import one.xingyi.reference.address.client.view.AddressLine12View;
 import one.xingyi.reference.person.PersonController;
 import one.xingyi.reference.person.client.companion.PersonNameViewCompanion;
 import one.xingyi.reference.person.client.view.PersonNameView;
@@ -44,8 +40,8 @@ abstract class AbstractEntityDetailsClientTest {
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
-        assertEquals(expectedHost() + "/person/{id}", service().primitiveGet(UrlPatternCompanion.companion, "/person", UrlPattern::urlPattern).get());
-        assertEquals(expectedHost() + "/person/{id}", UrlPatternCompanion.companion.getPrimitive(service(), "/person", e -> e.urlPattern()).get());
+        assertEquals(expectedHost() + "/person/{id}", service().primitive(UrlPatternCompanion.companion, "get", "/person", UrlPattern::urlPattern).get());
+        assertEquals(expectedHost() + "/person/{id}", UrlPatternCompanion.companion.primitive(service(), "get", "/person", e -> e.urlPattern()).get());
     }
 
 
@@ -57,7 +53,7 @@ abstract class AbstractEntityDetailsClientTest {
     @Test
     public void testGetUrlPatternWhenEntityNotRegistered() throws ExecutionException, InterruptedException {
         try {
-            UrlPatternCompanion.companion.getPrimitive(service(), "/notin", UrlPattern::urlPattern).get();
+            UrlPatternCompanion.companion.primitive(service(), "get", "/notin", UrlPattern::urlPattern).get();
             fail();
         } catch (Exception e) {
             Throwable cause = e.getCause().getCause();
@@ -84,13 +80,13 @@ abstract class AbstractEntityDetailsClientTest {
 //
 //    @Test
 //    public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
-//        assertEquals("serverName/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
+//        assertEquals("serverName/one.xi", client.primitive(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
 //        assertEquals("serverName/one.xi", client.get(ITestMultiple.class, "id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
 //    }
 //    @Test
 //    public void testWithMultipleInterfaces2() throws ExecutionException, InterruptedException {
 ////    Thread.sleep(100000);
-//        assertEquals("serverName/one.xi", client.primitiveGet(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
+//        assertEquals("serverName/one.xi", client.primitive(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
 //        //solution to this is to have a @XingYiMulti annotation and apply instance which can delegate. Actually pretty straightforwards...
 //    }
 //
