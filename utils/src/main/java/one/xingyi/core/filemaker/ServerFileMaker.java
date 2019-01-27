@@ -105,7 +105,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                             createEndpoint("getOptional" + className, "getOptionalEntity", b.urlPattern, controllerName + "::getOptional")),
                     Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
                     Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpoint("create" + className, "createEntity", dom.path, controllerName + "::create")),
-                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern, controllerName + "::" + dom.action))));
+                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern+ dom.path, controllerName + "::" + dom.action))));
         });
     }
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {

@@ -11,7 +11,9 @@ import one.xingyi.core.marshelling.JsonObject;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.BiConsumerWithException;
 import one.xingyi.core.utils.Files;
+import one.xingyi.trafficlights.client.companion.ColourViewCompanion;
 import one.xingyi.trafficlights.client.view.ColourView;
+import one.xingyi.trafficlights.server.companion.TrafficLightsCompanion;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
 import org.junit.Test;
 
@@ -50,7 +52,7 @@ public class TrafficLightTest {
     public void testCanGetEntity() throws Exception {
         setup((controller, server) -> {
             checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "/lights")).get().get());
-            checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", EndPoint.compose(server.allEndpoints()).apply(sr("get", "/lights")).get().get());
+            checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.endpoint().apply(sr("get", "/lights")).get().get());
             checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "http://somehost/lights")).get().get());
         });
     }
@@ -67,7 +69,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpointUsingAllEndpoints() throws Exception {
         setup((controller, server) -> {
             populate(controller, "someId", "red");
-            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\"}", EndPoint.compose(server.allEndpoints()).apply(sr("get", "/lights/someId")).get().get());
+            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\"}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }
@@ -75,9 +77,16 @@ public class TrafficLightTest {
     public void testGetFromView() throws Exception {
         setup((controller, server) -> {
             populate(controller, "someId", "red");
-            EndPoint composed = EndPoint.compose(server.allEndpoints());
-            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(composed));
+            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
             assertEquals("someIdred", ColourView.get(service, "someId", v -> v.id() + v.color()).get());
+        });
+    }
+
+    @Test public void testCanCreateThenGet() throws Exception {
+        setup((controller, server) -> {
+            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
+            assertEquals("1red", ColourViewCompanion.companion.create(service, "1", c -> c.id() + c.color()).get());
+            assertEquals("2red", ColourViewCompanion.companion.create(service, "2", c -> c.id() + c.color()).get());
         });
     }
 

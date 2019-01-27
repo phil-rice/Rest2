@@ -2,24 +2,18 @@ package one.xingyi.core.endpoints;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.core.acceptHeader.AcceptHeaderParser;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.javascript.JavascriptDetailsToString;
-import one.xingyi.core.javascript.JavascriptStore;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.HasJson;
-import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.WrappedException;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -54,7 +48,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn) {
-        return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("put", templatedPath, (sr, s) -> s),
+        return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<J, Entity>create(context, 201));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> postEntity(
@@ -70,13 +64,17 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
         if (original == null) throw new NullPointerException();
         return sr -> {
             try {
-                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.notFound(bodyIfNotFound.apply(sr)))).exceptionally(e -> internalError(e));
+                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.notFound(bodyIfNotFound.apply(sr)))).exceptionally(EndPoint::defaultErrorHandler);
             } catch (Exception e) {
-                System.out.println("Dumping error from inside completable future in toKliesli");
-                e.printStackTrace();
-                return CompletableFuture.completedFuture(internalError(e));
+                return CompletableFuture.completedFuture(defaultErrorHandler(e));
             }
         };
+    }
+    static ServiceResponse defaultErrorHandler(Throwable e) {
+        System.out.println("Dumping error from inside completable future in toKliesli");
+        Throwable actual = WrappedException.unWrap(e);
+        actual.printStackTrace();
+        return internalError(actual);
     }
     static ServiceResponse internalError(Throwable e) {
         return ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());

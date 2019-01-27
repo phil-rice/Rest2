@@ -10,7 +10,7 @@ public interface IXingYiResponseSplitter extends Function<ServiceResponse, DataA
 class XingYiResponseSplitter implements IXingYiResponseSplitter {
 
     @Override public DataAndJavaScript apply(ServiceResponse serviceResponse) {
-        if (serviceResponse.statusCode != 200)
+        if (serviceResponse.statusCode >= 300)
             throw new UnexpectedResponse(serviceResponse);
         String body = serviceResponse.body;
         int index = body.indexOf(XingYiResponseSplitter.marker);

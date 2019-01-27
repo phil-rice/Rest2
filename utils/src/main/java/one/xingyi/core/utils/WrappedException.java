@@ -1,6 +1,7 @@
 package one.xingyi.core.utils;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 public class WrappedException extends RuntimeException {
@@ -49,6 +50,8 @@ public class WrappedException extends RuntimeException {
         }
     }
     public static Throwable unWrap(Throwable e) {
+        if (e instanceof CompletionException)
+            return unWrap(e.getCause());
         if (e instanceof WrappedException)
             return e.getCause();
         else return e;

@@ -47,12 +47,12 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
         Getter<View, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity" + name, () -> (String) inv.invokeFunction("getL", name, t.mirror()));
-        Setter<View, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> maker.create(this, inv.invokeFunction("setL", name, t.mirror(), s)));
+        Setter<View, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
     @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> maker2, String name) {
-        Getter<View, ChildView> getter = t -> XingYiExecutionException.<ChildView>wrap("objectLens.getEntity" + name, () -> maker2.create(this, inv.invokeFunction("getL", name, t.mirror())));
-        Setter<View, ChildView> setter = (t, s) -> XingYiExecutionException.<View>wrap("objectLens.set" + name, () -> maker.create(this, inv.invokeFunction("setL", name, t.mirror(), s)));
+        Getter<View, ChildView> getter = t -> XingYiExecutionException.<ChildView>wrap("objectLens.getEntity" + name, () -> maker2.make(this, inv.invokeFunction("getL", name, t.mirror())));
+        Setter<View, ChildView> setter = (t, s) -> XingYiExecutionException.<View>wrap("objectLens.set" + name, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
     //    }
