@@ -25,9 +25,9 @@ public class EndpointHandler implements HttpHandler {
 
     final Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> fn;
     private final Function<ServiceRequest, CompletableFuture<ServiceResponse>> kleisli;
-    public EndpointHandler(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> fn) {
+    public EndpointHandler(EndPoint fn) {
         this.fn = fn;
-        this.kleisli = EndPoint.toKliesli(fn);
+        this.kleisli = EndPoint.toKliesli(fn, EndPoint.defaultNotFound(fn));
     }
 
     @Override public void handle(HttpExchange exchange) throws IOException {

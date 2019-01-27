@@ -66,13 +66,14 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createCompanions(ServerDom serverDom) {
         return List.of(
                 "public List<IXingYiServerCompanion<?, ?>> companions(){return List.of(",
+                Formating.indent + "one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion.companion,//added for url pattern on original bookmark ",
                 Formating.indent + Lists.mapJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
                 ");}");
     }
     List<String> createEntityCompanions(ServerDom serverDom) {
         return List.of(
                 "public List<HasBookmarkAndUrl> entityCompanions(){return List.of(",
-                Formating.indent + Lists.mapJoin(Lists.filter(serverDom.codeDom.entityDoms, e->e.bookmark.isPresent()),",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
+                Formating.indent + Lists.mapJoin(Lists.filter(serverDom.codeDom.entityDoms, e -> e.bookmark.isPresent()), ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
                 ");}");
     }
 

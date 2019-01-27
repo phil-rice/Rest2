@@ -12,15 +12,24 @@ import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.utils.IdAndValue;
+import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>>,MethodAndPathDescription{
+public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>>, MethodAndPathDescription {
+    static Function<ServiceRequest, String> defaultNotFound(EndPoint endPoint) {
+        return sr -> "Cannot find response for\n" +
+                sr.toString() + "\nLegal Endpoints are\n   " + Lists.mapJoin(endPoint.description(), "\n   ", Objects::toString);
+
+
+    }
+
     List<MethodAndPath> description();
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn) {
@@ -53,11 +62,14 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 fn, EndpointResult.<J, Entity>create(context, 200));
     }
 
-    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original) {
+    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(EndPoint original) {
+        return toKliesli(original, defaultNotFound(original));
+    }
+    static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>> original, Function<ServiceRequest, String> bodyIfNotFound) {
         if (original == null) throw new NullPointerException();
         return sr -> {
             try {
-                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.notFound(sr.toString()))).exceptionally(e -> internalError(e));
+                return original.apply(sr).thenApply(opt -> opt.orElse(ServiceResponse.notFound(bodyIfNotFound.apply(sr)))).exceptionally(e -> internalError(e));
             } catch (Exception e) {
                 System.out.println("Dumping error from inside completable future in toKliesli");
                 e.printStackTrace();

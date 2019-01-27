@@ -1,8 +1,6 @@
 package one.xingyi.trafficlights;
-import lombok.val;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
-import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
@@ -18,8 +16,6 @@ import one.xingyi.trafficlights.server.domain.TrafficLights;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -52,7 +48,7 @@ public class TrafficLightTest {
 
     @Test
     public void testCanGetEntity() throws Exception {
-        setup((controller, server)->{
+        setup((controller, server) -> {
             checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "/lights")).get().get());
             checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", EndPoint.compose(server.allEndpoints()).apply(sr("get", "/lights")).get().get());
             checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "http://somehost/lights")).get().get());
@@ -79,8 +75,9 @@ public class TrafficLightTest {
     public void testGetFromView() throws Exception {
         setup((controller, server) -> {
             populate(controller, "someId", "red");
-            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(EndPoint.compose(List.of(server.getOptionalTrafficLights()))));
-            assertEquals("", ColourView.get(service, "someId", v-> v.id() + v.color()).get());
+            EndPoint composed = EndPoint.compose(server.allEndpoints());
+            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(composed));
+            assertEquals("someIdred", ColourView.get(service, "someId", v -> v.id() + v.color()).get());
         });
     }
 
