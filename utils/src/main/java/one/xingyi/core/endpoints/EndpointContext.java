@@ -28,7 +28,7 @@ public class EndpointContext<J> {
         return resultBodyForJson(json);
     }
     public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, IdAndValue<Entity> entity) {
-        J j = IdAndValue.toJson(entity, "", jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest));
+        J j = IdAndValue.toJson(entity, jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest));
         return resultBodyForJson(jsonWriter.fromJ(j));
     }
     public String resultBodyForJson(String json) {

@@ -101,7 +101,9 @@ class DefaultHttpService implements HttpService {
 
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
                 IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
-                return xingYi.getIdAndValue(xingYi.parse(dataAndJavaScript.data), clientMaker);
+                Object mirror = xingYi.parse(dataAndJavaScript.data);
+                IdAndValue result = xingYi.getIdAndValue(mirror, clientMaker);
+                return result;
             } catch (Exception e) {
                 throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
             }

@@ -44,7 +44,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
             EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier) {
         return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", path),
-                s -> idAndValueSupplier.get(), EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
+                s -> {System.out.println("in here: "+ s);return idAndValueSupplier.get();}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn) {

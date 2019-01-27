@@ -97,13 +97,13 @@ public class TrafficLightTest {
             assertEquals("2red", ColourView.get(service, "2", fn).get());
         });
     }
-    @Ignore @Test public void testCanCreateWithoutId() throws Exception {
+     @Test public void testCanCreateWithoutId() throws Exception {
         setup((controller, server) -> {
             populate(controller, "someId", "red");
             HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
-            assertEquals("1red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
             assertEquals("2red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
             assertEquals("3red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
+            assertEquals("4red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
         });
     }
 

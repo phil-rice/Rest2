@@ -54,10 +54,12 @@ class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<Succes
 
     final String method;
     final String path;
+    private final String originalPath;
 
     public ResourceEndpointNoFromAcceptor(String method, String path) {
         this.method = method;
-        this.path = path;
+        this.originalPath = path;
+        this.path = path.replace("{host}", "");
     }
     @Override public String method() { return method; }
     @Override public String templatedPath() { return path; }
@@ -66,6 +68,6 @@ class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<Succes
         if (!serviceRequest.uri.getPath().equalsIgnoreCase(path)) return Optional.empty();
         return SuccessfulMatch.optMatch;
     }
-    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, path)); }
+    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, originalPath)); }
 }
 
