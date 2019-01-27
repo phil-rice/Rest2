@@ -1,7 +1,4 @@
 package one.xingyi.core.filemaker;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IXingYi;
@@ -19,30 +16,34 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
-    List<String> getOrCreateMethod(String name, String returnType, String signature) {
-        return List.of("public <T> CompletableFuture<T> " + name + "(HttpService httpService, String id, Function<" + returnType + ", T> fn){ return httpService." + signature + ";}");
+    List<String> getMethod(String returnType) {
+        return List.of("public <T> CompletableFuture<T> get(HttpService httpService, String id, Function<" + returnType + ", T> fn){ return httpService.get(this, id, fn);}");
+    }
+    List<String> createMethod(String returnType) {
+        return List.of("public  CompletableFuture<" + returnType + "> create(HttpService httpService, String id){ return httpService.create(this,id);}");
     }
     List<String> createWithoutIdMethod(String returnType) {
         return List.of("public CompletableFuture<IdAndValue<" + returnType + ">> createWithoutId(HttpService httpService){ return httpService.createWithoutId(this);}");
     }
 
     List<String> createDeleteMethod() {
-        return List.of("public CompletableFuture<Boolean> delete(HttpService httpService){ return httpService.delete(this);}");
+        return List.of("public CompletableFuture<Boolean> delete(HttpService httpService, String id){ return httpService.delete(this,id);}");
     }
     List<String> createEditMethod(String returnType) {
-        return List.of("public CompletableFuture<" + returnType + "> edit(HttpService httpService, String id, Function<" +returnType+ "," + returnType + "> fn){ return httpService.edit(this, id, fn);}");
+        return List.of("public CompletableFuture<" + returnType + "> edit(HttpService httpService, String id, Function<" + returnType + "," + returnType + "> fn){ return httpService.edit(this, id, fn);}");
     }
 
     List<String> accessorMethods(ViewDom viewDom, BookmarkUrlAndActionsDom bookmarkUrlAndActionsDom) {
-        ActionsDom actionsDom = bookmarkUrlAndActionsDom.actionsDom;
-        String viewReturnType = viewDom.viewNames.clientView.asString();
-        return Lists.<String>append(
-                Optionals.flatMap(actionsDom.getDom, dom -> getOrCreateMethod("get", viewReturnType, "get(this, id, fn)")),
-                Optionals.flatMap(actionsDom.createDom, dom -> getOrCreateMethod("create", viewReturnType, "create(this, id, fn)")),
-                Optionals.flatMap(actionsDom.createWithoutIdDom, dom -> createWithoutIdMethod(viewReturnType)),
-                Optionals.flatMap(actionsDom.deleteDom, dom -> createDeleteMethod()),
-                Optionals.flatMap(actionsDom.putDom, dom -> createEditMethod(viewReturnType))
-        );
+        return List.of();
+//        ActionsDom actionsDom = bookmarkUrlAndActionsDom.actionsDom;
+//        String viewReturnType = viewDom.viewNames.clientView.asString();
+//        return Lists.<String>append(
+//                Optionals.flatMap(actionsDom.getDom, dom -> getMethod(viewReturnType)),
+//                Optionals.flatMap(actionsDom.createDom, dom -> createMethod(viewReturnType)),
+//                Optionals.flatMap(actionsDom.createWithoutIdDom, dom -> createWithoutIdMethod(viewReturnType)),
+//                Optionals.flatMap(actionsDom.deleteDom, dom -> createDeleteMethod()),
+//                Optionals.flatMap(actionsDom.putDom, dom -> createEditMethod(viewReturnType))
+//        );
     }
 
     List<String> primitiveMethod(ViewDom viewDom) {
@@ -66,17 +67,9 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
 
     }
 
-    @RequiredArgsConstructor
-    @ToString
-    @EqualsAndHashCode
-    class BookmarkUrlAndActionsDom {
-        final BookmarkAndUrlPattern bookmarkAndUrlPattern;
-        final ActionsDom actionsDom;
-    }
-
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
-        Optional<BookmarkUrlAndActionsDom> accessDetails = viewDomAndItsEntityDom.entityDom.flatMap(ed -> ed.bookmark.map(b -> new BookmarkUrlAndActionsDom(b, ed.actionsDom)));
+        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsEntityDom);
         String parentInterface = Optionals.fold(accessDetails, () -> "IXingYiClientViewCompanion", b -> "IXingYiRemoteClientViewCompanion");
 
         List<String> manualImports = Lists.append(

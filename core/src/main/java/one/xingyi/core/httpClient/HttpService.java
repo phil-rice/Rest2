@@ -15,6 +15,7 @@ import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.IdAndValue;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface HttpService {
@@ -38,12 +39,15 @@ public interface HttpService {
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id,
             Function<View, Result> fn);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> create(
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id,
             Function<View, Result> fn);
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> create(
+            IXingYiRemoteAccessDetails<Entity, View> clientMaker,
+            String id);
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker);
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id);
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn);
 
 }
@@ -73,13 +77,17 @@ class DefaultHttpService implements HttpService {
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "get", urlPattern.replace("{id}", id), fn));//TODO UrlEncoding
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> create(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
-        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "post", urlPattern.replace("{id}", id), fn));
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
+        throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
+    }
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View>
+    create(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
+        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "post", urlPattern.replace("{id}", id), v -> v));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker) {
         throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker) {
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
         throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn) {

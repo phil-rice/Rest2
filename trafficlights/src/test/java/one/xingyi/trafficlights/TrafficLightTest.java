@@ -18,9 +18,12 @@ import one.xingyi.trafficlights.server.domain.TrafficLights;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
 public class TrafficLightTest {
 
     EndpointConfig<JsonObject> config = EndpointConfig.defaultConfig;
@@ -85,8 +88,42 @@ public class TrafficLightTest {
     @Test public void testCanCreateThenGet() throws Exception {
         setup((controller, server) -> {
             HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
-            assertEquals("1red", ColourViewCompanion.companion.create(service, "1", c -> c.id() + c.color()).get());
-            assertEquals("2red", ColourViewCompanion.companion.create(service, "2", c -> c.id() + c.color()).get());
+            Function<ColourView, String> fn = c -> c.id() + c.color();
+            assertEquals("1red", ColourView.create(service, "1").thenApply(fn).get());
+            assertEquals("2red", ColourView.create(service, "2").thenApply(fn).get());
+
+            assertEquals("1red", ColourView.get(service, "1", fn).get());
+            assertEquals("2red", ColourView.get(service, "2", fn).get());
+        });
+    }
+    @Test public void testCanCreateWithoutId() throws Exception {
+        setup((controller, server) -> {
+            populate(controller, "someId", "red");
+            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
+            assertEquals("1red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
+            assertEquals("2red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
+            assertEquals("3red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
+        });
+    }
+
+
+    @Test public void testCanGetOptional() throws Exception {
+        setup((controller, server) -> {
+            populate(controller, "someId", "red");
+            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
+            Function<ColourView, String> fn = c -> c.id() + c.color();
+            assertEquals(Optional.of("1red"), ColourView.getOptional(service, "1", fn).get());
+            assertEquals(Optional.empty(), ColourView.create(service, "2").thenApply(fn).get());
+        });
+    }
+
+    @Test public void testCanDelete() throws Exception {
+        setup((controller, server) -> {
+            populate(controller, "someId", "red");
+            assertTrue(controller.lights.containsKey("1"));
+            HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
+            assertEquals(Optional.of(true), ColourView.delete(service, "1").get());
+            assertFalse(controller.lights.containsKey("1"));
         });
     }
 
