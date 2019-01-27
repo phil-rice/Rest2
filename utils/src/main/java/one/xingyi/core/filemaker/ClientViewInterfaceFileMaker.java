@@ -4,15 +4,19 @@ import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.codeDom.ViewDomAndEntityDomField;
 import one.xingyi.core.codeDom.ViewDomAndItsEntityDom;
+import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.validation.Result;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
@@ -47,16 +51,20 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
 
     }
 
+    List<String> getRemoteAccessors(ViewDom viewDom, Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern) {
+        return Optionals.fold(bookmarkAndUrlPattern, () -> List.<String>of(), b -> Lists.<String>append(getPrimitiveMethod(viewDom), getUrlPatternMethod(viewDom), getMethod(viewDom)));
+
+    }
+
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
+        Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern = viewDomAndItsEntityDom.entityDom.flatMap(ed -> ed.bookmark);
         List<String> manualImports = Lists.append(List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"), Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName())));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class, CompletableFuture.class),
-                Formating.indent(getPrimitiveMethod(viewDom)),
-                Formating.indent(getUrlPatternMethod(viewDom)),
-                Formating.indent(getMethod(viewDom)),
+                Formating.indent(getRemoteAccessors(viewDom, bookmarkAndUrlPattern)),
                 List.of(),
                 Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
