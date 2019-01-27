@@ -9,10 +9,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface IResourceEndPoint<J, Entity extends IXingYiEntity, Request, Result> extends EndPoint {
+    public static <J, Entity extends IXingYiEntity, Request, Result> IResourceEndPoint<J, Entity, Request, Result>
+    create(IResourceEndpointAcceptor<Request> acceptor, Function<Request, CompletableFuture<Result>> fn, EndpointResult<Result> endpointResult) {
+        return new ResourceEndPoint<J, Entity, Request, Result>(acceptor, fn, endpointResult);
+    }
 
 }
-
-
 @RequiredArgsConstructor
 class ResourceEndPoint<J, Entity extends IXingYiEntity, Request, Result> implements IResourceEndPoint<J, Entity, Request, Result> {
 

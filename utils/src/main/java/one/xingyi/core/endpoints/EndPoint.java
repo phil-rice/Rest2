@@ -19,18 +19,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>>, MethodAndPathDescription {
+    List<MethodAndPath> description();
+
+
     static Function<ServiceRequest, String> defaultNotFound(EndPoint endPoint) {
         return sr -> "Cannot find response for\n" +
                 sr.toString() + "\nLegal Endpoints are\n   " + Lists.mapJoin(endPoint.description(), "\n   ", Objects::toString);
-
-
     }
 
-    List<MethodAndPath> description();
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn) {
         return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
@@ -80,20 +81,6 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static ServiceResponse internalError(Throwable e) {
         return ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
     }
-
-
-    static <J, From, To extends HasJson<ContextForJson>> EndPoint json(JsonWriter<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<To>> fn) {
-        return new JsonEndPoint<>(jsonTC, status, acceptor, fn, protocol);
-    }
-    static <J, From, To extends HasJson<ContextForJson>> EndPoint javascriptAndJson
-            (JsonWriter<J> jsonTC, int status, String protocol, Function<ServiceRequest, Optional<From>> acceptor, Function<From, CompletableFuture<To>> fn, JavascriptStore javascriptStore) {
-        return new JavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple, protocol);
-    }
-    static <J, From, To extends HasJson<ContextForJson>> EndPoint optionalJavascriptAndJson
-            (JsonWriter<J> jsonTC, int status, String protocol, EndpointAcceptor1<From> acceptor, Function<From, CompletableFuture<Optional<To>>> fn, JavascriptStore javascriptStore) {
-        return new OptionalJavascriptAndJsonEndPoint<From, To>(jsonTC, status, acceptor, fn, javascriptStore, JavascriptDetailsToString.simple, protocol);
-    }
-
 
     static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints);}
 

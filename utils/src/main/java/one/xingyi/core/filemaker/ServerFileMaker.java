@@ -114,7 +114,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                         List.of("one.xingyi.server.EndPointFactorys"),
                         XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class, IXingYiServer.class,
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class, IXingYiServerCompanion.class,
-                        JsonObject.class, JsonWriter.class, Files.class, EndpointAcceptor1.class, HasBookmarkAndUrl.class),
+                        JsonObject.class, JsonWriter.class, Files.class,  HasBookmarkAndUrl.class),
 //                Formating.indent(generateRegister(serverDom)),
                 Formating.indent(createFields(serverDom)),
                 Formating.indent(createConstructor(serverDom)),
