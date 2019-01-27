@@ -9,6 +9,6 @@ import one.xingyi.core.http.ServiceRequest;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 public class EntityDetailsRequest implements EndpointRequest {
-   public static EntityDetailsRequest create(ServiceRequest serviceRequest, String id){ return new EntityDetailsRequest(serviceRequest.url.getPath()); }
+   public static EntityDetailsRequest create(ServiceRequest serviceRequest, String id){ return new EntityDetailsRequest(serviceRequest.path); }
    public  final String entityName;
 }

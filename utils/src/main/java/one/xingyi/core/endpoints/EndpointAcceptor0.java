@@ -22,7 +22,7 @@ class ExactAcceptor0 implements EndpointAcceptor0 {
     final String method;
     final String path;
     @Override public Boolean apply(ServiceRequest sr) {
-        return sr.method.equalsIgnoreCase(method) && sr.url.getPath().equalsIgnoreCase(path);
+        return sr.method.equalsIgnoreCase(method) && sr.uri.getPath().equalsIgnoreCase(path);
     }
     @Override public List<MethodAndPath> description() {
         return List.of(new MethodAndPath(method, path));

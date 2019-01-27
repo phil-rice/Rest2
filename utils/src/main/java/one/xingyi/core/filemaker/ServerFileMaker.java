@@ -50,15 +50,15 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createFields(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("final EndpointContext<J> context;"),
-                Lists.map(serverDom.codeDom.entityDoms, ed -> ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
+                Lists.collect(serverDom.codeDom.entityDoms, ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
         );
     }
     List<String> createConstructor(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("public " + serverDom.serverName.className + "(EndpointConfig<J> config," +
-                                Lists.mapJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){",
+                                Lists.collectJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){",
                         Formating.indent + "this.context = config.from(companions());"),
-                Formating.indent(Lists.map(serverDom.codeDom.entityDoms, ed -> "this." + ed.entityNames.serverController.className + " = " + ed.entityNames.serverController.className + ";")),
+                Formating.indent(Lists.collect(serverDom.codeDom.entityDoms, ed->ed.bookmark.isPresent(),ed -> "this." + ed.entityNames.serverController.className + " = " + ed.entityNames.serverController.className + ";")),
                 List.of("}")
         );
     }
@@ -111,7 +111,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), serverDom.originalDefn, "class", serverDom.serverName, "<J> implements IXingYiServer",
-                        List.of("one.xingyi.server.EndPointFactorys", "one.xingyi.server.GetEntityEndpointDetails"),
+                        List.of("one.xingyi.server.EndPointFactorys"),
                         XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class, IXingYiServer.class,
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class, IXingYiServerCompanion.class,
                         JsonObject.class, JsonWriter.class, Files.class, EndpointAcceptor1.class, HasBookmarkAndUrl.class),

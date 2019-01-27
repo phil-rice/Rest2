@@ -35,7 +35,7 @@ public class EndpointResultTest implements FunctionFixture {
     }
     @Test public void testCreateForJsonFn() {
         TestEntity entity = new TestEntity();
-        ServiceResponse serviceResponse = EndpointResult.create( 314, fn(entity, "someJson")).apply(serviceRequestHost,  entity);
+        ServiceResponse serviceResponse = EndpointResult.create(314, fn(entity, "someJson")).apply(serviceRequestHost, entity);
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("someJson", serviceResponse.body);
     }

@@ -118,5 +118,16 @@ public class Lists {
         }
         return result.toString();
     }
+    public static <T> String collectJoin(List<T> list, String separator, Function<T, Boolean> acceptor, Function<T, String> fn) {
+        StringBuilder result = new StringBuilder();
+        for (T t : list) {
+            if (acceptor.apply(t)) {
+                if (result.length() > 0)
+                    result.append(separator);
+                result.append(fn.apply(t));
+            }
+        }
+        return result.toString();
+    }
 
 }

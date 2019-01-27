@@ -64,8 +64,8 @@ class BookmarkAcceptor<From> implements EndpointAcceptor1<From> {
 
     @Override public Optional<From> apply(ServiceRequest serviceRequest) {
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
-        String url = serviceRequest.url.getPath();
-        return ripper.apply(serviceRequest.url.getPath()).map(id -> fn.apply(serviceRequest, id));
+        String url = serviceRequest.uri.getPath();
+        return ripper.apply(serviceRequest.uri.getPath()).map(id -> fn.apply(serviceRequest, id));
     }
     @Override public List<MethodAndPath> description() {
         return List.of(new MethodAndPath(method, bookmark));

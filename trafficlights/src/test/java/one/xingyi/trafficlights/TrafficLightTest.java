@@ -21,7 +21,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 public class TrafficLightTest {
 
-    EndpointConfig<JsonObject> config = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple);
+    EndpointConfig<JsonObject> config = EndpointConfig.defaultConfig;
     public void setup(BiConsumerWithException<TrafficLightsController, TrafficLightServer<JsonObject>> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController();
         consumer.accept(controller, new TrafficLightServer<>(config, controller));

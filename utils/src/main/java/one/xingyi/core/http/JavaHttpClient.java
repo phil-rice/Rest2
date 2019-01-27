@@ -17,7 +17,7 @@ public interface JavaHttpClient {
     Function<ServiceRequest, HttpRequest> toJavaHttp = sr -> {
       try{  HttpRequest.Builder b1 = HttpRequest.newBuilder().
                 method(sr.method, HttpRequest.BodyPublishers.ofString(sr.body)).
-                uri(sr.url);
+                uri(sr.uri);
 
         HttpRequest.Builder b2 = Lists.foldLeft(b1, sr.headers, (b, h) -> b.header(h.name, h.value));
         return b2.build();}

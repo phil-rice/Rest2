@@ -45,7 +45,7 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
     @Override public String templatedPath() { return templatedPath; }
     @Override public Optional<From> apply(ServiceRequest serviceRequest) {
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
-        return ripper.apply(serviceRequest.url.getPath()).map(id -> fromFn.apply(serviceRequest, id));
+        return ripper.apply(serviceRequest.uri.getPath()).map(id -> fromFn.apply(serviceRequest, id));
     }
     @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, templatedPath)); }
 }
@@ -63,7 +63,7 @@ class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<Succes
     @Override public String templatedPath() { return path; }
     @Override public Optional<SuccessfulMatch> apply(ServiceRequest serviceRequest) {
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
-        if (!serviceRequest.url.getPath().equalsIgnoreCase(path)) return Optional.empty();
+        if (!serviceRequest.uri.getPath().equalsIgnoreCase(path)) return Optional.empty();
         return SuccessfulMatch.optMatch;
     }
     @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, path)); }

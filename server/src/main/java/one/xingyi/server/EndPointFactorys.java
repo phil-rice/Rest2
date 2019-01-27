@@ -28,19 +28,19 @@ public interface EndPointFactorys {
         return entityFactory.create(context);
     }
 
-    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
-        EndpointContext<J> context = config.from(Lists.append(Lists.map(details, d -> d.companion), allCompanions));
-        List<EndPointFactory> factories = Lists.map(details, GetEntityEndpointDetails::make);
-        return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
-
-    }
-    static <J> EndPoint create(EndpointConfig<J> config,
-                               List<GetEntityEndpointDetails<?, ?, ?>> details,
-                               List<IXingYiServerCompanion<?, ?>> allCompanions) {
-        return EndPoint.compose(List.of(
-                entityEndpoint(config, Lists.map(details, d -> d.companion)),
-                companionEndpoint(config, details, allCompanions)));
-    }
+//    static <J> EndPoint companionEndpoint(EndpointConfig<J> config, List<GetEntityEndpointDetails<?, ?, ?>> details, List<IXingYiServerCompanion<?, ?>> allCompanions) {
+//        EndpointContext<J> context = config.from(Lists.append(Lists.map(details, d -> d.companion), allCompanions));
+//        List<EndPointFactory> factories = Lists.map(details, GetEntityEndpointDetails::make);
+//        return EndPoint.compose(Lists.map(factories, f -> f.create(context)));
+//
+//    }
+//    static <J> EndPoint create(EndpointConfig<J> config,
+//                               List<GetEntityEndpointDetails<?, ?, ?>> details,
+//                               List<IXingYiServerCompanion<?, ?>> allCompanions) {
+//        return EndPoint.compose(List.of(
+//                entityEndpoint(config, Lists.map(details, d -> d.companion)),
+//                companionEndpoint(config, details, allCompanions)));
+//    }
 
 
     static <From, To extends HasJson<ContextForJson>> EndPointFactory bookmarked(String pattern, BiFunction<ServiceRequest, String, From> reqFn, Function<From, CompletableFuture<To>> fn) {
