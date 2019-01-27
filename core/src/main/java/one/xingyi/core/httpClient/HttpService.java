@@ -13,10 +13,12 @@ import one.xingyi.core.sdk.IXingYiClientEntity;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.IdAndValue;
+import org.checkerframework.checker.nullness.Opt;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 public interface HttpService {
 
@@ -39,6 +41,9 @@ public interface HttpService {
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id,
             Function<View, Result> fn);
+    public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
+            IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn);
+
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id,
@@ -52,6 +57,7 @@ public interface HttpService {
 
 }
 
+
 @RequiredArgsConstructor
 class DefaultHttpService implements HttpService {
     final String protocolAndHost;
@@ -59,26 +65,50 @@ class DefaultHttpService implements HttpService {
     final IXingYiFactory factory;
     final IXingYiResponseSplitter splitter;
 
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
-            IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
-        String fullUrl = url.startsWith("/") ? protocolAndHost + url : url;
-        ServiceRequest serviceRequest = new ServiceRequest(method, fullUrl, List.of(), "");
-        return service.apply(serviceRequest).thenApply(serviceResponse -> {
+
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, View> makeEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+        return serviceResponse -> {
             try {
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
                 IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
                 Object mirror = xingYi.parse(dataAndJavaScript.data);
-                return fn.apply(clientMaker.make(xingYi, mirror));
+                return clientMaker.make(xingYi, mirror);
             } catch (Exception e) {
                 throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
             }
-        });
+        };
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, Optional<View>> makeOptionalEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+        return serviceResponse -> {
+            try {
+                if (serviceResponse.statusCode == 404) return Optional.empty();
+                DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
+                IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
+                Object mirror = xingYi.parse(dataAndJavaScript.data);
+                return Optional.of(clientMaker.make(xingYi, mirror));
+            } catch (Exception e) {
+                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
+            }
+        };
+    }
+
+
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
+            IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
+        ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
+        return service.apply(serviceRequest).thenApply(makeEntity(clientMaker, serviceRequest).andThen(fn));
+    }
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
+            IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
+        ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
+        return service.apply(serviceRequest).thenApply(sr -> makeOptionalEntity(clientMaker, serviceRequest).apply(sr).map(fn));
+    }
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result>
+    get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "get", urlPattern.replace("{id}", id), fn));//TODO UrlEncoding
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
-        throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
+        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForOptional(clientMaker, "get", urlPattern.replace("{id}", id), fn));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View>
     create(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {

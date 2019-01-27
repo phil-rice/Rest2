@@ -109,11 +109,10 @@ public class TrafficLightTest {
 
     @Test public void testCanGetOptional() throws Exception {
         setup((controller, server) -> {
-            populate(controller, "someId", "red");
             HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
             Function<ColourView, String> fn = c -> c.id() + c.color();
             assertEquals(Optional.of("1red"), ColourView.getOptional(service, "1", fn).get());
-            assertEquals(Optional.empty(), ColourView.create(service, "2").thenApply(fn).get());
+            assertEquals(Optional.empty(), ColourView.getOptional(service, "2", fn).get());
         });
     }
 
