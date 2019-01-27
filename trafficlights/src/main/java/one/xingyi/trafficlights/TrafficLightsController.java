@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class TrafficLightsController implements ITrafficLightsController {
     public final Map<String, TrafficLights> lights = Collections.synchronizedMap(new HashMap<>());
-
+    public TrafficLightsController() { lights.put("1", new TrafficLights("1", "red")); }
     CompletableFuture<TrafficLights> wrap(String id, Runnable sideeffect) {
         sideeffect.run();
         return CompletableFuture.completedFuture(lights.get(id));

@@ -12,7 +12,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public interface EntityRegister extends Function<EntityDetailsRequest, CompletableFuture<Optional<EntityDetails>>> {
+public interface EntityRegister extends Function<EntityDetailsRequest, Optional<EntityDetails>> {
+    List<String> registered();
     static EntityRegister apply(List<HasBookmarkAndUrl> bookmarkAndUrls) { return new SimpleEntityRegister(bookmarkAndUrls); }
     static EntityRegister apply(HasBookmarkAndUrl... bookmarkAndUrls) { return new SimpleEntityRegister(Arrays.asList(bookmarkAndUrls)); }
 }
@@ -29,11 +30,11 @@ class SimpleEntityRegister implements EntityRegister {
     final List<HasBookmarkAndUrl> companions;
 
     @Override
-    public CompletableFuture<Optional<EntityDetails>> apply(EntityDetailsRequest entityDetailsRequest) {
-        Optional<EntityDetails> entity = Lists.find(companions, c -> c.bookmarkAndUrl().bookmark.equals(entityDetailsRequest.entityName)).
+    public Optional<EntityDetails> apply(EntityDetailsRequest entityDetailsRequest) {
+        return Lists.find(companions, c -> c.bookmarkAndUrl().bookmark.equals(entityDetailsRequest.entityName)).
                 map(b ->
                         b.bookmarkAndUrl().urlPattern).
                 map(EntityDetails::new);
-        return CompletableFuture.completedFuture(entity);
     }
+    @Override public List<String> registered() { return legalValues; }
 }
