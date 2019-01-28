@@ -1,5 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotationProcessors.ActionsDom;
+import one.xingyi.core.annotationProcessors.PostDom;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.ViewDom;
@@ -9,10 +10,7 @@ import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.sdk.IXingYiView;
-import one.xingyi.core.utils.Formating;
-import one.xingyi.core.utils.IdAndValue;
-import one.xingyi.core.utils.Lists;
-import one.xingyi.core.utils.Optionals;
+import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
 
 import javax.swing.text.html.Option;
@@ -41,6 +39,12 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
                 "public static <T> CompletableFuture<T> get(HttpService service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}",
                 "public static <T> CompletableFuture<Optional<T>> getOptional(HttpService service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
     }
+    List<String> editMethod(String viewName, String companionName) {
+
+        return List.of("public static CompletableFuture<" + viewName +
+                " > edit(HttpService service, String id, Function<" + viewName + "," + viewName +
+                "> fn){return service.edit(" + companionName + ",id, fn);}");
+    }
     List<String> deleteMethod(String companionName) {
         return List.of("public static CompletableFuture<Boolean> delete(HttpService service, String id){return service.delete(" + companionName + ",id);}");
     }
@@ -58,10 +62,17 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
             ActionsDom actionsDom = b.actionsDom;
             return Lists.<String>append(
                     Optionals.flatMap(actionsDom.getDom, dom -> getMethod(viewName, companionName)),
+                    Optionals.flatMap(actionsDom.putDom, dom -> editMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.createDom, dom -> createMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.createWithoutIdDom, dom -> createWithoutIdMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.deleteDom, dom -> deleteMethod(companionName)));
+//                    Lists.flatMap(actionsDom.postDoms, postDom -> postMethod(postDom, viewName, companionName)));
         });
+    }
+    private List<String> postMethod(PostDom postDom, String viewName, String companionName) {
+        return List.of("//The optional is because if the command needs a state, and that entity isn't in that state it will not be executed",
+                "public static CompletableFuture<" + viewName + ">. " + postDom.action +
+                        "(HttpService service, String id){return service.post(" + companionName + "," + Strings.quote(postDom.action) + ",id);}");
     }
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
@@ -72,7 +83,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
                 Formating.javaFile(getClass(), viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class,
-                        IdAndValue.class, CompletableFuture.class,Optional.class),
+                        IdAndValue.class, CompletableFuture.class, Optional.class),
                 Formating.indent(getRemoteAccessors(viewDom, accessDetails)),
                 List.of(),
                 Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),

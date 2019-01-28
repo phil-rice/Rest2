@@ -61,6 +61,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
                 Formating.indent(fields(viewDom)),
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
+                List.of(Formating.indent + "@Override public IXingYi xingYi(){return xingYi;}"),
                 Formating.indent(constructor(viewDom.viewNames.clientViewImpl.className, viewDom.fields)),
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")

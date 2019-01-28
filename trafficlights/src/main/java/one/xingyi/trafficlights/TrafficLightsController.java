@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public class TrafficLightsController implements ITrafficLightsController {
     public final Map<String, TrafficLights> lights = Collections.synchronizedMap(new HashMap<>());
-    public TrafficLightsController() { lights.put("1", new TrafficLights("1", "red")); }
+    public TrafficLightsController() { lights.put("1", new TrafficLights("1", "red", "someLocation")); }
     CompletableFuture<TrafficLights> wrap(String id, Runnable sideeffect) {
         sideeffect.run();
         return CompletableFuture.completedFuture(lights.get(id));
@@ -20,17 +20,18 @@ public class TrafficLightsController implements ITrafficLightsController {
         return CompletableFuture.completedFuture(newLight);
     }
 
+    //TODO This method is broken
     @Override public CompletableFuture<TrafficLights> put(IdAndValue<String> idAndTrafficLights) {
-        return wrap(idAndTrafficLights.id, () -> lights.put(idAndTrafficLights.id, new TrafficLights(idAndTrafficLights.id, idAndTrafficLights.t)));
+        return wrap(idAndTrafficLights.id, () -> lights.put(idAndTrafficLights.id, new TrafficLights(idAndTrafficLights.id, idAndTrafficLights.t, "")));
     }
     @Override public CompletableFuture<Optional<TrafficLights>> getOptional(String id) { return CompletableFuture.completedFuture(Optional.ofNullable(lights.get(id))); }
     @Override public CompletableFuture<Boolean> delete(String id) { lights.remove(id); return CompletableFuture.completedFuture(true); }
     @Override public CompletableFuture<TrafficLights> create(String id) {
-        return wrap(id, () -> lights.put(id, new TrafficLights(id, "red")));
+        return wrap(id, () -> lights.put(id, new TrafficLights(id, "red", "")));
     }
     @Override public CompletableFuture<IdAndValue<TrafficLights>> create() {
         String id = lights.size() + "";
-        TrafficLights light = new TrafficLights(id, "red");
+        TrafficLights light = new TrafficLights(id, "red", "");
         lights.put(id, light);
         return CompletableFuture.completedFuture(new IdAndValue<>(id, light));
     }

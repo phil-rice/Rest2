@@ -13,12 +13,11 @@ import one.xingyi.core.sdk.IXingYiClientEntity;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.IdAndValue;
-import org.checkerframework.checker.nullness.Opt;
+import one.xingyi.core.utils.StateFn;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 //TODO This whole class needs sorting out. It is far too big and does too much
 public interface HttpService {
@@ -57,6 +56,9 @@ public interface HttpService {
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker);
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id);
     <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn);
+    //    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> post(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String urlPattern, String id);
+    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> process(
+            IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn);
 
 }
 
@@ -156,7 +158,19 @@ class DefaultHttpService implements HttpService {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForBoolean("delete", urlPattern.replace("{id}", id)));
     }
     @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn) {
-        throw new RuntimeException("not implemented yet. Should had íd and value lens to root javascript and should then consider how to refactor''primitive'");
+        return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> {
+            String url = urlPattern.replace("{id}", id);
+            CompletableFuture<View> original = primitive(clientMaker, "get", url, fn);
+            return original.thenCompose(o -> {
+                String json = o.xingYi().render("json", o);
+                ServiceRequest serviceRequest = new ServiceRequest("post", url.startsWith("/") ? protocolAndHost + url : url, List.of(), json);
+                return service.apply(serviceRequest).thenApply(makeEntity(clientMaker, serviceRequest));
+            });
+        });
+    }
+
+    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> process(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn) {
+        throw new RuntimeException("not implemented yet");
     }
 }
 

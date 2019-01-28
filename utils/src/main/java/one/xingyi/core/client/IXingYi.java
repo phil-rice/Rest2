@@ -17,7 +17,7 @@ public interface IXingYi<Entity extends IXingYiClientEntity, View extends IXingY
     <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
     objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
 
-
+    <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
 }
 
 
@@ -43,27 +43,33 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
         this.javaScript = javaScript;
         long time = System.nanoTime();
         engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6 ");
-        XingYiExecutionException.wrap("initialising",javaScript, () -> engine.eval(javaScript));
+        XingYiExecutionException.wrap("initialising", javaScript, () -> engine.eval(javaScript));
         this.inv = (Invocable) engine;
         System.out.println("Duration: " + (System.nanoTime() - time) / 1000000);
     }
-    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse. Strings was \n" + s,javaScript, () -> inv.invokeFunction("parse", s)); }
+    @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
+        return rawRender(renderName, view.mirror());
+    }
+    String rawRender(String name, Object mirror) {
+        return XingYiExecutionException.wrap("render", javaScript, () -> inv.invokeFunction("render_" + name, mirror).toString());
+    }
+    @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse. Strings was \n" + s, javaScript, () -> inv.invokeFunction("parse", s)); }
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        Getter<View, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity " + name, javaScript,() -> (String) inv.invokeFunction("getL", name, t.mirror()));
-        Setter<View, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name,javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
+        Getter<View, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity " + name, javaScript, () -> (String) inv.invokeFunction("getL", name, t.mirror()));
+        Setter<View, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
     @Override public IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker) {
-        return XingYiExecutionException.wrap("getIdAndValue", javaScript,() -> {
+        return XingYiExecutionException.wrap("getIdAndValue", javaScript, () -> {
             String id = (String) inv.invokeFunction("getField", mirror, "id");
             Object valueMirror = inv.invokeFunction("getField", mirror, "value");
             return new IdAndValue<>(id, maker.make(this, valueMirror));
         });
     }
     @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> maker2, String name) {
-        Getter<View, ChildView> getter = t -> XingYiExecutionException.<ChildView>wrap("objectLens.getEntity" + name, javaScript,() -> maker2.make(this, inv.invokeFunction("getL", name, t.mirror())));
-        Setter<View, ChildView> setter = (t, s) -> XingYiExecutionException.<View>wrap("objectLens.set" + name,javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
+        Getter<View, ChildView> getter = t -> XingYiExecutionException.<ChildView>wrap("objectLens.getEntity" + name, javaScript, () -> maker2.make(this, inv.invokeFunction("getL", name, t.mirror())));
+        Setter<View, ChildView> setter = (t, s) -> XingYiExecutionException.<View>wrap("objectLens.set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
     //    }

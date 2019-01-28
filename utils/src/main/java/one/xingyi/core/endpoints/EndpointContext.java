@@ -6,10 +6,7 @@ import lombok.val;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.HasJson;
-import one.xingyi.core.marshelling.IXingYiResponseSplitter;
-import one.xingyi.core.marshelling.JsonWriter;
+import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.IdAndValue;
 
 import java.util.List;
@@ -20,6 +17,7 @@ public class EndpointContext<J> {
     public final JavascriptStore javascriptStore;
     public final JavascriptDetailsToString javascriptDetailsToString;
     public final JsonWriter<J> jsonWriter;
+    public final JsonParser<J> jsonParser;
     public final String protocol;
 
 

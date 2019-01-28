@@ -4,6 +4,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.TestEntity;
 import one.xingyi.core.utils.FunctionFixture;
@@ -17,7 +18,7 @@ public class EndpointResultTest implements FunctionFixture {
 
     ServiceRequest serviceRequestNoHost = new ServiceRequest("someMethod", "/somePath", List.of(), "");
     ServiceRequest serviceRequestHost = new ServiceRequest("someMethod", "/somePath", List.of(new Header("host", "someHost")), "");
-    EndpointContext<JsonObject> context = new EndpointConfig<JsonObject>("rootJavascript", JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple).from(List.of());
+    EndpointContext<JsonObject> context = new EndpointConfig<JsonObject>("rootJavascript", JsonWriter.cheapJson, JsonParser.nullParser(),"http://", JavascriptDetailsToString.simple).from(List.of());
 
     @Test public void testCreate() {
         ServiceResponse serviceResponse = EndpointResult.create(context, 314).apply(serviceRequestHost, new TestEntity());
@@ -31,7 +32,7 @@ public class EndpointResultTest implements FunctionFixture {
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("rootJavascript\n" +
                 "---------\n" +
-                "{\"id\":\"someId\",\"\":{\"test\":\"json\"}}", serviceResponse.body);
+                "{\"id\":\"someId\",\"value\":{\"test\":\"json\"}}", serviceResponse.body);
     }
     @Test public void testCreateForJsonFn() {
         TestEntity entity = new TestEntity();

@@ -13,17 +13,18 @@ public interface ITrafficLightsDefn extends IXingYiEntityDefn {
     @Field(readOnly = true)
     String id();
     String color();
+    String location();
 
     @Post(url = "/orange", state = "red")
-    ITrafficLightsDefn orange();
+    ITrafficLightsDefn orange(String id);
 
     @Post(url = "/red", state = "flashing")
-    ITrafficLightsDefn red();
+    ITrafficLightsDefn red(String id);
 
     @Post(url = "/green", state = "yellow")
-    ITrafficLightsDefn green();
+    ITrafficLightsDefn green(String id);
 
     @Post(url = "/flashing", state = "green")
-    ITrafficLightsDefn flashing();
+    ITrafficLightsDefn flashing(String id);
 
 }
