@@ -17,9 +17,6 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
     static <J, Result extends HasJson<ContextForJson>> EndpointResult<Result> create(EndpointContext context, int statusCode) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBody(sr, r));
     }
-    static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Result> createWithLinks(EndpointContext context, int statusCode, Function<Entity, String> stateFn) {
-        return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, r, stateFn));
-    }
 
     static <J, Entity extends HasJson<ContextForJson>> EndpointResult<IdAndValue<Entity>> createForIdAndvalue(EndpointContext context, int statusCode) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyForIdAndValue(sr, r));
@@ -30,5 +27,11 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
 
     static <J, Entity extends HasJson<ContextForJson>> EndpointResult<Optional<Entity>> createForOptional(EndpointContext context, int statusCodeIfPresent) {
         return (sr, r) -> Optionals.fold(r, () -> ServiceResponse.notFound(""), result -> ServiceResponse.jsonString(statusCodeIfPresent, context.resultBody(sr, result)));
+    }
+    static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Result> createWithLinks(EndpointContext context, int statusCode, Function<Result, String> stateFn) {
+        return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, r, stateFn));
+    }
+    static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Optional<Result>> createForOptionalWithLinks(EndpointContext context, int statusCode, Function<Result, String> stateFn) {
+        return (sr, r) -> Optionals.fold(r, () -> ServiceResponse.notFound(""), result -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, result, stateFn)));
     }
 }
