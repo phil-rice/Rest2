@@ -2,7 +2,7 @@ package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.ServerDom;
 import one.xingyi.core.endpoints.*;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.IXingYiServer;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
@@ -13,7 +13,6 @@ import one.xingyi.core.validation.Result;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 public class ServerFileMaker implements IFileMaker<ServerDom> {
@@ -122,7 +121,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                         List.of("one.xingyi.server.EndPointFactorys"),
                         XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class, IXingYiServer.class,
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class, IXingYiServerCompanion.class,
-                        JsonObject.class, JsonWriter.class, Files.class,  HasBookmarkAndUrl.class),
+                        JsonValue.class, JsonWriter.class, Files.class,  HasBookmarkAndUrl.class),
 //                Formating.indent(generateRegister(serverDom)),
                 Formating.indent(createFields(serverDom)),
                 Formating.indent(createConstructor(serverDom)),

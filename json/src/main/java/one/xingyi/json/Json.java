@@ -1,10 +1,11 @@
 package one.xingyi.json;
 import lombok.val;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
 import org.json.JSONObject;
-import org.json.JSONString;
+
+import java.util.List;
 public class Json implements JsonWriter<Object>, JsonParser<Object> {
     public static Json simple = new Json();
     @Override public Object makeObject(Object... namesAndValues) {
@@ -13,8 +14,9 @@ public class Json implements JsonWriter<Object>, JsonParser<Object> {
             result.put((String) namesAndValues[i + 0], namesAndValues[i + 1]);
         return result;
     }
+    @Override public Object makeList(List<Object> items) { return items; }
     @Override public Object liftString(String string) {
-        return new JsonObject(string);
+        return new JSONObject(string);
     }
     @Override public String fromJ(Object o) {
         return o.toString();

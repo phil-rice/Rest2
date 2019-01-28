@@ -3,7 +3,7 @@ import one.xingyi.core.http.Header;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.TestEntity;
@@ -18,7 +18,7 @@ public class EndpointResultTest implements FunctionFixture {
 
     ServiceRequest serviceRequestNoHost = new ServiceRequest("someMethod", "/somePath", List.of(), "");
     ServiceRequest serviceRequestHost = new ServiceRequest("someMethod", "/somePath", List.of(new Header("host", "someHost")), "");
-    EndpointContext<JsonObject> context = new EndpointConfig<JsonObject>("rootJavascript", JsonWriter.cheapJson, JsonParser.nullParser(),"http://", JavascriptDetailsToString.simple).from(List.of());
+    EndpointContext<JsonValue> context = new EndpointConfig<JsonValue>("rootJavascript", JsonWriter.cheapJson, JsonParser.nullParser(),"http://", JavascriptDetailsToString.simple).from(List.of());
 
     @Test public void testCreate() {
         ServiceResponse serviceResponse = EndpointResult.create(context, 314).apply(serviceRequestHost, new TestEntity());

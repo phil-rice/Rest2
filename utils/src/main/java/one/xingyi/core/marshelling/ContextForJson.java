@@ -3,6 +3,14 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
+import one.xingyi.core.state.StateData;
+import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Optionals;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 public interface ContextForJson {
     String protocol();
@@ -10,6 +18,13 @@ public interface ContextForJson {
     String template(String raw);
     static ContextForJson nullContext = new NullContext();
     static ContextForJson forServiceRequest(String protocol, ServiceRequest serviceRequest) { return new ServiceRequestContextForJson(protocol, serviceRequest);}
+    default <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, String self, Map<String, List<StateData>> stateMap) {
+        J selfLink = jsonWriter.makeObject("_self", self);
+        return Optionals.fold(Optional.ofNullable(stateMap.get(stateFn.apply(entity))),
+                () -> jsonWriter.makeList(List.of(selfLink)),
+                list -> jsonWriter.makeList(Lists.insert(selfLink, Lists.map(list, sd -> jsonWriter.makeObject(sd.action, sd.link)))));
+
+    }
 }
 
 class NullContext implements ContextForJson {

@@ -3,7 +3,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.TestEntity;
@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.*;
 public class EndPointTest implements FunctionFixture {
 
-    EndpointContext<JsonObject> context = new EndpointContext<JsonObject>(JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, JsonWriter.cheapJson, JsonParser.nullParser(),
+    EndpointContext<JsonValue> context = new EndpointContext<JsonValue>(JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, JsonWriter.cheapJson, JsonParser.nullParser(),
             "http://");
     TestEntity testEntity = new TestEntity();
 

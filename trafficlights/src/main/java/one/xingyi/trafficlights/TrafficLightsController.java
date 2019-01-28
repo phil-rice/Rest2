@@ -20,6 +20,7 @@ public class TrafficLightsController implements ITrafficLightsController {
         return CompletableFuture.completedFuture(newLight);
     }
 
+    @Override public String stateFn(TrafficLights trafficLights) { return trafficLights.color(); }
     @Override public CompletableFuture<TrafficLights> put(IdAndValue<TrafficLights> idAndTrafficLights) {
         return wrap(idAndTrafficLights.id, () -> lights.put(idAndTrafficLights.id, idAndTrafficLights.t));
     }

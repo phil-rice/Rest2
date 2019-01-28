@@ -8,7 +8,7 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.UnexpectedResponse;
 import one.xingyi.reference.PersonServer;
 import one.xingyi.reference.person.PersonController;
@@ -28,10 +28,10 @@ abstract class AbstractEntityDetailsClientTest {
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
 
-    static EndpointConfig<JsonObject> config = EndpointConfig.defaultConfigNoParser;
+    static EndpointConfig<JsonValue> config = EndpointConfig.defaultConfigNoParser;
 
 
-    static EndPoint entityEndpoints = EndPoint.printlnLog(EndPoint.compose(new PersonServer<JsonObject>(config, new PersonController()).allEndpoints()));
+    static EndPoint entityEndpoints = EndPoint.printlnLog(EndPoint.compose(new PersonServer<JsonValue>(config, new PersonController()).allEndpoints()));
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 

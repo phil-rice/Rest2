@@ -1,5 +1,6 @@
 package one.xingyi.core.marshelling;
 import java.util.LinkedHashMap;
+import java.util.List;
 public interface JsonWriter<J> {
 
     default <Context> String toJson(HasJson<Context> hasJson, Context context) {
@@ -10,13 +11,14 @@ public interface JsonWriter<J> {
      * Contract is that there are an even number and that the first is a string, the next is a J
      */
     J makeObject(Object... namesAndValues);
+    J makeList(List<J> items);
     J liftString(String string);
     String fromJ(J j);
 
 
     static JsonWriter<Object> forMaps = new JsonWriterForMaps();
-    static JsonWriter<JsonObject> cheapJson = new CheapJson();
-    }
+    static JsonWriter<JsonValue> cheapJson = new CheapJson();
+}
 
 
 class JsonWriterForMaps implements JsonWriter<Object> {
@@ -29,6 +31,9 @@ class JsonWriterForMaps implements JsonWriter<Object> {
             result.put((String) namesAndValues[i], namesAndValues[i + 1]);
         }
         return result;
+    }
+    @Override public Object makeList(List<Object> items) {
+        return items;
     }
     @Override public Object liftString(String string) {
         return string;

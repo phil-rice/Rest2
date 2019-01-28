@@ -15,6 +15,7 @@ import one.xingyi.core.validation.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     String callConstructor(String entityName, FieldListDom dom) {
@@ -53,7 +54,16 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         result.add("}");
         return result;
     }
-
+    List<String> makeJsonForLinks(EntityDom entityDom, String companionName, String entityName, FieldListDom dom) {
+        List<String> result = new ArrayList<>();
+        if (entityDom.bookmark.isEmpty()) return result;
+        result.add("@XingYiGenerated");
+        result.add("public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<" + entityName + ", String> stateFn) {");
+        result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.mapJoin(",",
+                fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ",\"links_\",context.links(jsonWriter, this, stateFn," + companionName + ".companion.bookmarkAndUrl().urlPattern, " + companionName + ".companion.stateMap));");
+        result.add("}");
+        return result;
+    }
 
 
     public List<String> createEquals(EntityDom entityDom) {
@@ -90,12 +100,12 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityNames.serverInterface.asString(),
-                        List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, ContextForJson.class, HasJson.class, ContextForJson.class, JsonParser.class),
+                        List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),
                 Formating.indent(allFieldsAccessors(entityDom.entityNames.serverEntity.className, entityDom.fields)),
                 Formating.indent(makeJson(entityDom.fields)),
-
+                Formating.indent(makeJsonForLinks(entityDom, entityDom.entityNames.serverCompanion.asString(), entityDom.entityNames.serverEntity.asString(), entityDom.fields)),
                 Formating.indent(createEquals(entityDom)),
                 Formating.indent(createHashcode(entityDom)),
                 Formating.indent(createToString(entityDom)),

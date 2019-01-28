@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 
 public class PersonController implements IPersonController {
+    @Override public String stateFn(Person entity) { return ""; }
     final Address address = new Address("someLine1", "someLine2", "somePostcode");
     final TelephoneNumber number = new TelephoneNumber("someNumber");
     final Person person = new Person("someName", 23, address, number);

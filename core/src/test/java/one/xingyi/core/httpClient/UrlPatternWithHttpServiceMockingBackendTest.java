@@ -7,7 +7,7 @@ import one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion;
 import one.xingyi.core.httpClient.server.domain.EntityDetails;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Files;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     static String url = protocolAndHost + bookmark;
     static ServiceRequest serviceRequest = new ServiceRequest("get", url, List.of(), "");
     static ContextForJson context = ContextForJson.forServiceRequest("http://", serviceRequest);
-    static JsonWriter<JsonObject> jsonTC = JsonWriter.cheapJson;
+    static JsonWriter<JsonValue> jsonTC = JsonWriter.cheapJson;
     static String javascript = Files.getText("header.js") + EntityDetailsCompanion.companion.javascript;
     static String json = new EntityDetails("http://someHost:9000/someUrlPattern{id}").toJsonString(jsonTC, context);
 

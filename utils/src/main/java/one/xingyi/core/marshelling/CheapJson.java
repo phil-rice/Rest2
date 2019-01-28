@@ -1,7 +1,9 @@
 package one.xingyi.core.marshelling;
 import one.xingyi.core.utils.Strings;
-class CheapJson implements JsonWriter<JsonObject> {
-    public String jsonValueFor(Object obj){
+
+import java.util.List;
+class CheapJson implements JsonWriter<JsonValue> {
+    public String jsonValueFor(Object obj) {
         if (obj instanceof JsonObject) return ((JsonObject) obj).string;
         if (obj instanceof Integer) return obj.toString();
         if (obj instanceof Double) return obj.toString();
@@ -9,7 +11,7 @@ class CheapJson implements JsonWriter<JsonObject> {
         return Strings.quote(obj.toString());
     }
 
-    @Override public JsonObject makeObject(Object... namesAndValues) {
+    @Override public JsonValue makeObject(Object... namesAndValues) {
         StringBuilder builder = new StringBuilder("{");
         for (int i = 0; i < namesAndValues.length; i += 2) {
             if (i != 0) builder.append(",");
@@ -21,12 +23,13 @@ class CheapJson implements JsonWriter<JsonObject> {
         }
         return new JsonObject(builder + "}");
     }
-    @Override public JsonObject liftString(String string) {
+    @Override public JsonValue makeList(List<JsonValue> items) {
+        return null;
+    }
+    @Override public JsonValue liftString(String string) {
         return new JsonObject(Strings.quote(escape(string)));
     }
-    @Override public String fromJ(JsonObject jsonObject) {
-        return jsonObject.string;
-    }
+    @Override public String fromJ(JsonValue jsonValue) { return jsonValue.asString(); }
 
     String escape(String s) {
         return s.replace("\b", "\\b").

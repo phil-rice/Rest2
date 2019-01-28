@@ -15,8 +15,8 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
 
     List<String> addFromActionsDom(String result, ActionsDom actionsDom) {
         return Lists.append(
-                Optionals.toList(actionsDom.putDom, dom -> "CompletableFuture<" + result + "> put(IdAndValue<"+result+"> idAnd" + result + ");"),
-                Optionals.toList(actionsDom.getDom, dom -> dom.mustExist ? "CompletableFuture<" + result + "> get(String id);": "CompletableFuture<Optional<" + result + ">> getOptional(String id);"),
+                Optionals.toList(actionsDom.putDom, dom -> "CompletableFuture<" + result + "> put(IdAndValue<" + result + "> idAnd" + result + ");"),
+                Optionals.toList(actionsDom.getDom, dom -> dom.mustExist ? "CompletableFuture<" + result + "> get(String id);" : "CompletableFuture<Optional<" + result + ">> getOptional(String id);"),
                 Optionals.toList(actionsDom.deleteDom, dom -> "CompletableFuture<Boolean> delete(String id);"),
                 Optionals.toList(actionsDom.createWithoutIdDom, dom -> "CompletableFuture<" + result + "> create(String id);"),
                 Optionals.toList(actionsDom.createDom, dom -> "CompletableFuture<IdAndValue<" + result + ">> create();"),
@@ -32,6 +32,7 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
                 List.of("//" + entityDom.bookmark),
                 Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "interface", entityDom.entityNames.serverController, "",
                         manualImports, CompletableFuture.class, IdAndValue.class, Optional.class),
+                Formating.indent(List.of("String stateFn(" + serverEntity.className + " entity);")),
                 Formating.indent(addFromActionsDom(serverEntity.className, entityDom.actionsDom)),
                 List.of("}"));
         return Result.succeed(new FileDefn(entityDom.entityNames.serverController, Lists.join(result, "\n")));
