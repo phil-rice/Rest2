@@ -10,6 +10,7 @@ import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.IdAndValue;
 
 import java.util.List;
+import java.util.function.Function;
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode

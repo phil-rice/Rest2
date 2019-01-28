@@ -10,10 +10,12 @@ import one.xingyi.core.utils.Lists;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 public interface EndPointFactorys {
 
     static <J> EndPoint entityEndpointFromContext(EndpointContext<J> context, List<HasBookmarkAndUrl> companions) {
         EntityRegister entityRegister = EntityRegister.apply(companions);
+        Function<EntityDetails, String> noStateFn = x -> "";
         return IResourceEndPoint.<J, EntityDetails, EntityDetailsRequest, Optional<EntityDetails>>create(
                 new EntityEndpointAcceptor(entityRegister),
                 from -> CompletableFuture.completedFuture(entityRegister.apply(from)),

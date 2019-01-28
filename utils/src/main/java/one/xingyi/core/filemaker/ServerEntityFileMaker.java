@@ -3,10 +3,7 @@ import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.FieldListDom;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.HasJson;
-import one.xingyi.core.marshelling.JsonParser;
-import one.xingyi.core.marshelling.JsonWriter;
+import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
@@ -98,9 +95,12 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
 
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
+        String classPostFix = " implements HasJson<ContextForJson>," + entityDom.entityNames.serverInterface.asString();
+        if (entityDom.bookmark.isPresent()) classPostFix += ",HasJsonWithLinks<ContextForJson," + entityDom.entityNames.serverEntity.className + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, " implements HasJson<ContextForJson>," + entityDom.entityNames.serverInterface.asString(),
-                        List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class),
+                Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, classPostFix,
+                        List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, HasJsonWithLinks.class,
+                        ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),
                 Formating.indent(allFieldsAccessors(entityDom.entityNames.serverEntity.className, entityDom.fields)),

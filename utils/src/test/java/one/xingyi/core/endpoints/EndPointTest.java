@@ -12,6 +12,7 @@ import one.xingyi.core.utils.Strings;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 public class EndPointTest implements FunctionFixture {
@@ -25,13 +26,15 @@ public class EndPointTest implements FunctionFixture {
         assertEquals("someJavascript\n---------\n" + json, serviceResponse.body);
     }
 
+    Function<TestEntity, String> stateFn = e -> "someState";
+
     @Test
     public void getOptionalEntity() {
     }
     @Test
     public void getEntity() throws ExecutionException, InterruptedException {
-        checkSR(200, Strings.changeQuotes("{'test':'json'}"), EndPoint.getEntity(context, "/path/{id}", kleisli("someId", testEntity)).apply(ServiceRequest.sr("get", "/path/someId")).get().get());
-        checkSR(200, Strings.changeQuotes("{'test':'json'}"), EndPoint.getEntity(context, "{host}/path/{id}", kleisli("someId", testEntity)).apply(ServiceRequest.sr("get", "/path/someId")).get().get());
+        checkSR(200, Strings.changeQuotes("{'test':'json'}"), EndPoint.getEntity(context, "/path/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/path/someId")).get().get());
+        checkSR(200, Strings.changeQuotes("{'test':'json'}"), EndPoint.getEntity(context, "{host}/path/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/path/someId")).get().get());
     }
     @Test
     public void deleteEntity() {
