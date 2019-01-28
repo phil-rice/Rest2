@@ -9,6 +9,7 @@ Currently it is being generated but we need to 'manage it'.
 
 * We need to parse JSON for puts/posts
 * We want a nice library instead of quick JSON
+* We need to make the prototype story clean: perhaps we need to ask for a prototype?
 
 #Lists
 No idea what to do...
