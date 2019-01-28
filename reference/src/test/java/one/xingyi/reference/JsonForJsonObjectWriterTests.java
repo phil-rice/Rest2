@@ -6,7 +6,7 @@ import static junit.framework.TestCase.assertEquals;
 public class JsonForJsonObjectWriterTests extends JsonWriterTests<JsonObject> {
 
 
-    @Override protected JsonWriter<JsonObject> jsonTC() {
+    @Override protected JsonWriter<JsonObject> jsonWriter() {
         return JsonWriter.cheapJson;
     }
 }

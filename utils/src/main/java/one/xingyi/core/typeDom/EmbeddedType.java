@@ -16,4 +16,7 @@ public class EmbeddedType implements TypeDom {
     }
     @Override public TypeDom nested() { return nested; }
     @Override public boolean primitive() { return false; }
+    @Override public String forFromJson(String fieldName) {
+        return null; //TODO
+    }
 }

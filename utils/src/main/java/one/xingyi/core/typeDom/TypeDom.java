@@ -23,7 +23,8 @@ public interface TypeDom {
     TypeDom nested();
     boolean primitive();
 
-    default String forJson(String fieldName, boolean templated){return fieldName;}
+    default String forToJson(String fieldName, boolean templated) {return fieldName;}
+    String forFromJson(String fieldName);
 
 
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName) {
@@ -42,7 +43,7 @@ public interface TypeDom {
                 String serviceInterface = tr.serverInterface.asString();
                 String serviceClass = tr.originalDefn.asString();
                 return names.viewName(fullTypeName, serviceClass).map(
-                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(),vn.clientCompanion.asString()));
+                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(), vn.clientCompanion.asString(),tr.serverCompanion.asString()));
             });
         }
         return Result.failwith("Could not work out what type " + rawTypeName + " was");

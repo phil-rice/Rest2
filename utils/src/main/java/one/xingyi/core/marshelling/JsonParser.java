@@ -5,7 +5,9 @@ public interface JsonParser<J> {
     String fromJ(J j);
     J parse(String jsonString);
     String asString(J j);
+    default String asString(J j, String childName) {return asString(child(j, childName));}
     int asInt(J j);
+    default int asInt(J j, String childName) {return asInt(child(j, childName));}
     J child(J j, String name);
 }
 class NullParser<J> implements JsonParser<J> {

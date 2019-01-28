@@ -3,6 +3,7 @@ import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
+import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.sdk.IXingYiServesEntityCompanion;
 import one.xingyi.core.utils.Formating;
@@ -21,7 +22,6 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     }
 
 
-
     private List<String> createCompanion(EntityDom entityDom) {
         return List.of("public static " + entityDom.entityNames.serverCompanion.asString() + " companion  =new " + entityDom.entityNames.serverCompanion.className + "();");
     }
@@ -38,17 +38,28 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
         return result;
     }
 
+    List<String> fromJson(EntityDom dom) {
+        String className = dom.entityNames.serverEntity.className;
+        return List.of("@XingYiGenerated", "public <J> " + className + " fromJson(JsonParser<J> jsonParser, J j){",
+                Formating.indent+"return new " + className + "(" + dom.fields.mapJoin(",", fd -> fd.typeDom.forFromJson(fd.name)) + ");",
+                "};");
+    }
+
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
-        String implementsString = (entityDom.bookmark.isEmpty() ?"IXingYiServerCompanion": "IXingYiServesEntityCompanion") + "<" + entityDom.entityNames.originalDefn.asString() + "," + entityDom.entityNames.serverEntity.asString() + ">";
+        String implementsString = (entityDom.bookmark.isEmpty() ? "IXingYiServerCompanion" : "IXingYiServesEntityCompanion") + "<" + entityDom.entityNames.originalDefn.asString() + "," + entityDom.entityNames.serverEntity.asString() + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverCompanion,
-                        " implements " + implementsString, List.of(), IXingYiServerCompanion.class, IXingYiServesEntityCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
+                Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverCompanion,
+                        " implements " + implementsString,
+                        List.of(entityDom.entityNames.serverEntity.asString()),
+                        IXingYiServerCompanion.class, JsonParser.class,
+                        IXingYiServesEntityCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(entityDom)),
                 Formating.indent(createCompanion(entityDom)),
                 Formating.indent(createJavascript(entityDom)),
+                Formating.indent(fromJson(entityDom)),
                 List.of("}")
         ), "\n");
-        return Result.succeed( new FileDefn(entityDom.entityNames.serverCompanion, result));
+        return Result.succeed(new FileDefn(entityDom.entityNames.serverCompanion, result));
     }
 }

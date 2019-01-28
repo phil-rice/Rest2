@@ -15,6 +15,9 @@ public class ListType implements TypeDom {
     @Override public String forEntity() { return List.class.getName() + "<" + nested.forEntity() + ">"; }
     @Override public String fullTypeName() { return fullTypeName; }
     @Override public boolean primitive() { return false; }
+    @Override public String forFromJson(String fieldName) {
+        return null;//TODO
+    }
     @Override public TypeDom nested() { return nested; }
 
 }

@@ -63,7 +63,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpoint() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\"}", server.getOptionalTrafficLights().apply(sr("get", "/lights/someId")).get().get());
+            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\"}", server.getOptionalTrafficLights().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }
@@ -71,7 +71,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpointUsingAllEndpoints() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\"}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
+            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\"}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }
