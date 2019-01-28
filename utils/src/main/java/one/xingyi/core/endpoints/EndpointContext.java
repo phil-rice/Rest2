@@ -7,6 +7,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.*;
+import one.xingyi.core.utils.Function3;
 import one.xingyi.core.utils.IdAndValue;
 
 import java.util.List;
@@ -24,6 +25,10 @@ public class EndpointContext<J> {
 
     public <Entity extends HasJson<ContextForJson>> String resultBody(ServiceRequest serviceRequest, Entity entity) {
         val json = jsonWriter.fromJ(entity.toJson(jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest)));
+        return resultBodyForJson(json);
+    }
+    public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyWithLinks(ServiceRequest serviceRequest, Entity entity, Function<Entity, String> stateFn) {
+        val json = jsonWriter.fromJ(entity.toJsonWithLinks(jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest), stateFn));
         return resultBodyForJson(json);
     }
     public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, IdAndValue<Entity> entity) {

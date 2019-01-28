@@ -40,10 +40,10 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Boolean> deleteEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Boolean>> fn) {
         return new ResourceEndPoint<J, Entity, String, Boolean>(IResourceEndpointAcceptor.<String>apply("delete", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<Boolean>create(200, r -> r.toString()));
+                fn, EndpointResult.<Boolean>createForNonEntity(200, r -> r.toString()));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
-            EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier,Function<Entity, String> stateFn ) {
+            EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", path),
                 s -> {System.out.println("in here: " + s); return idAndValueSupplier.get();}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
     }
@@ -59,7 +59,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     }
 
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
-            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath,  Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
                 (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.jsonParser, context.jsonParser.parse(sr.body)))),
                 fn, EndpointResult.<J, Entity>create(context, 200));

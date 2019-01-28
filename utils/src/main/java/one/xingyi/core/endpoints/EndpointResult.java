@@ -1,8 +1,10 @@
 package one.xingyi.core.endpoints;
+import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
+import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.utils.Function3;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Optionals;
@@ -15,10 +17,14 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
     static <J, Result extends HasJson<ContextForJson>> EndpointResult<Result> create(EndpointContext context, int statusCode) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBody(sr, r));
     }
+    static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Result> createWithLinks(EndpointContext context, int statusCode, Function<Entity, String> stateFn) {
+        return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, r, stateFn));
+    }
+
     static <J, Entity extends HasJson<ContextForJson>> EndpointResult<IdAndValue<Entity>> createForIdAndvalue(EndpointContext context, int statusCode) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyForIdAndValue(sr, r));
     }
-    static <Result> EndpointResult<Result> create(int statusCode, Function<Result, String> jsonFn) {
+    static <Result> EndpointResult<Result> createForNonEntity(int statusCode, Function<Result, String> jsonFn) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, jsonFn.apply(r));
     }
 
