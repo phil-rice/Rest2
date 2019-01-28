@@ -163,7 +163,7 @@ class DefaultHttpService implements HttpService {
             CompletableFuture<View> original = primitive(clientMaker, "get", url, fn);
             return original.thenCompose(o -> {
                 String json = o.xingYi().render("json", o);
-                ServiceRequest serviceRequest = new ServiceRequest("post", url.startsWith("/") ? protocolAndHost + url : url, List.of(), json);
+                ServiceRequest serviceRequest = new ServiceRequest("put", url.startsWith("/") ? protocolAndHost + url : url, List.of(), json);
                 return service.apply(serviceRequest).thenApply(makeEntity(clientMaker, serviceRequest));
             });
         });

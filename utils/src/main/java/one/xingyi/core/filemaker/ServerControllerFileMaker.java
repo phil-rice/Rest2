@@ -15,7 +15,7 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
 
     List<String> addFromActionsDom(String result, ActionsDom actionsDom) {
         return Lists.append(
-                Optionals.toList(actionsDom.putDom, dom -> "CompletableFuture<" + result + "> put(IdAndValue<String> idAnd" + result + ");"),
+                Optionals.toList(actionsDom.putDom, dom -> "CompletableFuture<" + result + "> put(IdAndValue<"+result+"> idAnd" + result + ");"),
                 Optionals.toList(actionsDom.getDom, dom -> dom.mustExist ? "CompletableFuture<" + result + "> get(String id);": "CompletableFuture<Optional<" + result + ">> getOptional(String id);"),
                 Optionals.toList(actionsDom.deleteDom, dom -> "CompletableFuture<Boolean> delete(String id);"),
                 Optionals.toList(actionsDom.createWithoutIdDom, dom -> "CompletableFuture<" + result + "> create(String id);"),

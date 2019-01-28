@@ -20,9 +20,8 @@ public class TrafficLightsController implements ITrafficLightsController {
         return CompletableFuture.completedFuture(newLight);
     }
 
-    //TODO This method is broken
-    @Override public CompletableFuture<TrafficLights> put(IdAndValue<String> idAndTrafficLights) {
-        return wrap(idAndTrafficLights.id, () -> lights.put(idAndTrafficLights.id, new TrafficLights(idAndTrafficLights.id, idAndTrafficLights.t, "")));
+    @Override public CompletableFuture<TrafficLights> put(IdAndValue<TrafficLights> idAndTrafficLights) {
+        return wrap(idAndTrafficLights.id, () -> lights.put(idAndTrafficLights.id, idAndTrafficLights.t));
     }
     @Override public CompletableFuture<Optional<TrafficLights>> getOptional(String id) { return CompletableFuture.completedFuture(Optional.ofNullable(lights.get(id))); }
     @Override public CompletableFuture<Boolean> delete(String id) { lights.remove(id); return CompletableFuture.completedFuture(true); }

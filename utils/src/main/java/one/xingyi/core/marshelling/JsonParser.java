@@ -12,7 +12,7 @@ public interface JsonParser<J> {
 }
 class NullParser<J> implements JsonParser<J> {
     @Override public String fromJ(J j) { throw new RuntimeException("The Null Parser cannot be used");}
-    @Override public J parse(String jsonString) { throw new RuntimeException("The Null Parser cannot be used");}
+    @Override public J parse(String jsonString) { throw new RuntimeException("The Null Parser cannot be used to parse\n" + jsonString);}
     @Override public String asString(J j) { throw new RuntimeException("The Null Parser cannot be used");}
     @Override public int asInt(J j) { throw new RuntimeException("The Null Parser cannot be used");}
     @Override public J child(J j, String name) { throw new RuntimeException("The Null Parser cannot be used");}

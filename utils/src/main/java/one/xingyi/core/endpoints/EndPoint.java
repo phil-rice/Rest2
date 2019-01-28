@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.marshelling.MakesFromJson;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Lists;
@@ -44,7 +45,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
             EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier) {
         return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", path),
-                s -> {System.out.println("in here: "+ s);return idAndValueSupplier.get();}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
+                s -> {System.out.println("in here: " + s); return idAndValueSupplier.get();}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn) {
@@ -54,6 +55,13 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> postEntity(
             EndpointContext<J> context, String templatedPath, List<String> states, Function<String, CompletableFuture<Entity>> fn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
+                fn, EndpointResult.<J, Entity>create(context, 200));
+    }
+
+    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
+            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath,  Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn) {
+        return new ResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
+                (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.jsonParser, context.jsonParser.parse(sr.body)))),
                 fn, EndpointResult.<J, Entity>create(context, 200));
     }
 

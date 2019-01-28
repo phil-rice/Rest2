@@ -83,6 +83,12 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark) + ", " + function + ");",
                 "}"));
     }
+    List<String> createPutEndpoint(String methodName,  String companionName, String bookmark, String function) {
+        return Lists.append(List.of(
+                "public EndPoint " + methodName + "() {",
+                Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + Strings.quote(bookmark) + ", " + function + ");",
+                "}"));
+    }
     List<String> createPostEndpoint(String methodName, List<String> states, String bookmark, String function) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
@@ -97,9 +103,11 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
         return Lists.flatMap(serverDom.codeDom.entityDoms, ed -> {
             String className = ed.entityNames.serverEntity.className;
             String controllerName = ed.entityNames.serverController.className;
+            String companionName = ed.entityNames.serverCompanion.asString();
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
                     Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpoint("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::create")),
+                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b.urlPattern, controllerName + "::put")),
                     Optionals.flatMap(ed.actionsDom.getDom, dom -> dom.mustExist ?
                             createEndpoint("get" + className, "getEntity", b.urlPattern, controllerName + "::get") :
                             createEndpoint("getOptional" + className, "getOptionalEntity", b.urlPattern, controllerName + "::getOptional")),

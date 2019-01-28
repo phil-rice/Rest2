@@ -31,9 +31,8 @@ public class PersonController implements IPersonController {
         return CompletableFuture.completedFuture(Optional.ofNullable(personStore.get(id)).orElseThrow(() -> new RuntimeException("Cannot find person with id: " + id)));
     }
 
-    @Override public CompletableFuture<Person> put(IdAndValue<String> idAndPerson) {
-//        return wrap(idAndPerson.id, () ->personStore.put(idAndPerson.id, idAndPerson.t) );
-        throw new RuntimeException("not implemented yet");
+    @Override public CompletableFuture<Person> put(IdAndValue<Person> idAndPerson) {
+        return wrap(idAndPerson.id, () -> personStore.put(idAndPerson.id, idAndPerson.t));
     }
     @Override public CompletableFuture<Optional<Person>> getOptional(String id) { return CompletableFuture.completedFuture(Optional.ofNullable(personStore.get(id))); }
     @Override public CompletableFuture<Boolean> delete(String id) {

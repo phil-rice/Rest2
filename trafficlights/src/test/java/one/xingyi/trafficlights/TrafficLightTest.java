@@ -4,13 +4,15 @@ import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
-import one.xingyi.core.marshelling.DataAndJavaScript;
-import one.xingyi.core.marshelling.IXingYiResponseSplitter;
-import one.xingyi.core.marshelling.JsonObject;
+import one.xingyi.core.javascript.JavascriptDetailsToString;
+import one.xingyi.core.marshelling.*;
 import one.xingyi.core.utils.Consumer3WithException;
+import one.xingyi.core.utils.Files;
+import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
 import one.xingyi.trafficlights.client.view.LocationView;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -23,10 +25,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 public class TrafficLightTest {
 
-    EndpointConfig<JsonObject> config = EndpointConfig.defaultConfigNoParser;
-    public void setup(Consumer3WithException<TrafficLightsController, TrafficLightServer<JsonObject>, HttpService> consumer) throws Exception {
+    Json jsonParserAndWriter = new Json();
+    EndpointConfig<Object> config = new EndpointConfig<>(
+            Files.getText("header.js"),
+            jsonParserAndWriter, jsonParserAndWriter,
+            "http://",
+            JavascriptDetailsToString.simple);
+
+    public void setup(Consumer3WithException<TrafficLightsController, TrafficLightServer<Object>, HttpService> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController();
-        TrafficLightServer<JsonObject> server = new TrafficLightServer<>(config, controller);
+        TrafficLightServer<Object> server = new TrafficLightServer<>(config, controller);
         HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
         consumer.accept(controller, server, service);
     }
@@ -93,6 +101,7 @@ public class TrafficLightTest {
             assertEquals("2red", ColourView.get(service, "2", fn).get());
         });
     }
+
     @Test public void testCanCreateWithoutId() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
@@ -125,22 +134,22 @@ public class TrafficLightTest {
             populate(controller, "someId", "red", "someLocation");
             assertEquals("newLocation", LocationView.edit(service, "someId", loc -> loc.withlocation("newLocation")).get().location());
             assertEquals("newLocation", controller.lights.get("someId").location());
-            assertEquals("newLocation", LocationView.get(service, "someId", v -> v.location()));
+            assertEquals("newLocation", LocationView.get(service, "someId", v -> v.location()).get());
         });
     }
+
+    @Test @Ignore public void testTheStateChangeMethods() throws Exception {
+        setup((controller, server, service) -> {
+            //lets think about this programming model in a bit... it's important but off topic
+//            ColourView.getFor(service, "someId", new Pretend<ColourView>()
+            //The optional is because the entity might not be in the right state
+//            CompletableFuture<Optional<ColourView>> doneIt = ColourView.orange(service, "1");
 //    class Pretend<T> {
 //        Optional<Function<T, T>> processRed;
 //        Optional<Function<T, T>> processOrange;
 //        Optional<Function<T, T>> processGreen;
 //        Optional<Function<T, T>> processFlashing;
 //    }
-
-    @Test public void testTheStateChangeMethods() throws Exception {
-        setup((controller, server, service) -> {
-            //lets think about this programming model in a bit... it's important but off topic
-//            ColourView.getFor(service, "someId", new Pretend<ColourView>()
-            //The optional is because the entity might not be in the right state
-//            CompletableFuture<Optional<ColourView>> doneIt = ColourView.orange(service, "1");
 
             fail();
         });
