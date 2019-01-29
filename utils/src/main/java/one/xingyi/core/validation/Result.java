@@ -34,11 +34,11 @@ public interface Result<Fail, T> {
     static <Fail, T> Result<Fail, List<T>> merge(List<Result<Fail, T>> results) {
         return Result.<Fail, List<T>>apply(Lists.flatMap(results, f -> f.fails()), Lists.flatMapOptional(results, Result::result));
     }
-    static <Fail, T> Result<Fail, T> validate(T t, Function<T, List<Fail>>... failFns) { return apply(Lists.flatMap(Arrays.asList(failFns), fn -> fn.apply(t)), t); }
+    @SafeVarargs static <Fail, T> Result<Fail, T> validate(T t, Function<T, List<Fail>>... failFns) { return apply(Lists.flatMap(Arrays.asList(failFns), fn -> fn.apply(t)), t); }
     static <Fail, T> Result<Fail, T> succeed(T t) { return new Succeeds<>(t);}
     static <Fail, T> Result<Fail, T> failwith(Fail fail) { return new Failures<>(List.of(fail));}
-    static <Fail, T> Result<Fail, T> allFail(Fail... fails) { return new Failures<>(Arrays.asList(fails));}
-    static <Fail, T> Result<Fail, T> apply(List<Fail> fails, T t) { return fails.isEmpty() ? new Succeeds<>(t) : new Failures(fails);}
+    @SafeVarargs static <Fail, T> Result<Fail, T> allFail(Fail... fails) { return new Failures<>(Arrays.asList(fails));}
+    static <Fail, T> Result<Fail, T> apply(List<Fail> fails, T t) { return fails.isEmpty() ? new Succeeds<>(t) : new Failures<>(fails);}
     static <Fail, T> List<T> successes(List<Result<Fail, T>> results) { return Lists.flatMapOptional(results, Result::result);}
     static <Fail, T> List<Fail> failures(List<Result<Fail, T>> results) {return Lists.flatMap(results, Result::fails);}
 }

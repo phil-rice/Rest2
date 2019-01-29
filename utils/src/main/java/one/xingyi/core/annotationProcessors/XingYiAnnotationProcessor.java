@@ -53,7 +53,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         log.info("Processing XingYi Annotations");
         try {
             Set<? extends Element> elements = env.getElementsAnnotatedWith(Entity.class);
-            log.info("Found these entities: " + elements);
+//            log.info("Found these entities: " + elements);
             List<Result<ElementFail, EntityDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
@@ -63,7 +63,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
 
             List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());
-            log.info("Making viewDoms elements: " + viewElements);
+//            log.info("Making viewDoms elements: " + viewElements);
             List<Result<ElementFail, ViewDom>> viewDomResults = Lists.map(viewElements,
                     v -> bundle.elementToViewNames().apply((TypeElement) v).flatMap(vn ->
                             bundle.elementToViewDom(vn).apply((TypeElement) v)
