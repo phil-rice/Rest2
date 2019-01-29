@@ -13,7 +13,7 @@ public class Lists {
             if (fn.apply(t)) return Optional.of(t);
         return Optional.empty();
     }
-    public static <T, T1> List<T1> map(List<T> list, FunctionWithError<T, T1> fn) {
+    public static <T, T1> List<T1> map(List<T> list, FunctionWithException<T, T1> fn) {
         try {
             List<T1> result = new ArrayList<>();
             for (T t : list)

@@ -79,7 +79,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsEntityDom);
         List<String> manualImports = Lists.append(List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
-                Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.fullTypeName())));
+                Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,

@@ -8,6 +8,7 @@ import one.xingyi.core.utils.IdAndValue;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
+import java.util.List;
 import java.util.concurrent.Callable;
 public interface IXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> {
     Object parse(String s);
@@ -16,6 +17,9 @@ public interface IXingYi<Entity extends IXingYiClientEntity, View extends IXingY
 
     <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
     objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
+
+    <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>>
+    Lens<View, ISimpleList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
 
     <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
 }
@@ -72,7 +76,22 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
         Setter<View, ChildView> setter = (t, s) -> XingYiExecutionException.<View>wrap("objectLens.set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
-    //    }
+
+    <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> ISimpleList<ChildView> makeSimpleList(Object mirror, IXingYiClientFactory<ChildEntity, ChildView> childMaker) {
+        return new SimpleList<>(mirror,
+                () -> (Integer) inv.invokeFunction("sizeOfList", mirror),
+                n -> childMaker.make(this, inv.invokeFunction("getFromList", mirror, n)),
+                (n, t) -> makeSimpleList(inv.invokeFunction("setInList", mirror, n, t), childMaker));
+    }
+    @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ISimpleList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
+        Getter<View, ISimpleList<ChildView>> getter = t ->
+                XingYiExecutionException.<ISimpleList<ChildView>>wrap("listLens.getEntity" + name, javaScript,
+                        () -> makeSimpleList(inv.invokeFunction("getL", name, t.mirror()), childMaker));
+        Setter<View, ISimpleList<ChildView>> setter =
+                (t, s) -> XingYiExecutionException.<View>wrap("listLens.set" + name, javaScript,
+                        () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
+        return Lens.<View, ISimpleList<ChildView>>create(getter, setter);
+    }
 //    @Override public <View extends XingYiDomain, ChildView> Lens<View, ChildView> objectLens(IDomainMaker<View> domainMaker1, IDomainMaker<ChildView> domainMaker2, String name) {
 //    }
 }

@@ -74,7 +74,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
 
         List<String> manualImports = Lists.append(
                 List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern", "one.xingyi.core.httpClient.client.companion.UrlPatternCompanion"),
-                Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.fullTypeName())));
+                Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
 //        String afterClassString = "<Entity extends IXingYiEntity, IOps extends IXingYiView<Entity>, Impl extends IXingYiClientImpl<Entity, IOps>> extends IXingYiClientMaker<Entity, IOps>"
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientCompanion,

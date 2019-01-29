@@ -21,10 +21,10 @@ public interface IPersonDefn extends IXingYiEntityDefn {
     //==========
 
     @Deprecated
-    @Field(javascript = " return compose(lens_person_address_address(), lens('line1'));")
+    @Field(javascript = " return compose(lens_Person_address(), lens('line1'));")
     String line1();
 
     @Deprecated
-    @Field(javascript = " return compose(lens_person_address_address(), lens('line2'));")
+    @Field(javascript = " return compose(lens_Person_address(), lens('line2'));")
     String line2();
 }

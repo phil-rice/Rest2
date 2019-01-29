@@ -1,4 +1,4 @@
 package one.xingyi.core.utils;
-public interface FunctionWithError<From,To> {
+public interface FunctionWithException<From,To> {
     To apply(From from) throws Exception;
 }

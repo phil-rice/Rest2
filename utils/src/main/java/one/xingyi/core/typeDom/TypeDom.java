@@ -1,4 +1,5 @@
 package one.xingyi.core.typeDom;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.embedded.Embedded;
 import one.xingyi.core.names.IServerNames;
@@ -30,7 +31,7 @@ public interface TypeDom {
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName) {
         String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);
         PackageAndClassName packageAndClassName = new PackageAndClassName(fullTypeName);
-        String listClassName = List.class.getName();
+        String listClassName = ISimpleList.class.getName();
         String embeddedClassName = Embedded.class.getName();
         if (primitives().contains(packageAndClassName))
             return Result.succeed(new PrimitiveType(packageAndClassName));

@@ -40,6 +40,17 @@ public class WrappedException extends RuntimeException {
             }
         };
     }
+    public static <T1, T2> Function<T1, T2> wrapFnWithE(FunctionWithException<T1, T2> fn) {
+        return from -> {
+            try {
+                return fn.apply(from);
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new WrappedException(e);
+            }
+        };
+    }
     public static void wrap(RunnableWithException runnable) {
         try {
             runnable.run();

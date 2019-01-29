@@ -1,9 +1,12 @@
 package one.xingyi.core.filemaker;
+import one.xingyi.core.ISimpleMap;
 import one.xingyi.core.annotations.XingYiGenerated;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.core.sdk.IXingYiClientImpl;
+import one.xingyi.core.typeDom.ListType;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
@@ -23,12 +26,18 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         result.add("//Entity" + viewDomAndEntityDomField.entityDomField);
         String lensName = entityDom.map(fd -> fd.lensName).orElse("not defined. Is this because of incremental compilation?");
 
+        //TODO wow... really ugly
         if (viewDom.typeDom.primitive()) {
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
                     "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(lensName) + ");}");
-        } else {
+        } else if (viewDom.typeDom instanceof ListType ){
+            result.add("//" + viewDom.typeDom);
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){return xingYi.objectLens(companion, " + viewDom.typeDom.viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
+                    viewDom.name + "Lens(){return xingYi.listLens(companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
+
+        } else{
+            result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
+                    viewDom.name + "Lens(){return xingYi.objectLens(companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
 
         }
         result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
@@ -54,12 +63,13 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
-        List<String> manualImports = Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.fullTypeName()));
+        List<String> manualImports = Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName()));
         String result = Lists.<String>join(Lists.<String>append(
                 Formating.javaFile(getClass(),viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientViewImpl,
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
-                                viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class, Lens.class),
+                                viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
+                        ISimpleList.class, Lens.class, ISimpleMap.class),
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
                 Formating.indent(fields(viewDom)),
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),

@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.utils.Function3;
-import one.xingyi.core.utils.FunctionWithError;
+import one.xingyi.core.utils.FunctionWithException;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
 
@@ -21,7 +21,7 @@ public interface Result<Fail, T> {
     Result<Fail, T> forEach(Consumer<T> consumer);
     <T1> Result<Fail, T1> map(Function<T, T1> fn);
     <T1> Result<Fail, T1> flatMap(Function<T, Result<Fail, T1>> fn);
-    <Fail1> Result<Fail1, T> failMap(FunctionWithError<Fail, Fail1> fn);
+    <Fail1> Result<Fail1, T> failMap(FunctionWithException<Fail, Fail1> fn);
 
     static <Fail, T1, T2, T> Result<Fail, T> join(Result<Fail, T1> res1, Result<Fail, T2> res2, BiFunction<T1, T2, T> fn) {
         return res1.flatMap(r1 -> res2.map(r2 -> fn.apply(r1, r2)));
@@ -53,7 +53,7 @@ class Failures<Fail, T> implements Result<Fail, T> {
     @Override public Result<Fail, T> forEach(Consumer<T> consumer) { return this; }
     @Override public <T1> Result<Fail, T1> map(Function<T, T1> fn) { return new Failures<>(fails); }
     @Override public <T1> Result<Fail, T1> flatMap(Function<T, Result<Fail, T1>> fn) {return new Failures<>(fails); }
-    @Override public <Fail1> Result<Fail1, T> failMap(FunctionWithError<Fail, Fail1> fn) { return new Failures<Fail1, T>(Lists.<Fail, Fail1>map(fails, fn)); }
+    @Override public <Fail1> Result<Fail1, T> failMap(FunctionWithException<Fail, Fail1> fn) { return new Failures<Fail1, T>(Lists.<Fail, Fail1>map(fails, fn)); }
 }
 
 @RequiredArgsConstructor
@@ -66,5 +66,5 @@ class Succeeds<Fail, T> implements Result<Fail, T> {
     @Override public Result<Fail, T> forEach(Consumer<T> consumer) { consumer.accept(t); return this;}
     @Override public <T1> Result<Fail, T1> map(Function<T, T1> fn) { return new Succeeds<>(fn.apply(t)); }
     @Override public <T1> Result<Fail, T1> flatMap(Function<T, Result<Fail, T1>> fn) { return fn.apply(t); }
-    @Override public <Fail1> Result<Fail1, T> failMap(FunctionWithError<Fail, Fail1> fn) { return new Succeeds<>(t); }
+    @Override public <Fail1> Result<Fail1, T> failMap(FunctionWithException<Fail, Fail1> fn) { return new Succeeds<>(t); }
 }

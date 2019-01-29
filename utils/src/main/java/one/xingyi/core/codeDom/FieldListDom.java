@@ -1,9 +1,8 @@
 package one.xingyi.core.codeDom;
 
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import one.xingyi.core.utils.FunctionWithError;
+import one.xingyi.core.utils.FunctionWithException;
 import one.xingyi.core.utils.Lists;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class FieldListDom {
     public String noDeprecatedmapJoin(String separator, Function<FieldDom, String> fn) {
         return Lists.mapJoin(allNonDeprecatedFields, separator, fn);
     }
-    public <T> List<T> noDeprecatedmap(FunctionWithError<FieldDom, T> fn) {
+    public <T> List<T> noDeprecatedmap(FunctionWithException<FieldDom, T> fn) {
         return Lists.map(allNonDeprecatedFields, fn);
     }
     public <T> List<T> noDeprecatedflatMap(Function<FieldDom, List<T>> fn) {
@@ -31,7 +30,7 @@ public class FieldListDom {
     public String withDeprecatedmapJoin(String separator, Function<FieldDom, String> fn) {
         return Lists.mapJoin(allFields, separator, fn);
     }
-    public <T> List<T> withDeprecatedmap(FunctionWithError<FieldDom, T> fn) {
+    public <T> List<T> withDeprecatedmap(FunctionWithException<FieldDom, T> fn) {
         return Lists.map(allFields, fn);
     }
     public <T> List<T> withDeprecatedflatMap(Function<FieldDom, List<T>> fn) {
