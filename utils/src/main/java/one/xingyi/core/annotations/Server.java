@@ -6,5 +6,4 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME) // Need to keep them around for testing
 public @interface Server {
-    int port();
 }

@@ -95,28 +95,30 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 makeClassFile(fileDefn);
             for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults), Result.failures(serverDomResults)))
                 Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
-            Set<? extends Element> validate = env.getElementsAnnotatedWith(ValidateLens.class);
+            Set<? extends Element> validate = env.getElementsAnnotatedWith(ValidateManyLens.class);
             for (Element v : validate) {
 //                PackageAndClassName packageAndClassName = new PackageAndClassName(v.getAnnotation(ValidateLens.class).value());
-                FileObject fileObject = filer.getResource(StandardLocation.CLASS_PATH, "", v.getAnnotation(ValidateLens.class).value());
-                File outputFile = new File(fileObject.toUri().toURL().getFile());
-                File file = new File(outputFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + v.getAnnotation(ValidateLens.class).value());
+                for (ValidateLens annotation : v.getAnnotation(ValidateManyLens.class).value()) {
+                    FileObject fileObject = filer.getResource(StandardLocation.CLASS_PATH, "", annotation.value());
+                    File outputFile = new File(fileObject.toUri().toURL().getFile());
+                    File file = new File(outputFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + annotation.value());
 //                log.error(v, "trying" +file.getAbsolutePath());
 //                File file = new File(v.getAnnotation(ValidateLens.class).value());
-                log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
+                    log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
 //                if (!file.exists())
 //                    log.error(v, "Cannot find file " + file.getAbsolutePath());
-                String text = Files.getText(file);
+                    String text = Files.getText(file);
 //                log.error(v, "Found textt" + text);
-                Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
-                Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
-                expectedLens.removeAll(actualLens);
-                if (expectedLens.size() > 0) {
-                    String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
-                    if (v.getAnnotation(ValidateLens.class).error())
-                        log.error(v, msg);
-                    else
-                        log.warning(v, msg);
+                    Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
+                    Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
+                    expectedLens.removeAll(actualLens);
+                    if (expectedLens.size() > 0) {
+                        String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
+                        if (annotation.error())
+                            log.error(v, msg);
+                        else
+                            log.warning(v, msg);
+                    }
                 }
             }
 
@@ -165,6 +167,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override public SourceVersion getSupportedSourceVersion() { return SourceVersion.latestSupported(); }
     @Override public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName(), ValidateLens.class.getName());
+        return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName(), ValidateManyLens.class.getName());
     }
 }

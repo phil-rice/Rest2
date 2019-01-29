@@ -1,5 +1,9 @@
+lens_EntityDetails_urlPattern
+lens_Address_line1
+lens_Address_line2
+lens_Address_postcode
 lens_Person_name
 lens_Person_age
-version2
 lens_Person_address
 lens_Person_telephone
+lens_TelephoneNumber_number

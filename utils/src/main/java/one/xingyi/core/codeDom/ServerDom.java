@@ -16,15 +16,12 @@ import javax.lang.model.element.Element;
 public class ServerDom {
     public final PackageAndClassName originalDefn;
     public final PackageAndClassName serverName;
-    public final int port;
     public final CodeDom codeDom;
 
-    //TODO Awful code.
     public static Result<ElementFail, ServerDom> create(IServerNames names, Element element, CodeDom codeDom) {
-        Server server = element.getAnnotation(Server.class);
         String rawName = element.asType().toString();
         PackageAndClassName originalDefn = new PackageAndClassName(rawName);
         PackageAndClassName serverName = originalDefn.mapName(s -> s.substring(1, s.length() - 4));
-        return Result.succeed(new ServerDom(originalDefn, serverName, server.port(), codeDom));
+        return Result.succeed(new ServerDom(originalDefn, serverName, codeDom));
     }
 }
