@@ -4,6 +4,7 @@ import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 public interface LoggerAdapter {
     void info(String message);
+    void info(Element element, String message);
     void warning(Element element, String message);
     void error(Element element, String message);
     void error(String message);
@@ -11,6 +12,7 @@ public interface LoggerAdapter {
     static LoggerAdapter fromMessager(Messager messager, Element element) {
         return new LoggerAdapter() {
             @Override public void info(String message) { messager.printMessage(Diagnostic.Kind.NOTE, message, element); }
+            @Override public void info(Element element, String message) {messager.printMessage(Diagnostic.Kind.NOTE, message, element);}
             @Override public void warning(Element element, String message) { messager.printMessage(Diagnostic.Kind.WARNING, message, element); }
             @Override public void error(Element element, String message) { messager.printMessage(Diagnostic.Kind.ERROR, message, element); }
             @Override public void error(String message) { messager.printMessage(Diagnostic.Kind.ERROR, message, element); }
@@ -22,6 +24,7 @@ public interface LoggerAdapter {
             @Override public void info(String message) {
                 messager.printMessage(Diagnostic.Kind.NOTE, message);
             }
+            @Override public void info(Element element, String message) {messager.printMessage(Diagnostic.Kind.NOTE, message, element); }
             @Override public void warning(Element element, String message) { messager.printMessage(Diagnostic.Kind.WARNING, message); }
             @Override public void error(Element element, String message) { messager.printMessage(Diagnostic.Kind.ERROR, message, element); }
             @Override public void error(String message) { messager.printMessage(Diagnostic.Kind.ERROR, message); }

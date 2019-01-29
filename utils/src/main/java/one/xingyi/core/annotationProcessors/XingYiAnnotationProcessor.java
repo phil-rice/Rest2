@@ -112,8 +112,13 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 Set<String> actualLens = new HashSet(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
                 Files.setText(() -> new PrintWriter(new FileWriter(outputFile)), Lists.mapJoin(Sets.sortedList(actualLens, String::compareTo), "\n", Objects::toString));
                 expectedLens.removeAll(actualLens);
-                if (expectedLens.size() > 0)
-                    log.error(v, "Missing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", "));
+                if (expectedLens.size() > 0) {
+                    String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
+                    if (v.getAnnotation(ValidateLens.class).error())
+                        log.error(v, msg);
+                    else
+                        log.info(v, msg);
+                }
             }
 
         } catch (Exception e) {
