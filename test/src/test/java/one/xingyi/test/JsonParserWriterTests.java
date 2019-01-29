@@ -6,7 +6,7 @@ import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
-public abstract class JsonParserWriterTests<J>  implements IReferenceFixture{
+public abstract class JsonParserWriterTests<J>  implements IReferenceFixture3 {
 
     String jsonString = Strings.changeQuotes("{'name':'someName','age':23,'address':{'line1':'someLine1','line2':'someLine2','postcode':'somePostcode'},'telephone':{'number':'someNumber'}}");
     abstract protected JsonWriter<J> jsonWriter();

@@ -8,7 +8,6 @@ import one.xingyi.core.utils.IdAndValue;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.util.List;
 import java.util.concurrent.Callable;
 public interface IXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> {
     Object parse(String s);
@@ -78,7 +77,7 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
     }
 
     <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> ISimpleList<ChildView> makeSimpleList(Object mirror, IXingYiClientFactory<ChildEntity, ChildView> childMaker) {
-        return new SimpleList<>(mirror,
+        return new MirroredSimpleList<>(mirror,
                 () -> (Integer) inv.invokeFunction("sizeOfList", mirror),
                 n -> childMaker.make(this, inv.invokeFunction("getFromList", mirror, n)),
                 (n, t) -> makeSimpleList(inv.invokeFunction("setInList", mirror, n, t), childMaker));

@@ -1,5 +1,6 @@
 package one.xingyi.reference3.person;
 
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.RunnableWithException;
 import one.xingyi.core.utils.WrappedException;
@@ -19,8 +20,8 @@ public class PersonController implements IPersonController {
     @Override public String stateFn(Person entity) { return ""; }
     final Address address = new Address("someLine1", "someLine2", "somePostcode");
     final TelephoneNumber number = new TelephoneNumber("someNumber");
-    final Person person = new Person("someName", 23, address, number);
-    Person prototype = new Person("", 0, new Address("", "", ""), new TelephoneNumber(""));
+    final Person person = new Person("someName", 23, ISimpleList.create(address), number);
+    Person prototype = new Person("", 0, ISimpleList.create(), new TelephoneNumber(""));
 
     final Map<String, Person> personStore = Collections.synchronizedMap(new HashMap<>());
 

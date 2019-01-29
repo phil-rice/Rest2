@@ -33,6 +33,8 @@ The state based approach demoed in Trafficlights looks really simple to use and 
 * Make sure the annotations are set up right (only interface/only clsas etc)
 * Check that if deprecated javascript must be set
 * check name structures
+* A field in a view must be in the entity
+
 # Ideas
  
 Don't forget we can use exactly the same idea for Cassandra/Doc model in SQL. We can store the javascript
