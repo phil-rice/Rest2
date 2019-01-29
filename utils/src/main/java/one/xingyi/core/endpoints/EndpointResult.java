@@ -1,14 +1,15 @@
 package one.xingyi.core.endpoints;
-import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.HasJsonWithLinks;
-import one.xingyi.core.utils.Function3;
+import one.xingyi.core.state.StateData;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Optionals;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -32,6 +33,8 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
         return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, r, stateFn));
     }
     static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Optional<Result>> createForOptionalWithLinks(EndpointContext context, int statusCode, Function<Result, String> stateFn) {
-        return (sr, r) -> Optionals.fold(r, () -> ServiceResponse.notFound(""), result -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, result, stateFn)));
+        return (sr, r) -> Optionals.fold(r,
+                () -> ServiceResponse.notFound(""),
+                result -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, result,  stateFn)));
     }
 }

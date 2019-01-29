@@ -8,12 +8,14 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.marshelling.MakesFromJson;
 import one.xingyi.core.sdk.IXingYiEntity;
+import one.xingyi.core.state.StateData;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.WrappedException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -29,15 +31,17 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 sr.toString() + "\nLegal Endpoints are\n   " + Lists.mapJoin(endPoint.description(), "\n   ", Objects::toString);
     }
 
-    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
+    static <J, Entity extends IXingYiEntity & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>createForOptional(context, 200));
+                fn, EndpointResult.<J, Entity>createForOptionalWithLinks(context, 200, stateFn));
     }
     static <J, Entity extends IXingYiEntity & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Entity> getEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>createWithLinks(context, 200, stateFn));
+        return new ResourceEndPoint<>(
+                IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
+                fn,
+                EndpointResult.<J, Entity>createWithLinks(context, 200, stateFn));
     }
     static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Boolean> deleteEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Boolean>> fn) {

@@ -18,13 +18,7 @@ public interface ContextForJson {
     String template(String raw);
     static ContextForJson nullContext = new NullContext();
     static ContextForJson forServiceRequest(String protocol, ServiceRequest serviceRequest) { return new ServiceRequestContextForJson(protocol, serviceRequest);}
-    default <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, String self, Map<String, List<StateData>> stateMap) {
-        J selfLink = jsonWriter.makeObject("_self", self);
-        return Optionals.fold(Optional.ofNullable(stateMap.get(stateFn.apply(entity))),
-                () -> jsonWriter.makeList(List.of(selfLink)),
-                list -> jsonWriter.makeList(Lists.insert(selfLink, Lists.map(list, sd -> jsonWriter.makeObject(sd.action, sd.link)))));
-
-    }
+    <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap);
 }
 
 class NullContext implements ContextForJson {
@@ -33,6 +27,9 @@ class NullContext implements ContextForJson {
         return "";
     }
     @Override public String template(String raw) { return raw.replace("{host}", ""); }
+    @Override public <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap) {
+        return jsonWriter.makeObject();
+    }
 }
 
 @RequiredArgsConstructor
@@ -44,5 +41,12 @@ class ServiceRequestContextForJson implements ContextForJson {
     public String protocol() { return protocol;}
     @Override public String template(String raw) {
         return raw.replace("{host}", serviceRequest.header("host").map(s -> protocol + s).orElse(""));
+    }
+    @Override public <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap) {
+        J selfLink = jsonWriter.makeObject("_self", serviceRequest.uri.toString());
+        return Optionals.fold(Optional.ofNullable(stateMap.get(stateFn.apply(entity))),
+                () -> jsonWriter.makeList(List.of(selfLink)),
+                list -> jsonWriter.makeList(Lists.insert(selfLink, Lists.map(list, sd -> jsonWriter.makeObject(sd.action, sd.link)))));
+
     }
 }

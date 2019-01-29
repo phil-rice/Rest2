@@ -30,6 +30,6 @@ public class TrafficLightsJsonTest {
     }
 
     @Test public void testToJsonWithState() {
-        assertEquals(Strings.changeQuotes("{'id':'1','color':'red','location':'someLocation','links_':[{'_self':'{host}/lights/{id}'},{'orange':'{host}/lights/{id}/orange'}]}"), tl("1", "red"));
+        assertEquals(Strings.changeQuotes("{'id':'1','color':'red','location':'someLocation','links_':[{'_self':'/some/thing'},{'orange':'{host}/lights/{id}/orange'}]}"), tl("1", "red"));
     }
 }

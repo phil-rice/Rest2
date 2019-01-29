@@ -91,7 +91,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createPutEndpoint(String methodName, String companionName, String bookmark, String function, String stateFn) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + Strings.quote(bookmark) + ", " + function +","+ stateFn+ ");",
+                Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + Strings.quote(bookmark) + ", " + function + "," + stateFn + ");",
                 "}"));
     }
     List<String> createPostEndpoint(String methodName, List<String> states, String bookmark, String function, String stateFn) {
@@ -112,10 +112,12 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
                     Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::create", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b.urlPattern, controllerName + "::put",controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b.urlPattern, controllerName + "::put", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.getDom, dom -> dom.mustExist ?
-                            createEndpointWithStateFn("get" + className, "getEntity", b.urlPattern, controllerName + "::get", controllerName + "::stateFn") :
-                            createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", b.urlPattern, controllerName + "::getOptional", controllerName + "::stateFn")),
+                            createEndpointWithStateFn("get" + className, "getEntity", b.urlPattern,
+                                    controllerName + "::get", controllerName + "::stateFn") :
+                            createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", b.urlPattern,
+                                    controllerName + "::getOptional", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
                     Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpointWithStateFn("create" + className, "createEntity", dom.path, controllerName + "::create", controllerName + "::stateFn")),
                     Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern + dom.path, controllerName + "::" + dom.action, controllerName + "::stateFn"))));

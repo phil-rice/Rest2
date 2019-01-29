@@ -7,10 +7,11 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.*;
-import one.xingyi.core.utils.Function3;
+import one.xingyi.core.state.StateData;
 import one.xingyi.core.utils.IdAndValue;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 @RequiredArgsConstructor
 @ToString
@@ -28,9 +29,12 @@ public class EndpointContext<J> {
         return resultBodyForJson(json);
     }
     public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyWithLinks(ServiceRequest serviceRequest, Entity entity, Function<Entity, String> stateFn) {
-        val json = jsonWriter.fromJ(entity.toJsonWithLinks(jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest), stateFn));
-        return resultBodyForJson(json);
+        ContextForJson context = ContextForJson.forServiceRequest(protocol, serviceRequest);
+        val javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
+        String json = jsonWriter.fromJ(entity.toJsonWithLinks(jsonWriter, context, stateFn));
+        return javascript + IXingYiResponseSplitter.marker + json;
     }
+
     public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, IdAndValue<Entity> entity) {
         J j = IdAndValue.toJson(entity, jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest));
         return resultBodyForJson(jsonWriter.fromJ(j));

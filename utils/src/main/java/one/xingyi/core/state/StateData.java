@@ -17,7 +17,7 @@ public class StateData {
     public final String link;
     public static <J> J toJson(JsonWriter<J> writer, String state, Map<String, List<StateData>> stateMap) {
         return Optionals.<List<StateData>, J>fold(Optional.ofNullable(stateMap.get(state)),
-                () -> writer.makeList(List.<J>of()),
+                () -> writer.makeList(List.of()),
                 listOfStates -> writer.makeList(Lists.map(listOfStates, s -> writer.makeObject(s.action, s.link))));
     }
 }

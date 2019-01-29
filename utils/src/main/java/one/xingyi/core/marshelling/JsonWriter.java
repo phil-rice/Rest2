@@ -11,7 +11,7 @@ public interface JsonWriter<J> {
      * Contract is that there are an even number and that the first is a string, the next is a J
      */
     J makeObject(Object... namesAndValues);
-    J makeList(List<J> items);
+    J makeList(List<Object> items);
     J liftString(String string);
     String fromJ(J j);
 

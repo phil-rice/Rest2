@@ -1,4 +1,5 @@
 package one.xingyi.core.marshelling;
+import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 
 import java.util.List;
@@ -23,9 +24,7 @@ class CheapJson implements JsonWriter<JsonValue> {
         }
         return new JsonObject(builder + "}");
     }
-    @Override public JsonValue makeList(List<JsonValue> items) {
-        return null;
-    }
+    @Override public JsonValue makeList(List<Object> items) { return new JsonObject("[" + Lists.mapJoin(items, ",", this::jsonValueFor) + "]"); }
     @Override public JsonValue liftString(String string) {
         return new JsonObject(Strings.quote(escape(string)));
     }

@@ -57,7 +57,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         result.add("@XingYiGenerated");
         result.add("public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<" + entityName + ", String> stateFn) {");
         result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.mapJoin(",",
-                fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ",\"links_\",context.links(jsonWriter, this, stateFn," + companionName + ".companion.bookmarkAndUrl().urlPattern, " + companionName + ".companion.stateMap));");
+                fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ",\"links_\",context.links(jsonWriter, this, stateFn," + companionName + ".companion.stateMap));");
         result.add("}");
         return result;
     }
