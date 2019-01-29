@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
 
-    List<String> allFieldsAccessors(String entityName, FieldListDom dom) { return dom.flatMap(fd -> accessors(entityName, fd)); }
+    List<String> allFieldsAccessors(String entityName, FieldListDom dom) { return dom.noDeprecatedflatMap(fd -> accessors(entityName, fd)); }
 
     List<String> accessors(String entityName, FieldDom dom) {
         List<String> result = new ArrayList<>();
@@ -25,7 +25,7 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     }
 
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
-        List<String> manualImports = Lists.unique(entityDom.fields.map(fd -> fd.typeDom.fullTypeName()));
+        List<String> manualImports = Lists.unique(entityDom.fields.noDeprecatedmap(fd -> fd.typeDom.fullTypeName()));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(),entityDom.entityNames.originalDefn,"interface", entityDom.entityNames.serverInterface,
                         " extends IXingYiEntity", manualImports, IXingYiEntity.class, XingYiGenerated.class),

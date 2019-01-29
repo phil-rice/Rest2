@@ -18,7 +18,6 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -28,7 +27,6 @@ import one.xingyi.core.validation.ResultAndFailures;
 @RequiredArgsConstructor
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
-    ElementToBundle bundle = ElementToBundle.simple;
 
     private Types typeUtils;
     private Elements elementUtils;
@@ -50,6 +48,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
+        ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
         try {
             Set<? extends Element> elements = env.getElementsAnnotatedWith(Entity.class);
@@ -110,7 +109,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     String text = Files.getText(file);
 //                log.error(v, "Found textt" + text);
                     Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
-                    Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
+                    Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.withDeprecatedmap(fd -> fd.lensName)));
+                    actualLens.add("lens_EntityDetails_urlPattern");
                     expectedLens.removeAll(actualLens);
                     if (expectedLens.size() > 0) {
                         String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
@@ -123,7 +123,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             }
 
         } catch (Exception e) {
-            log.error("In Annotation Processor\n" + Strings.getFrom(e::printStackTrace));
+            Throwable unwrapped = WrappedException.unWrap(e);
+            log.error("In Annotation Processor\n" + Strings.getFrom(unwrapped::printStackTrace));
         }
         return false;
     }

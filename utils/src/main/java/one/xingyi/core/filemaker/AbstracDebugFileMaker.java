@@ -35,7 +35,8 @@ public class AbstracDebugFileMaker {
                         "Lens name  " + fieldDom.lensName,
                         "Readonly   " + fieldDom.readOnly,
                         "Javascript " + Strings.noWhitespace(fieldDom.javascript),
-                        "Templated: " + fieldDom.templated)));
+                        "Templated: " + fieldDom.templated,
+                        "Deprecated " + fieldDom.deprecated)));
     }
 
     List<String> entityDebugInfo(EntityDom entityDom) {

@@ -32,19 +32,19 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
         List<String> result = new ArrayList<>();
         result.add("public String javascript(){return javascript;}");
         result.add("final public String javascript = " + Strings.quote(""));
-        result.addAll(Formating.indent(entityDom.fields.map(fd -> "+ " + Strings.quote("function " + fd.lensName + "(){ return lens('" + fd.lensPath + "');};\\n"))));
+        result.addAll(Formating.indent(entityDom.fields.withDeprecatedmap(fd -> "+ " + Strings.quote(fd.javascript + "\\n"))));
         result.add(";");
         return result;
     }
 
     private List<String> createListOfLens(EntityDom entityDom) {
-        return List.of("public List<String> lens(){return List.of(", entityDom.fields.mapJoin(",", fd -> Strings.quote(fd.lensName)), ");}");
+        return List.of("public List<String> lens(){return List.of(", entityDom.fields.withDeprecatedmapJoin(",", fd -> Strings.quote(fd.lensName)), ");}");
     }
 
     List<String> fromJson(EntityDom dom) {
         String className = dom.entityNames.serverEntity.className;
         return List.of("@XingYiGenerated", "public <J> " + className + " fromJson(JsonParser<J> jsonParser, J j){",
-                Formating.indent + "return new " + className + "(" + dom.fields.mapJoin(",", fd -> fd.typeDom.forFromJson(fd.name)) + ");",
+                Formating.indent + "return new " + className + "(" + dom.fields.noDeprecatedmapJoin(",", fd -> fd.typeDom.forFromJson(fd.name)) + ");",
                 "};");
     }
 

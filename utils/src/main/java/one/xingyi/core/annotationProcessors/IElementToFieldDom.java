@@ -6,6 +6,7 @@ import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.typeDom.TypeDom;
+import one.xingyi.core.utils.LoggerAdapter;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
@@ -14,13 +15,14 @@ import javax.lang.model.element.Element;
 import java.util.Optional;
 import java.util.function.Function;
 public interface IElementToFieldDom extends Function<Element, Result<ElementFail, FieldDom>> {
-    static IElementToFieldDom forEntity(ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToFieldDomForEntity(bundle.serverNames(), entityNames);}
-    static IElementToFieldDom forView(ElementToBundle bundle, ViewNames viewNames) {return new SimpleElementToFieldDomForViews(bundle.serverNames(), viewNames);}
+    static IElementToFieldDom forEntity(LoggerAdapter loggerAdapter, ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToFieldDomForEntity(loggerAdapter, bundle.serverNames(), entityNames);}
+    static IElementToFieldDom forView(LoggerAdapter loggerAdapter, ElementToBundle bundle, ViewNames viewNames) {return new SimpleElementToFieldDomForViews(loggerAdapter, bundle.serverNames(), viewNames);}
 
 }
 
 @RequiredArgsConstructor
 abstract class AbstractElementToFieldDom implements IElementToFieldDom {
+    final LoggerAdapter loggerAdapter;
     final IServerNames serverNames;
     abstract String findLensName(String fieldName, String annotationField);
     abstract String findLensPath(String fieldName, String annotationField);
@@ -30,20 +32,25 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
         Result<String, TypeDom> typeDom = TypeDom.create(serverNames, fieldType);
         return ElementFail.lift(element, typeDom).flatMap(td -> {
             Field annotation = element.getAnnotation(Field.class);
-            String lensName = Optionals.chain(annotation, f -> f.lensName(), "", f -> findLensName(fieldName, f));
-            String lensPath = Optionals.chain(annotation, f -> f.lensPath(), "", f -> findLensPath(fieldName, f));
+
+//            String defaultLensName = findLensName(fieldName, annotation.)
+            String lensName = findLensName(fieldName, Optional.ofNullable(annotation).map(Field::lensName).orElse(""));
+            String lensPath = findLensPath(fieldName, Optional.ofNullable(annotation).map(Field::lensPath).orElse(""));
+//            String lensPath = findLensPath(fieldName, Optional.ofNullable(annotation.lensPath()).orElse(""));
             Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
-            String javascriptBody = Optional.ofNullable(annotation).map(Field::javascript).orElse("return lens('" + lensPath + "');");
+            String javascriptBody = Strings.from(Optional.ofNullable(annotation).map(Field::javascript).orElse(""), "return lens('" + lensPath + "');");
             String javascript = "function " + lensName + "(){" + javascriptBody + "};";
+            loggerAdapter.info(element, fieldName + ": " + javascriptBody + "/" + javascript);
             Boolean templated = Optional.ofNullable(annotation).map(a -> a.templated()).orElse(false);
-            return Result.succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript, templated));
+            Boolean deprecated = element.getAnnotation(Deprecated.class) != null;
+            return Result.succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript, templated, deprecated));
         });
     }
 }
 class SimpleElementToFieldDomForEntity extends AbstractElementToFieldDom {
     final EntityNames entityNames;
-    public SimpleElementToFieldDomForEntity(IServerNames serverNames, EntityNames entityNames) {
-        super(serverNames);
+    public SimpleElementToFieldDomForEntity(LoggerAdapter loggerAdapter, IServerNames serverNames, EntityNames entityNames) {
+        super(loggerAdapter, serverNames);
         this.entityNames = entityNames;
     }
     @Override String findLensName(String fieldName, String annotationField) {
@@ -57,8 +64,8 @@ class SimpleElementToFieldDomForEntity extends AbstractElementToFieldDom {
 class SimpleElementToFieldDomForViews extends AbstractElementToFieldDom {
     final ViewNames viewNames;
 
-    public SimpleElementToFieldDomForViews(IServerNames serverNames, ViewNames viewNames) {
-        super(serverNames);
+    public SimpleElementToFieldDomForViews(LoggerAdapter loggerAdapter, IServerNames serverNames, ViewNames viewNames) {
+        super(loggerAdapter, serverNames);
         this.viewNames = viewNames;
     }
     @Override String findLensName(String fieldName, String annotationField) {

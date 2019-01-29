@@ -17,4 +17,14 @@ public interface IPersonDefn extends IXingYiEntityDefn {
     Integer age();
     IAddressDefn address();
     ITelephoneNumberDefn telephone();
+
+    //==========
+
+    @Deprecated
+    @Field(javascript = " return compose(lens_person_address_address(), lens('line1'));")
+    String line1();
+
+    @Deprecated
+    @Field(javascript = " return compose(lens_person_address_address(), lens('line2'));")
+    String line2();
 }

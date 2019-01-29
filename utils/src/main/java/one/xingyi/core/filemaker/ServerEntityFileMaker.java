@@ -16,23 +16,23 @@ import java.util.function.Function;
 public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
 
     String callConstructor(String entityName, FieldListDom dom) {
-        return "new " + entityName + "(" + dom.mapJoin(",", fd -> fd.name) + ")";
+        return "new " + entityName + "(" + dom.noDeprecatedmapJoin(",", fd -> fd.name) + ")";
     }
 
     List<String> fields(FieldListDom dom) {
-        return dom.map(nv -> "final " + nv.typeDom.forEntity() + " " + nv.name + ";");
+        return dom.noDeprecatedmap(nv -> "final " + nv.typeDom.forEntity() + " " + nv.name + ";");
     }
 
     List<String> constructor(EntityDom dom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
-        result.add("public " + dom.entityNames.serverEntity.className + "(" + dom.fields.mapJoin(",", nv -> nv.typeDom.forEntity() + " " + nv.name) + "){");
-        result.addAll(dom.fields.map(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
+        result.add("public " + dom.entityNames.serverEntity.className + "(" + dom.fields.noDeprecatedmapJoin(",", nv -> nv.typeDom.forEntity() + " " + nv.name) + "){");
+        result.addAll(dom.fields.noDeprecatedmap(nv -> Formating.indent + "this." + nv.name + "=" + nv.name + ";"));
         result.add("}");
         return result;
     }
 
-    List<String> allFieldsAccessors(String entityName, FieldListDom dom) { return dom.flatMap(fd -> accessors(entityName, callConstructor(entityName, dom), fd)); }
+    List<String> allFieldsAccessors(String entityName, FieldListDom dom) { return dom.noDeprecatedflatMap(fd -> accessors(entityName, callConstructor(entityName, dom), fd)); }
 
     List<String> accessors(String entityName, String constructor, FieldDom dom) {
         List<String> result = new ArrayList<>();
@@ -47,7 +47,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("public <J> J toJson(JsonWriter<J> jsonWriter, ContextForJson context) {");
-        result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.mapJoin(",", fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ");");
+        result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.noDeprecatedmapJoin(",", fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ");");
         result.add("}");
         return result;
     }
@@ -56,7 +56,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         if (entityDom.bookmark.isEmpty()) return result;
         result.add("@XingYiGenerated");
         result.add("public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<" + entityName + ", String> stateFn) {");
-        result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.mapJoin(",",
+        result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.noDeprecatedmapJoin(",",
                 fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ",\"links_\",context.links(jsonWriter, this, stateFn," + companionName + ".companion.stateMap));");
         result.add("}");
         return result;
@@ -70,7 +70,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         result.add(Formating.indent + "if (this == o) return true;");
         result.add(Formating.indent + "if (o == null || getClass() != o.getClass()) return false;");
         result.add(Formating.indent + entityDom.entityNames.serverEntity.className + " other = (" + entityDom.entityNames.serverEntity.className + ") o;");
-        result.add(Formating.indent + "return " + entityDom.fields.mapJoin(" && ", fd -> "Objects.equals(" + fd.name + ",other." + fd.name + ")") + ";");
+        result.add(Formating.indent + "return " + entityDom.fields.noDeprecatedmapJoin(" && ", fd -> "Objects.equals(" + fd.name + ",other." + fd.name + ")") + ";");
         result.add("}");
         return result;
     }
@@ -78,7 +78,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public int hashCode() {");
-        result.add(Formating.indent + "return Objects.hash(" + entityDom.fields.mapJoin(",", fd -> fd.name) + ");");
+        result.add(Formating.indent + "return Objects.hash(" + entityDom.fields.noDeprecatedmapJoin(",", fd -> fd.name) + ");");
         result.add("}");
         return result;
     }
@@ -87,7 +87,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         result.add("@XingYiGenerated");
         result.add("@Override public String toString(){");
         result.add(Formating.indent + "return " + Strings.quote(entityDom.entityNames.serverEntity.className + "(") + "+" +
-                entityDom.fields.mapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
+                entityDom.fields.noDeprecatedmapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
         result.add("}");
         return result;
 
