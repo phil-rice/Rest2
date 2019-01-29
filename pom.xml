@@ -9,7 +9,9 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>reference</module>
+        <module>reference1</module>
+        <module>reference2</module>
+        <module>reference3</module>
         <module>server</module>
         <module>utils</module>
         <module>core</module>

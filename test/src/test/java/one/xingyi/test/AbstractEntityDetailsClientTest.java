@@ -10,10 +10,10 @@ import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.UnexpectedResponse;
-import one.xingyi.reference.PersonServer;
-import one.xingyi.reference.person.PersonController;
-import one.xingyi.reference.person.client.companion.PersonNameViewCompanion;
-import one.xingyi.reference.person.client.view.PersonNameView;
+import one.xingyi.reference3.PersonServer;
+import one.xingyi.reference3.person.PersonController;
+import one.xingyi.reference3.person.client.companion.PersonNameViewCompanion;
+import one.xingyi.reference3.person.client.view.PersonNameView;
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
