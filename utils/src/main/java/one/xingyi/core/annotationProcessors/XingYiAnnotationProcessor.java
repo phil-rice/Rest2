@@ -18,6 +18,7 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -98,8 +99,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             for (Element v : validate) {
 //                PackageAndClassName packageAndClassName = new PackageAndClassName(v.getAnnotation(ValidateLens.class).value());
                 FileObject fileObject = filer.getResource(StandardLocation.CLASS_PATH, "", v.getAnnotation(ValidateLens.class).value());
-                File wrongFile = new File(fileObject.toUri().toURL().getFile());
-                File file = new File(wrongFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + v.getAnnotation(ValidateLens.class).value());
+                File outputFile = new File(fileObject.toUri().toURL().getFile());
+                File file = new File(outputFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + v.getAnnotation(ValidateLens.class).value());
 //                log.error(v, "trying" +file.getAbsolutePath());
 //                File file = new File(v.getAnnotation(ValidateLens.class).value());
                 log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
@@ -109,6 +110,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 //                log.error(v, "Found textt" + text);
                 Set<String> expectedLens = new HashSet(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
                 Set<String> actualLens = new HashSet(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
+                Files.setText(() -> new PrintWriter(new FileWriter(outputFile)), Lists.mapJoin(Sets.sortedList(actualLens, String::compareTo), "\n", Objects::toString));
                 expectedLens.removeAll(actualLens);
                 if (expectedLens.size() > 0)
                     log.error(v, "Missing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", "));
