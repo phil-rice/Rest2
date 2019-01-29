@@ -3,14 +3,14 @@ import java.util.*;
 public class Sets {
 
 
-    public static <T> Set<T> appendKeepingOrder(Set<T>... lists) {
+    @SafeVarargs public static <T> Set<T> appendKeepingOrder(Set<T>... lists) {
         Set<T> result = new LinkedHashSet<>();
         for (Set<T> list : lists)
             result.addAll(list);
         return result;
     }
 
-    public static <T>List<T> toList(Set<T> set){
+    public static <T> List<T> toList(Set<T> set) {
         List<T> result = new ArrayList<>();
         result.addAll(set);
         return result;
