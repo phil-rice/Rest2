@@ -69,6 +69,11 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent + Lists.mapJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
                 ");}");
     }
+    List<String> createLens(ServerDom serverDom) {
+        return List.of("public List<String> lens(){return Lists.flatMap(companions(), c->c.lens());}");
+    }
+
+
     List<String> createEntityCompanions(ServerDom serverDom) {
         return List.of(
                 "public List<HasBookmarkAndUrl> entityCompanions(){return List.of(",
@@ -137,6 +142,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent(createCompanions(serverDom)),
                 Formating.indent(createEntityEndpoint(serverDom)),
                 Formating.indent(createEndpoints(serverDom)),
+                Formating.indent(createLens(serverDom)),
 //                Formating.indent(makeSimpleServer(serverDom)),
                 List.of("/*" + serverDom),
 //                List.of("//gets"),

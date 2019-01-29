@@ -29,13 +29,16 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
         return List.of("public static " + entityDom.entityNames.serverCompanion.asString() + " companion  =new " + entityDom.entityNames.serverCompanion.className + "();");
     }
     private List<String> createJavascript(EntityDom entityDom) {
-
         List<String> result = new ArrayList<>();
         result.add("public String javascript(){return javascript;}");
         result.add("final public String javascript = " + Strings.quote(""));
         result.addAll(Formating.indent(entityDom.fields.map(fd -> "+ " + Strings.quote("function " + fd.lensName + "(){ return lens('" + fd.lensPath + "');};\\n"))));
         result.add(";");
         return result;
+    }
+
+    private List<String> createListOfLens(EntityDom entityDom) {
+        return List.of("public List<String> lens(){return List.of(", entityDom.fields.mapJoin(",", fd -> Strings.quote(fd.lensName)), ");}");
     }
 
     List<String> fromJson(EntityDom dom) {
@@ -57,6 +60,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
                 Formating.indent(createBookmarkAndUrl(entityDom)),
                 Formating.indent(createCompanion(entityDom)),
                 Formating.indent(createJavascript(entityDom)),
+                Formating.indent(createListOfLens(entityDom)),
                 Formating.indent(fromJson(entityDom)),
                 Formating.indent(stateMap(entityDom)),
                 List.of("}")

@@ -10,7 +10,7 @@ public class App {
     public static void main(String[] args) {
         TrafficLightServer<JsonValue> trafficLightServer = new TrafficLightServer<>(EndpointConfig.defaultConfigNoParser, new TrafficLightsController());
         trafficLightServer.simpleServer(9000).start();
-        System.out.println("Started traffic lights");
+        System.out.println("Started traffic lights: " + trafficLightServer.lens());
         System.out.println(Lists.mapJoin(trafficLightServer.endpoint().description(), "\n", Objects::toString));
     }
 }

@@ -1,10 +1,7 @@
 package one.xingyi.core.annotationProcessors;
 
 import lombok.RequiredArgsConstructor;
-import one.xingyi.core.annotations.Entity;
-import one.xingyi.core.annotations.Get;
-import one.xingyi.core.annotations.Server;
-import one.xingyi.core.annotations.View;
+import one.xingyi.core.annotations.*;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.filemaker.*;
 import one.xingyi.core.names.*;
@@ -17,7 +14,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -94,7 +94,25 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 makeClassFile(fileDefn);
             for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults), Result.failures(serverDomResults)))
                 Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
-
+            Set<? extends Element> validate = env.getElementsAnnotatedWith(ValidateLens.class);
+            for (Element v : validate) {
+//                PackageAndClassName packageAndClassName = new PackageAndClassName(v.getAnnotation(ValidateLens.class).value());
+                FileObject fileObject = filer.getResource(StandardLocation.CLASS_PATH, "", v.getAnnotation(ValidateLens.class).value());
+                File wrongFile = new File(fileObject.toUri().toURL().getFile());
+                File file = new File(wrongFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + v.getAnnotation(ValidateLens.class).value());
+//                log.error(v, "trying" +file.getAbsolutePath());
+//                File file = new File(v.getAnnotation(ValidateLens.class).value());
+                log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
+//                if (!file.exists())
+//                    log.error(v, "Cannot find file " + file.getAbsolutePath());
+                String text = Files.getText(file);
+//                log.error(v, "Found textt" + text);
+                Set<String> expectedLens = new HashSet(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
+                Set<String> actualLens = new HashSet(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
+                expectedLens.removeAll(actualLens);
+                if (expectedLens.size() > 0)
+                    log.error(v, "Missing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", "));
+            }
 
         } catch (Exception e) {
             log.error("In Annotation Processor\n" + Strings.getFrom(e::printStackTrace));
@@ -127,6 +145,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         List<String> fromViewDomIssues = Result.failures(fromViewDomResults);
         List<FileDefn> fromViewDom = Result.successes(fromViewDomResults);
 
+
         return new ResultAndFailures<>(Lists.append(fromCodeDomIssues, fromViewDomIssues), Lists.<FileDefn>append(fromCodeDom, fromViewDom));
     }
 
@@ -140,6 +159,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override public SourceVersion getSupportedSourceVersion() { return SourceVersion.latestSupported(); }
     @Override public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName(), Get.class.getName());
+        return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName(), ValidateLens.class.getName());
     }
 }
