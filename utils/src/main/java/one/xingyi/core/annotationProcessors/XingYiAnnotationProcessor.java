@@ -59,7 +59,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
 
             List<EntityDom> entityDoms = Result.successes(entityDomResults);
-            log.info("Made entityDoms: " + entityDoms);
+//            log.info("Made entityDoms: " + entityDoms);
 
 
             List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());
@@ -70,7 +70,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     )
             );
             val viewDoms = Result.successes(viewDomResults);
-            log.info("Made viewDoms: " + viewDoms);
+//            log.info("Made viewDoms: " + viewDoms);
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 
@@ -108,16 +108,15 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 //                    log.error(v, "Cannot find file " + file.getAbsolutePath());
                 String text = Files.getText(file);
 //                log.error(v, "Found textt" + text);
-                Set<String> expectedLens = new HashSet(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
-                Set<String> actualLens = new HashSet(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
-                Files.setText(() -> new PrintWriter(new FileWriter(outputFile)), Lists.mapJoin(Sets.sortedList(actualLens, String::compareTo), "\n", Objects::toString));
+                Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
+                Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.map(fd -> fd.lensName)));
                 expectedLens.removeAll(actualLens);
                 if (expectedLens.size() > 0) {
                     String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
                     if (v.getAnnotation(ValidateLens.class).error())
                         log.error(v, msg);
                     else
-                        log.info(v, msg);
+                        log.warning(v, msg);
                 }
             }
 

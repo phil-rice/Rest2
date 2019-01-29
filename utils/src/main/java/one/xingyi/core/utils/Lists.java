@@ -48,6 +48,7 @@ public class Lists {
         result.addAll(list);
         return result;
     }
+    @SafeVarargs
     public static <T> List<T> append(List<T>... lists) {
         List<T> result = new ArrayList<>();
         for (List<T> list : lists)

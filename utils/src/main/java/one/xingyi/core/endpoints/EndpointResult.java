@@ -16,11 +16,11 @@ import java.util.function.Function;
 public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Result, ServiceResponse> {
     ServiceResponse apply(ServiceRequest serviceRequest, Result result);
     static <J, Result extends HasJson<ContextForJson>> EndpointResult<Result> create(EndpointContext context, int statusCode) {
-        return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBody(sr, r));
+        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBody(sr, r));
     }
 
     static <J, Entity extends HasJson<ContextForJson>> EndpointResult<IdAndValue<Entity>> createForIdAndvalue(EndpointContext context, int statusCode) {
-        return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyForIdAndValue(sr, r));
+        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyForIdAndValue(sr, r));
     }
     static <Result> EndpointResult<Result> createForNonEntity(int statusCode, Function<Result, String> jsonFn) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, jsonFn.apply(r));
@@ -30,11 +30,11 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
         return (sr, r) -> Optionals.fold(r, () -> ServiceResponse.notFound(""), result -> ServiceResponse.jsonString(statusCodeIfPresent, context.resultBody(sr, result)));
     }
     static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Result> createWithLinks(EndpointContext context, int statusCode, Function<Result, String> stateFn) {
-        return (sr, r) -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, r, stateFn));
+        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyWithLinks(sr, r, stateFn));
     }
     static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Optional<Result>> createForOptionalWithLinks(EndpointContext context, int statusCode, Function<Result, String> stateFn) {
         return (sr, r) -> Optionals.fold(r,
                 () -> ServiceResponse.notFound(""),
-                result -> ServiceResponse.jsonString(statusCode, context.resultBodyWithLinks(sr, result,  stateFn)));
+                result -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyWithLinks(sr, result,  stateFn)));
     }
 }

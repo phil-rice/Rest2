@@ -23,7 +23,7 @@ public class EndpointConfig<J> {
 
     public static EndpointConfig<JsonValue> defaultConfigNoParser = new EndpointConfig<>(Files.getText("header.js"), JsonWriter.cheapJson, JsonParser.nullParser(), "http://", JavascriptDetailsToString.simple);
 
-    public EndpointContext from(List<IXingYiServerCompanion<?, ?>> companions) {
+    public EndpointContext<J> from(List<IXingYiServerCompanion<?, ?>> companions) {
         return new EndpointContext<J>(JavascriptStore.fromEntities(rootJavascript, companions), javascriptDetailsToString, jsonWriter, jsonParser, protocol);
     }
 }

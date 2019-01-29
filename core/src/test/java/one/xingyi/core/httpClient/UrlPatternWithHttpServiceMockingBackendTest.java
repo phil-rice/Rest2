@@ -34,7 +34,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     static String responseBody = javascript + IXingYiResponseSplitter.marker + json;
     static ServiceResponse serviceResponse = new ServiceResponse(200, responseBody, List.of());
 
-    @Test
+    @Test@SuppressWarnings("unchecked")
     public void testCanGet_checkingTheActualServiceRequestAndResponse() throws ExecutionException, InterruptedException {
         Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate = mock(Function.class);
         HttpService service = HttpService.defaultService(protocolAndHost, delegate);

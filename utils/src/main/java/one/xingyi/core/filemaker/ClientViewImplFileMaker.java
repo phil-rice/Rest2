@@ -46,14 +46,16 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
     List<String> fields(ViewDom viewDom) {
         return List.of("final IXingYi<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi;", "final Object mirror;");
     }
-    List<String> constructor(String classname, FieldListDom fld) {
-        return List.of("public " + classname + "(IXingYi xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
+    List<String> constructor(ViewDom viewDom) {
+        String classname = viewDom.viewNames.clientViewImpl.className;
+        FieldListDom fld = viewDom.fields;
+        return List.of("public " + classname + "(IXingYi<"+ viewDom.viewNames.clientEntity.asString()+"," + viewDom.viewNames.clientView.asString()+ ">xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
     }
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.map(fd -> fd.typeDom.fullTypeName()));
-        String result = Lists.join(Lists.append(
+        String result = Lists.<String>join(Lists.<String>append(
                 Formating.javaFile(getClass(),viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientViewImpl,
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
@@ -61,8 +63,8 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
                 Formating.indent(fields(viewDom)),
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
-                List.of(Formating.indent + "@Override public IXingYi xingYi(){return xingYi;}"),
-                Formating.indent(constructor(viewDom.viewNames.clientViewImpl.className, viewDom.fields)),
+                List.of(Formating.indent + "@Override public IXingYi<"+ viewDom.viewNames.clientEntity.asString()+"," + viewDom.viewNames.clientView.asString()+ "> xingYi(){return xingYi;}"),
+                Formating.indent(constructor( viewDom)),
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");

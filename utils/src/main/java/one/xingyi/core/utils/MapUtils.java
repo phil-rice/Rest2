@@ -1,6 +1,7 @@
 package one.xingyi.core.utils;
 import java.util.*;
 public class MapUtils {
+    @SafeVarargs
     public static <K, V> Map<K, V> append(Map<K, V>... maps) {
         Map<K, V> result = new HashMap<>();
         for (Map<K, V> map : maps)

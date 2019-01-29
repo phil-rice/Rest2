@@ -11,7 +11,7 @@ public class PostAnnotationTest {
     @Test
     public void testPostAnnotationsDontCreateGetterAndSetterFields() {
         try {
-            new Reflection(ColourView.class).method0("orange");
+            new Reflection<>(ColourView.class).method0("orange");
             fail();
         } catch (WrappedException e) {
             assertEquals(NoSuchMethodException.class, e.getCause().getClass());

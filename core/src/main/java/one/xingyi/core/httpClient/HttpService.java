@@ -75,7 +75,7 @@ class DefaultHttpService implements HttpService {
         return serviceResponse -> {//TODO extract the try catch
             try {
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-                IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
+                IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
                 Object mirror = xingYi.parse(dataAndJavaScript.data);
                 return clientMaker.make(xingYi, mirror);
             } catch (Exception e) {
@@ -88,7 +88,7 @@ class DefaultHttpService implements HttpService {
             try {
                 if (serviceResponse.statusCode == 404) return Optional.empty();
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-                IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
+                IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
                 Object mirror = xingYi.parse(dataAndJavaScript.data);
                 return Optional.of(clientMaker.make(xingYi, mirror));
             } catch (Exception e) {
@@ -96,13 +96,12 @@ class DefaultHttpService implements HttpService {
             }
         };
     }
-
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, IdAndValue<View>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+    @SuppressWarnings("unchecked") <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, IdAndValue<View>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
         return serviceResponse -> {
             try {
 
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-                IXingYi<Entity, View> xingYi = factory.apply(dataAndJavaScript.javascript);
+                IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
                 Object mirror = xingYi.parse(dataAndJavaScript.data);
                 IdAndValue result = xingYi.getIdAndValue(mirror, clientMaker);
                 return result;
@@ -162,6 +161,7 @@ class DefaultHttpService implements HttpService {
             String url = urlPattern.replace("{id}", id);
             CompletableFuture<View> original = primitive(clientMaker, "get", url, fn);
             return original.thenCompose(o -> {
+                @SuppressWarnings("unchecked")
                 String json = o.xingYi().render("json", o);
                 ServiceRequest serviceRequest = new ServiceRequest("put", url.startsWith("/") ? protocolAndHost + url : url, List.of(), json);
                 return service.apply(serviceRequest).thenApply(makeEntity(clientMaker, serviceRequest));
