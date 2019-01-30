@@ -4,9 +4,7 @@ import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.sdk.IXingYiViewDefn;
 import one.xingyi.reference3.address.IAddressLine12ViewDefn;
 
-import java.util.List;
-
 @View()
-public interface IPersonAddress12ViewDefn extends IXingYiViewDefn<IPersonDefn> {
-    IAddressLine12ViewDefn address();
+public interface IPersonAddresses12ViewDefn extends IXingYiViewDefn<IPersonDefn> {
+    ISimpleList<IAddressLine12ViewDefn> addresses();
 }

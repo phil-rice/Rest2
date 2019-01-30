@@ -6,6 +6,8 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.reference3.person.PersonController;
+import one.xingyi.reference3.person.client.view.PersonAddress12View;
+import one.xingyi.reference3.person.client.view.PersonAddresses12View;
 import one.xingyi.reference3.person.client.view.PersonLine12View;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import org.junit.Test;
@@ -30,8 +32,20 @@ public class Deprecated3Tests {
         assertTrue(PersonCompanion.companion.javascript, PersonCompanion.companion.javascript().contains("return compose(lens_Person_address(), lens('line2'));"));
     }
 
-    @Test public void testCanReadLine1() throws ExecutionException, InterruptedException {
+    @Test public void testCanReadLine1and2() throws ExecutionException, InterruptedException {
         assertEquals("someLine1", PersonLine12View.get(service(), "id1", PersonLine12View::line1).get());
+        assertEquals("someLine2", PersonLine12View.get(service(), "id1", PersonLine12View::line2).get());
+
+    }
+    @Test public void testCanReadLine1and2ViaAddress() throws ExecutionException, InterruptedException {
+        assertEquals("someLine1", PersonAddress12View.get(service(), "id1", v -> v.address().line1()).get());
+        assertEquals("someLine2", PersonAddress12View.get(service(), "id1", v -> v.address().line2()).get());
+
+    }
+
+    @Test public void testCanReadLine1and2ViaAddresses() throws ExecutionException, InterruptedException {
+        assertEquals("someLine1", PersonAddresses12View.get(service(), "id1", v -> v.addresses().get(0).line1()).get());
+        assertEquals("someLine2", PersonAddresses12View.get(service(), "id1", v -> v.addresses().get(0).line2()).get());
 
     }
 
