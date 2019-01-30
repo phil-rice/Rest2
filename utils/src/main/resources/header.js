@@ -11,6 +11,20 @@ function setL(lensName, t, v) {
     return eval(lensName)().set(t, v)
 }
 
+function getFromList(list, n) {
+    return list[n];
+}
+
+function sizeOfList(list) {
+    return list.length;
+}
+
+function setInList(list, n, item) {
+    var newList = list.splice();
+    newList[n] = item;
+    return newList;
+}
+
 function makeArray() {
     var result = [];
     for (var i = 0; i < arguments.length; i++) {

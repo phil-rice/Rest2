@@ -1,10 +1,14 @@
 package one.xingyi.reference3;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.MirroredSimpleList;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpService;
 import one.xingyi.core.marshelling.JsonValue;
+import one.xingyi.reference3.address.client.view.AddressLine12View;
 import one.xingyi.reference3.person.PersonController;
 import one.xingyi.reference3.person.client.view.PersonAddress12View;
 import one.xingyi.reference3.person.client.view.PersonAddresses12View;
@@ -12,6 +16,7 @@ import one.xingyi.reference3.person.client.view.PersonLine12View;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -19,11 +24,12 @@ import java.util.function.Function;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-public class Deprecated3Tests {
+abstract public class AbstractDeprecated3Tests<J> {
 
     Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
-    static EndpointConfig<JsonValue> config = EndpointConfig.defaultConfigNoParser;
-    static EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config, new PersonController()).allEndpoints());
+    abstract EndpointConfig<JsonValue> config();
+    abstract boolean supportsReadingJson();
+    EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config(), new PersonController()).allEndpoints());
     HttpService rawService;
     HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
 
@@ -47,6 +53,23 @@ public class Deprecated3Tests {
         assertEquals("someLine1", PersonAddresses12View.get(service(), "id1", v -> v.addresses().get(0).line1()).get());
         assertEquals("someLine2", PersonAddresses12View.get(service(), "id1", v -> v.addresses().get(0).line2()).get());
 
+    }
+    @Test public void testCanSizeOfReadLine1and2ViaAddresses() throws ExecutionException, InterruptedException {
+        assertEquals(1, PersonAddresses12View.get(service(), "id1", v -> v.addresses().size()).get().intValue());
+        assertEquals(1, PersonAddresses12View.get(service(), "id1", v -> v.addresses().size()).get().intValue());
+
+    }
+    @Test public void testCanChangeItemsInList() throws ExecutionException, InterruptedException {
+        if (supportsReadingJson()) {
+            assertEquals("newLine1", PersonAddresses12View.get(service(), "id1", v -> {
+                AddressLine12View newItem = v.addresses().get(0).withline1("newLine1");
+                ISimpleList<AddressLine12View> addresses = v.addresses();
+                MirroredSimpleList<AddressLine12View> newList = (MirroredSimpleList<AddressLine12View>) addresses.withItem(0, newItem);
+                ScriptObjectMirror newListAsJava= (ScriptObjectMirror) newList.mirror;
+                return newList.get(0).line1();
+            }).get());
+            assertEquals("newLine2", PersonAddresses12View.get(service(), "id1", v -> v.addresses().withItem(0, v.addresses().get(0).withline2("newLine2")).get(0).line2()).get());
+        }
     }
 
 }

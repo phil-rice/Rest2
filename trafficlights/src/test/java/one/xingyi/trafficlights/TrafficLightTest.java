@@ -26,11 +26,7 @@ import static org.junit.Assert.fail;
 public class TrafficLightTest {
 
     Json jsonParserAndWriter = new Json();
-    EndpointConfig<Object> config = new EndpointConfig<>(
-            Files.getText("header.js"),
-            jsonParserAndWriter, jsonParserAndWriter,
-            "http://",
-            JavascriptDetailsToString.simple);
+    EndpointConfig<Object> config = EndpointConfig.defaultConfig(jsonParserAndWriter, jsonParserAndWriter);
 
     public void setup(Consumer3WithException<TrafficLightsController, TrafficLightServer<Object>, HttpService> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController();

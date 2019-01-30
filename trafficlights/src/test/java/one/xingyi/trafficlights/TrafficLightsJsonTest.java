@@ -17,11 +17,6 @@ public class TrafficLightsJsonTest {
 
     Json jsonParserAndWriter = new Json();
 
-    EndpointConfig<Object> config = new EndpointConfig<>(
-            Files.getText("header.js"),
-            jsonParserAndWriter, jsonParserAndWriter,
-            "http://",
-            JavascriptDetailsToString.simple);
 
     String tl(String id, String colour) {
         ContextForJson context = ContextForJson.forServiceRequest("http://", new ServiceRequest("get", "/some/thing", List.of(new Header("host", "someHost")), ""));
