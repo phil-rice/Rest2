@@ -6,4 +6,6 @@ lens_Person_name
 lens_Person_age
 lens_Person_address
 lens_Person_telephone
+lens_Person_line1
+lens_Person_line2
 lens_TelephoneNumber_number

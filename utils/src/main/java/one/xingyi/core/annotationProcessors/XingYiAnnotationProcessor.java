@@ -105,7 +105,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                         File file = new File(outputFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + annotation.value());
 //                log.error(v, "trying" +file.getAbsolutePath());
 //                File file = new File(v.getAnnotation(ValidateLens.class).value());
-                        log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
+//                        log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
 //                if (!file.exists())
 //                    log.error(v, "Cannot find file " + file.getAbsolutePath());
                         String text = Files.getText(file);
@@ -113,16 +113,28 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                         Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
                         Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.withDeprecatedmap(fd -> fd.lensName)));
                         actualLens.add("lens_EntityDetails_urlPattern");
-                        expectedLens.removeAll(actualLens);
+                        Set<String> originalExpectedLens = new HashSet<>(expectedLens);
+                        Set<String> originalActualsLens = new HashSet<>(actualLens);
+                        expectedLens.removeAll(originalActualsLens);
                         if (expectedLens.size() > 0) {
-                            String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
+                            String msg = "("+ annotation.value() +") Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(originalActualsLens, ", ");
                             if (annotation.error())
                                 log.error(v, msg);
                             else
                                 log.warning(v, msg);
                         }
+                        if (annotation.exact()) {
+                            actualLens.removeAll(originalExpectedLens);
+                            if (actualLens.size() > 0) {
+                                String msg = "("+ annotation.value() +") There are lens supported " + actualLens + " that aren't in the validation file\nActual lens are" + "\n" + Sets.sortedString(originalActualsLens, ", ");
+                                if (annotation.error())
+                                    log.error(v, msg);
+                                else
+                                    log.warning(v, msg);
+                            }
+                        }
                     } catch (FileNotFoundException ex) {
-                        log.error(v, "Cannot find file for "+ annotation.value()+". It should be in the root class path. For example in src/main/resources ");
+                        log.error(v, "Cannot find file for " + annotation.value() + ". It should be in the root class path. For example in src/main/resources ");
                     }
                 }
             }
