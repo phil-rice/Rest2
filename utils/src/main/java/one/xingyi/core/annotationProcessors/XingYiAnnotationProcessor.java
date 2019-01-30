@@ -18,6 +18,7 @@ import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -98,26 +99,30 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             for (Element v : validate) {
 //                PackageAndClassName packageAndClassName = new PackageAndClassName(v.getAnnotation(ValidateLens.class).value());
                 for (ValidateLens annotation : v.getAnnotation(ValidateManyLens.class).value()) {
-                    FileObject fileObject = filer.getResource(StandardLocation.CLASS_PATH, "", annotation.value());
-                    File outputFile = new File(fileObject.toUri().toURL().getFile());
-                    File file = new File(outputFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + annotation.value());
+                    try {
+                        FileObject fileObject = filer.getResource(StandardLocation.CLASS_PATH, "", annotation.value());
+                        File outputFile = new File(fileObject.toUri().toURL().getFile());
+                        File file = new File(outputFile.getParentFile().getParentFile().getParentFile(), "src/main/resources/" + annotation.value());
 //                log.error(v, "trying" +file.getAbsolutePath());
 //                File file = new File(v.getAnnotation(ValidateLens.class).value());
-                    log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
+                        log.info("Checking lens in " + file.getAbsolutePath() + " " + file.exists());
 //                if (!file.exists())
 //                    log.error(v, "Cannot find file " + file.getAbsolutePath());
-                    String text = Files.getText(file);
+                        String text = Files.getText(file);
 //                log.error(v, "Found textt" + text);
-                    Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
-                    Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.withDeprecatedmap(fd -> fd.lensName)));
-                    actualLens.add("lens_EntityDetails_urlPattern");
-                    expectedLens.removeAll(actualLens);
-                    if (expectedLens.size() > 0) {
-                        String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
-                        if (annotation.error())
-                            log.error(v, msg);
-                        else
-                            log.warning(v, msg);
+                        Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
+                        Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.withDeprecatedmap(fd -> fd.lensName)));
+                        actualLens.add("lens_EntityDetails_urlPattern");
+                        expectedLens.removeAll(actualLens);
+                        if (expectedLens.size() > 0) {
+                            String msg = "Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(actualLens, ", ");
+                            if (annotation.error())
+                                log.error(v, msg);
+                            else
+                                log.warning(v, msg);
+                        }
+                    } catch (FileNotFoundException ex) {
+                        log.error(v, "Cannot find file for "+ annotation.value()+". It should be in the root class path. For example in src/main/resources ");
                     }
                 }
             }

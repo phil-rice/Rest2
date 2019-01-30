@@ -36,6 +36,7 @@ The state based approach demoed in Trafficlights looks really simple to use and 
 
 # Validations
 
+* LensValidations: add 'exact' as an option, so that we can say 'we do this and only this'
 * Make sure the annotations are set up right (only interface/only clsas etc)
 * Check that if deprecated javascript must be set
 * check name structures
