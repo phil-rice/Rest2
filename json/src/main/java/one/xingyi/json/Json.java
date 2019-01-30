@@ -4,9 +4,11 @@ import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 public class Json implements JsonWriter<Object>, JsonParser<Object> {
     public static Json simple = new Json();
     @Override public Object makeObject(Object... namesAndValues) {
@@ -32,6 +34,10 @@ public class Json implements JsonWriter<Object>, JsonParser<Object> {
         return (Integer) o;
     }
     @Override public Object child(Object o, String name) {
-        return ((JSONObject) o).get(name);
+        if (o instanceof Map) return (((Map) o).get(name));
+        else return ((JSONObject) o).get(name);
+    }
+    @Override public List<Object> asList(Object o) {
+        return ((JSONArray) o).toList();
     }
 }

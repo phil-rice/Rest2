@@ -1,5 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.codeDom.EntityDom;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
@@ -44,7 +45,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
     List<String> fromJson(EntityDom dom) {
         String className = dom.entityNames.serverEntity.className;
         return List.of("@XingYiGenerated", "public <J> " + className + " fromJson(JsonParser<J> jsonParser, J j){",
-                Formating.indent + "return new " + className + "(" + dom.fields.noDeprecatedmapJoin(",", fd -> fd.typeDom.forFromJson(fd.name)) + ");",
+                Formating.indent + "return new " + className + "(" + dom.fields.noDeprecatedmapJoin(",\n"+Formating.indent+Formating.indent, fd -> fd.typeDom.forFromJson(fd.name)) + ");",
                 "};");
     }
 
@@ -54,7 +55,7 @@ public class ServerCompanionFileMaker implements IFileMaker<EntityDom> {
                 Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverCompanion,
                         " implements " + implementsString,
                         List.of(entityDom.entityNames.serverEntity.asString()),
-                        IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class,
+                        IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, ISimpleList.class,Lists.class,
                         IXingYiServesEntityCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(entityDom)),

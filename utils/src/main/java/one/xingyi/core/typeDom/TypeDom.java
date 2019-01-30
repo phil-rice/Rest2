@@ -6,8 +6,6 @@ import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
-import java.util.List;
-
 import static one.xingyi.core.codeDom.PackageAndClassName.*;
 public interface TypeDom {
     /** For example if the type if List<T> this is List<T> */
@@ -35,8 +33,11 @@ public interface TypeDom {
         String embeddedClassName = Embedded.class.getName();
         if (primitives().contains(packageAndClassName))
             return Result.succeed(new PrimitiveType(packageAndClassName));
-        if (fullTypeName.startsWith(listClassName))
-            return create(names, Strings.extractFromOptionalEnvelope(listClassName + "<", ">", fullTypeName)).map(nested -> new ListType(fullTypeName, nested));
+        if (fullTypeName.startsWith(listClassName)) {
+
+            return create(names, Strings.extractFromOptionalEnvelope(listClassName + "<", ">", fullTypeName)).flatMap(nested ->
+                    names.entityName(nested.fullTypeName()).map(entityNames -> new ListType(fullTypeName, nested, entityNames.serverCompanion)));
+        }
         if (fullTypeName.startsWith(embeddedClassName))
             return create(names, Strings.extractFromOptionalEnvelope(embeddedClassName + "<", ">", fullTypeName)).map(nested -> new EmbeddedType(fullTypeName, nested));
         if (fullTypeName.indexOf("<") == -1) {
@@ -44,7 +45,7 @@ public interface TypeDom {
                 String serviceInterface = tr.serverInterface.asString();
                 String serviceClass = tr.originalDefn.asString();
                 return names.viewName(fullTypeName, serviceClass).map(
-                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(), vn.clientCompanion.asString(),tr.serverCompanion.asString()));
+                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(), vn.clientCompanion.asString(), tr.serverCompanion.asString()));
             });
         }
         return Result.failwith("Could not work out what type " + rawTypeName + " was");
