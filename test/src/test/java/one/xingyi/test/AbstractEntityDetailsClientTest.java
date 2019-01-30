@@ -33,7 +33,7 @@ abstract class AbstractEntityDetailsClientTest {
     static EndpointConfig<Object> config = EndpointConfig.defaultConfig(json, json);
 
 
-    static EndPoint entityEndpoints = EndPoint.printlnLog(EndPoint.compose(new PersonServer<>(config, new PersonController()).allEndpoints()));
+    static EndPoint entityEndpoints = EndPoint.compose(new PersonServer<>(config, new PersonController()).allEndpoints());
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
