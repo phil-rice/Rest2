@@ -1,5 +1,6 @@
 package one.xingyi.json;
 import lombok.val;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
@@ -14,7 +15,7 @@ public class Json implements JsonWriter<Object>, JsonParser<Object> {
             result.put((String) namesAndValues[i + 0], namesAndValues[i + 1]);
         return result;
     }
-    @Override public Object makeList(List<Object> items) { return items; }
+    @Override public <T> Object makeList(ISimpleList<T> items) { return items.toList(); }
     @Override public Object liftString(String string) {
         return new JSONObject(string);
     }

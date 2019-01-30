@@ -1,6 +1,7 @@
 package one.xingyi.core.client;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import one.xingyi.core.utils.*;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 
@@ -17,9 +19,12 @@ public interface ISimpleList<T> extends Iterable<T> {
     T get(int n);
     ISimpleList<T> withItem(int n, T t);
     @SafeVarargs static <T> ISimpleList<T> create(T... ts) {return new SimpleList<>(Arrays.asList(ts));}
+    static <T> ISimpleList<T> fromList(List<T>ts) {return new SimpleList<>(ts);}
+    default List<T> toList() {List<T> result = new ArrayList<>(); for (T t : this) result.add(t); return result;}
 }
 
 @EqualsAndHashCode
+@ToString
 class SimpleList<T> implements ISimpleList<T> {
     final List<T> list;
     public SimpleList(List<T> list) {
@@ -56,6 +61,7 @@ class MirroredSimpleList<T> implements ISimpleList<T> {
     @Override public ISimpleList<T> withItem(int n, T t) {
         return WrappedException.wrapCallable(() -> setFn.apply(n, t));
     }
+
     @Override public Iterator<T> iterator() {
         return new Iterator<T>() {
             int count = 0;

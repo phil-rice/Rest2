@@ -1,4 +1,6 @@
 package one.xingyi.core.marshelling;
+import one.xingyi.core.client.ISimpleList;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 public interface JsonWriter<J> {
@@ -11,7 +13,8 @@ public interface JsonWriter<J> {
      * Contract is that there are an even number and that the first is a string, the next is a J
      */
     J makeObject(Object... namesAndValues);
-    J makeList(List<Object> items);
+    <T extends Object> J makeList(ISimpleList<T> items);
+    default J makeList(List<Object> items) {return makeList(ISimpleList.fromList(items));}
     J liftString(String string);
     String fromJ(J j);
 
@@ -32,9 +35,7 @@ class JsonWriterForMaps implements JsonWriter<Object> {
         }
         return result;
     }
-    @Override public Object makeList(List<Object> items) {
-        return items;
-    }
+    @Override public <T> Object makeList(ISimpleList<T> items) { return items.toList(); }
     @Override public Object liftString(String string) {
         return string;
     }

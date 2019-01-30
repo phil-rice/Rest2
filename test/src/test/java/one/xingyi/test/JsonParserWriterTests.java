@@ -8,7 +8,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 public abstract class JsonParserWriterTests<J>  implements IReferenceFixture3 {
 
-    String jsonString = Strings.changeQuotes("{'name':'someName','age':23,'address':{'line1':'someLine1','line2':'someLine2','postcode':'somePostcode'},'telephone':{'number':'someNumber'}}");
+    String jsonString = Strings.changeQuotes("{'name':'someName','age':23,'addresses':[{'line1':'someLine1','line2':'someLine2','postcode':'somePostcode'}],'telephone':{'number':'someNumber'}}");
     abstract protected JsonWriter<J> jsonWriter();
     abstract protected JsonParser<J> jsonParser();
 
@@ -17,7 +17,7 @@ public abstract class JsonParserWriterTests<J>  implements IReferenceFixture3 {
         J json = jsonParser().parse(jsonString);
         assertEquals("someName", jsonParser().asString(jsonParser().child(json, "name")));
         assertEquals(23, jsonParser().asInt(jsonParser().child(json, "age")));
-        assertEquals("someLine1", jsonParser().asString(jsonParser().child(jsonParser().child(json, "address"), "line1")));
+        assertEquals("someLine1", jsonParser().asString(jsonParser().child(jsonParser().child(json, "addresses"), "line1")));
     }
 
     @Test

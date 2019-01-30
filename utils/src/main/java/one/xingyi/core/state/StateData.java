@@ -2,6 +2,7 @@ package one.xingyi.core.state;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Optionals;
@@ -17,7 +18,7 @@ public class StateData {
     public final String link;
     public static <J> J toJson(JsonWriter<J> writer, String state, Map<String, List<StateData>> stateMap) {
         return Optionals.<List<StateData>, J>fold(Optional.ofNullable(stateMap.get(state)),
-                () -> writer.makeList(List.of()),
+                () -> writer.makeList(ISimpleList.create()),
                 listOfStates -> writer.makeList(Lists.map(listOfStates, s -> writer.makeObject(s.action, s.link))));
     }
 }

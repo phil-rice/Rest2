@@ -100,7 +100,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, classPostFix,
                         List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, HasJsonWithLinks.class,
-                        ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class),
+                        ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class, Lists.class),
                 Formating.indent(fields(entityDom.fields)),
                 Formating.indent(constructor(entityDom)),
                 Formating.indent(allFieldsAccessors(entityDom.entityNames.serverEntity.className, entityDom.fields)),

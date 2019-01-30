@@ -20,6 +20,9 @@ public class ListType implements TypeDom {
     @Override public String forFromJson(String fieldName) {
         return null;//TODO
     }
+    @Override public String forToJson(String fieldName, boolean templated) { return "jsonWriter.makeList(Lists.map(" + fieldName + ".toList(), a -> a.toJson(jsonWriter,context)))"; }
+
+
     @Override public TypeDom nested() { return nested; }
 
 }
