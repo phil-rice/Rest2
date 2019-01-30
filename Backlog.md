@@ -5,15 +5,21 @@ Currently it is being generated but we need to 'manage it'.
 * Long term we need the 'correct javascript'for this request.
 * We would like strategies that allow the javascript to be included (piecemeal) or sent with the data
 
+# Accept Header / Content negotiation
+
+* Find the recursive list of lens for a view
+* Use the list to make an accept header which is sent
+* Use the list to minimise the JSON sent back - work out how to make this optional
+
 # JSON
 
-* We need to parse JSON for puts/posts
-* We want a nice library instead of quick JSON
-* We need to make the prototype story clean: perhaps we need to ask for a prototype?
+* Parse JSON for puts/posts - done by second point
+* Nice library instead of quick JSON - done
+* Lists  - in progress
 
 #Lists
-No idea what to do...
-Reading is easy... but what about writing? What if they are links/embedded?
+* Need to be able to have lists of views
+* Need lists of primitives
 
 
 #Embedded/Link
