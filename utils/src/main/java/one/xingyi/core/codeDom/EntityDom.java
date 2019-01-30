@@ -16,6 +16,7 @@ import java.util.Optional;
 @ToString
 @EqualsAndHashCode
 public class EntityDom {
+    public final boolean deprecated;
     public final EntityNames entityNames;
     public final Optional<BookmarkAndUrlPattern> bookmark;
     public final FieldListDom fields;

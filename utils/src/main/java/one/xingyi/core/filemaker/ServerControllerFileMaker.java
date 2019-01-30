@@ -30,7 +30,7 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
         List<String> manualImports = List.of(serverEntity.asString());
         List<String> result = Lists.append(
                 List.of("//" + entityDom.bookmark),
-                Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "interface", entityDom.entityNames.serverController, "",
+                Formating.javaFile(getClass(), entityDom.deprecated,entityDom.entityNames.originalDefn, "interface", entityDom.entityNames.serverController, "",
                         manualImports, CompletableFuture.class, IdAndValue.class, Optional.class),
                 Formating.indent(List.of("String stateFn(" + serverEntity.className + " entity);")),
                 Formating.indent(addFromActionsDom(serverEntity.className, entityDom.actionsDom)),

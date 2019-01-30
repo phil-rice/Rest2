@@ -19,6 +19,8 @@
         <module>test</module>
         <module>trafficlights</module>
         <module>json</module>
+        <module>reference4</module>
+        <module>certificates</module>
     </modules>
     <build>
         <plugins>

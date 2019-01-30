@@ -9,7 +9,7 @@ import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 
 import java.util.List;
-public class AbstracDebugFileMaker {
+public class AbstractDebugFileMaker {
     List<String> typeDomInfo(TypeDom typeDom) {
         return List.of(typeDom.toString());
     }
@@ -41,6 +41,7 @@ public class AbstracDebugFileMaker {
 
     List<String> entityDebugInfo(EntityDom entityDom) {
         return Lists.<String>append(
+                List.of("Deprecated: " + entityDom.deprecated),
                 entityNameInfo(entityDom.entityNames),
                 List.of(
                         "bookmarkAndUrl " + entityDom.bookmark,

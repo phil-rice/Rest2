@@ -130,7 +130,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     }
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), serverDom.originalDefn, "class", serverDom.serverName, "<J> implements IXingYiServer",
+                Formating.javaFile(getClass(), false, serverDom.originalDefn, "class", serverDom.serverName, "<J> implements IXingYiServer",
                         List.of("one.xingyi.server.EndPointFactorys"),
                         XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class, IXingYiServer.class,
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class, IXingYiServerCompanion.class,

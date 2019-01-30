@@ -98,7 +98,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         String classPostFix = " implements HasJson<ContextForJson>," + entityDom.entityNames.serverInterface.asString();
         if (entityDom.bookmark.isPresent()) classPostFix += ",HasJsonWithLinks<ContextForJson," + entityDom.entityNames.serverEntity.className + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, classPostFix,
+                Formating.javaFile(getClass(),entityDom.deprecated, entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, classPostFix,
                         List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, HasJsonWithLinks.class,
                         ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class, Lists.class),
                 Formating.indent(fields(entityDom.fields)),

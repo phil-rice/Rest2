@@ -17,6 +17,7 @@ public interface IPersonDefn extends IXingYiEntityDefn {
     @Field(readOnly = true)
     String name();
     Integer age();
+
     ISimpleList<IAddressDefn> addresses();
     ITelephoneNumberDefn telephone();
 
@@ -24,7 +25,7 @@ public interface IPersonDefn extends IXingYiEntityDefn {
 
     @Deprecated
     @Field(javascript = "return compose(lens_Person_addresses(), lensForFirstItemInList());")
-    ISimpleList<IAddressLine12ViewDefn> address();
+    IAddressLine12ViewDefn address();
 
     @Deprecated
     @Field(javascript = "return compose(lens_Person_address(), lens('line1'));")

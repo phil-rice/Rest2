@@ -19,7 +19,7 @@ public class ClientEntityFileMaker implements IFileMaker<ViewDomAndItsEntityDom>
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewAndEntityDom) {
         ViewDom viewDom = viewAndEntityDom.viewDom;
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), viewAndEntityDom.viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientEntity,
+                Formating.javaFile(getClass(), viewDom.deprecated, viewAndEntityDom.viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientEntity,
                         " extends IXingYiClientEntity", List.of(),
                         IXingYiClientEntity.class, XingYiGenerated.class),
                 List.of("}")

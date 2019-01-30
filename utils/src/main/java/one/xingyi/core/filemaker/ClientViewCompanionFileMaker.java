@@ -77,7 +77,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
                 Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
 //        String afterClassString = "<Entity extends IXingYiEntity, IOps extends IXingYiView<Entity>, Impl extends IXingYiClientImpl<Entity, IOps>> extends IXingYiClientMaker<Entity, IOps>"
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientCompanion,
+                Formating.javaFile(getClass(), viewDom.deprecated,viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientCompanion,
                         " implements " + parentInterface + "<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + "," +

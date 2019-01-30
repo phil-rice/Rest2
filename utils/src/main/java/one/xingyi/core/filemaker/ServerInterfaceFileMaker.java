@@ -27,7 +27,7 @@ public class ServerInterfaceFileMaker implements IFileMaker<EntityDom> {
     @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
         List<String> manualImports = Lists.unique(entityDom.fields.noDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName()));
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),entityDom.entityNames.originalDefn,"interface", entityDom.entityNames.serverInterface,
+                Formating.javaFile(getClass(), entityDom.deprecated, entityDom.entityNames.originalDefn, "interface", entityDom.entityNames.serverInterface,
                         " extends IXingYiEntity", manualImports, IXingYiEntity.class, XingYiGenerated.class),
                 Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 List.of("}")

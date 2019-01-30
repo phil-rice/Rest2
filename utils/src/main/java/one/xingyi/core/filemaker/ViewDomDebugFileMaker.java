@@ -7,7 +7,7 @@ import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+public class ViewDomDebugFileMaker extends AbstractDebugFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
 
     List<String> viewNameInfo(ViewNames names) {
         return Lists.append(
@@ -22,6 +22,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
     }
     List<String> viewDebugInfo(ViewDom viewDom) {
         return Lists.<String>append(
+                List.of("Deprecated: " + viewDom.deprecated),
                 viewNameInfo(viewDom.viewNames),
                 List.of(
                         "Fields: " + viewDom.fields.allFields.size()
@@ -36,7 +37,7 @@ public class ViewDomDebugFileMaker extends AbstracDebugFileMaker implements IFil
         List<String> manualImports = Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName()));
 
         List<String> result = Lists.append(
-                Formating.javaFile(getClass(),viewDom.viewNames.originalDefn,"class", packageAndClassName, "", manualImports),
+                Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "class", packageAndClassName, "", manualImports),
                 List.of("/*"),
 
                 viewDebugInfo(viewDom),

@@ -24,8 +24,7 @@ class SimpleElementToViewDom implements IElementToViewDom {
 
 
     @Override public Result<ElementFail, ViewDom> apply(TypeElement viewElement) {
-
-        return elementToFieldListDom.apply(viewElement).map(fieldListDom -> new ViewDom(viewNames,  fieldListDom));
+        return elementToFieldListDom.apply(viewElement).map(fieldListDom -> new ViewDom(viewElement.getAnnotation(Deprecated.class) != null, viewNames, fieldListDom));
     }
 }
 

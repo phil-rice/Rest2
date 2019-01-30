@@ -14,6 +14,7 @@ import one.xingyi.json.Json;
 import one.xingyi.reference3.PersonServer;
 import one.xingyi.reference3.person.PersonController;
 import one.xingyi.reference3.person.client.companion.PersonNameViewCompanion;
+import one.xingyi.reference3.person.client.view.PersonLine12View;
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import org.junit.Test;
 
@@ -67,7 +68,7 @@ abstract class AbstractEntityDetailsClientTest {
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
         assertEquals("someName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
-    }
+            }
 
 //    @Test
 //    public void testGetAddress() throws ExecutionException, InterruptedException {

@@ -15,6 +15,7 @@ import one.xingyi.core.validation.Result;
 @EqualsAndHashCode
 public class ViewDom {
     //    public final EntityDom entityDom;
+    public final boolean deprecated;
     public final ViewNames viewNames;
     public final FieldListDom fields;
 

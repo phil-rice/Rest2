@@ -30,12 +30,12 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         if (viewDom.typeDom.primitive()) {
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
                     "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(lensName) + ");}");
-        } else if (viewDom.typeDom instanceof ListType ){
+        } else if (viewDom.typeDom instanceof ListType) {
             result.add("//" + viewDom.typeDom);
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
                     viewDom.name + "Lens(){return xingYi.listLens(companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
 
-        } else{
+        } else {
             result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
                     viewDom.name + "Lens(){return xingYi.objectLens(companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
 
@@ -58,14 +58,14 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
     List<String> constructor(ViewDom viewDom) {
         String classname = viewDom.viewNames.clientViewImpl.className;
         FieldListDom fld = viewDom.fields;
-        return List.of("public " + classname + "(IXingYi<"+ viewDom.viewNames.clientEntity.asString()+"," + viewDom.viewNames.clientView.asString()+ ">xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
+        return List.of("public " + classname + "(IXingYi<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + ">xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
     }
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
         ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName()));
         String result = Lists.<String>join(Lists.<String>append(
-                Formating.javaFile(getClass(),viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientViewImpl,
+                Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientViewImpl,
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
@@ -73,8 +73,8 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
                 Formating.indent(fields(viewDom)),
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
-                List.of(Formating.indent + "@Override public IXingYi<"+ viewDom.viewNames.clientEntity.asString()+"," + viewDom.viewNames.clientView.asString()+ "> xingYi(){return xingYi;}"),
-                Formating.indent(constructor( viewDom)),
+                List.of(Formating.indent + "@Override public IXingYi<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi(){return xingYi;}"),
+                Formating.indent(constructor(viewDom)),
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
                 List.of("}")
         ), "\n");

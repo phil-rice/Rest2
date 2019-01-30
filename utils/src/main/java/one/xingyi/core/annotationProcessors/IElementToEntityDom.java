@@ -25,7 +25,7 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
         String bookmark = annotation.bookmark();
         String url = annotation.rootUrl();
         Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, bookmark, url);
-        List<PostDom> pathDoms = Lists.collect(element.getEnclosedElements(), e -> e.getAnnotation(Post.class) != null, e -> PostDom.create(e.getSimpleName().toString(),e.getAnnotation(Post.class), url));
+        List<PostDom> pathDoms = Lists.collect(element.getEnclosedElements(), e -> e.getAnnotation(Post.class) != null, e -> PostDom.create(e.getSimpleName().toString(), e.getAnnotation(Post.class), url));
         ActionsDom actionsDom = new ActionsDom(//TODO Move into own mini interface
                 Optional.ofNullable(element.getAnnotation(Get.class)).map(get -> new GetDom(get.mustExist())),
                 Optional.ofNullable(element.getAnnotation(Put.class)).map(put -> new PutDom()),
@@ -34,6 +34,6 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
                 Optional.ofNullable(element.getAnnotation(CreateWithoutId.class)).map(create -> new CreateWithoutIdDom(create.url())),
                 pathDoms
         );
-        return elementToFieldListDom.apply(element).map(fieldListDom -> new EntityDom(entityNames, bookmarkAndUrlPattern, fieldListDom, actionsDom));
+        return elementToFieldListDom.apply(element).map(fieldListDom -> new EntityDom(element.getAnnotation(Deprecated.class) != null, entityNames, bookmarkAndUrlPattern, fieldListDom, actionsDom));
     }
 }
