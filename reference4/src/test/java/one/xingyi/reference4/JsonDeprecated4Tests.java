@@ -1,11 +1,11 @@
-package one.xingyi.reference3;
+package one.xingyi.reference4;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.marshelling.JsonValue;
-public class CheapJsonDeprecatedTests extends AbstractDeprecated3Tests<JsonValue> {
+public class JsonDeprecated4Tests extends AbstractDeprecated4Tests<JsonValue> {
     @Override EndpointConfig<JsonValue> config() {
         return EndpointConfig.defaultConfigNoParser;
     }
     @Override boolean supportsReadingJson() {
-        return false;
+        return true;
     }
 }

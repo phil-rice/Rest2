@@ -1,4 +1,4 @@
-package one.xingyi.reference3;
+package one.xingyi.reference4;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.client.MirroredSimpleList;
@@ -24,7 +24,7 @@ import java.util.function.Function;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-abstract public class AbstractDeprecated3Tests<J> {
+abstract public class AbstractDeprecated4Tests<J> {
 
     Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
     abstract EndpointConfig<JsonValue> config();
@@ -33,10 +33,6 @@ abstract public class AbstractDeprecated3Tests<J> {
     HttpService rawService;
     HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
 
-    @Test public void testJavascriptForLine1() {
-        assertFalse(PersonCompanion.companion.javascript, PersonCompanion.companion.javascript().contains("return lens('line1')"));
-        assertTrue(PersonCompanion.companion.javascript, PersonCompanion.companion.javascript().contains("return compose(lens_Person_address(), lens('line2'));"));
-    }
 
     @Test public void testCanReadLine1and2() throws ExecutionException, InterruptedException {
         assertEquals("someLine1", PersonLine12View.get(service(), "id1", PersonLine12View::line1).get());

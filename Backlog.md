@@ -17,8 +17,11 @@ Currently it is being generated but we need to 'manage it'.
 * Nice library instead of quick JSON - done
 * Lists  - in progress
 
+#Optionals
+Of primitives and views
+
 #Lists
-* Need to be able to have lists of views
+* Need to be able to have lists of views -- done
 * Need lists of primitives
 
 

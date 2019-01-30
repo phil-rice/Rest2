@@ -27,13 +27,10 @@ public interface IPersonDefn extends IXingYiEntityDefn {
     //==========
 
     @Deprecated
-    @Field(javascript = "return need to work out;")
+    @Field(javascript = "return identityLens();")
     ISimpleList<IAddressLine12ViewDefn> address();
 
-//    @Deprecated
-//    @Field(javascript = "return compose(lens_Person_address(), lens('line1'));")
-
     @Deprecated
-    @Field(javascript = "return need to work out;")
+    @Field(javascript = "return itemAsListLens();")
     ISimpleList<IAddressDefn> addresses();
 }

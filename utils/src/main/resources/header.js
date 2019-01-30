@@ -54,6 +54,28 @@ function lens(field) {
     };
 }
 
+function identityLens() {
+    return {
+        get: function (t) {
+            return t;
+        },
+        set: function (t, b) {
+            return b;
+        }
+    }
+}
+
+function itemAsListLens(){
+    return {
+        get: function(t){
+            return [t];
+        },
+        set: function(t,b){
+            return b[0];
+        }
+    }
+}
+
 function lensForFirstItemInList() {
     return {
         "get": function (list) {

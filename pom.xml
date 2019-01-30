@@ -9,18 +9,18 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>utils</module>
+        <module>core</module>
+        <module>server</module>
+        <module>client</module>
+        <module>json</module>
         <module>reference1</module>
         <module>reference2</module>
         <module>reference3</module>
-        <module>server</module>
-        <module>utils</module>
-        <module>core</module>
-        <module>client</module>
-        <module>test</module>
-        <module>trafficlights</module>
-        <module>json</module>
         <module>reference4</module>
+        <module>trafficlights</module>
         <module>certificates</module>
+        <module>test</module>
     </modules>
     <build>
         <plugins>
