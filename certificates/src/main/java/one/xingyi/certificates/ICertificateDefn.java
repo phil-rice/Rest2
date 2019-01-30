@@ -2,6 +2,7 @@ package one.xingyi.certificates;
 
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.sdk.IXingYiEntityDefn;
+
 @Entity(bookmark = "/certificate", rootUrl = "/certificate/{id}")
 @Delete
 @Get(mustExist = false)
