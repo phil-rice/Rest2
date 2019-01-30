@@ -11,14 +11,25 @@ Currently it is being generated but we need to 'manage it'.
 * Use the list to make an accept header which is sent
 * Use the list to minimise the JSON sent back - work out how to make this optional
 
+# server
+
+* Move most of content to the companion object (much more composable)
+* Have a method to compose two servers
+'
+
 # JSON
 
 * Parse JSON for puts/posts - done by second point
 * Nice library instead of quick JSON - done
 * Lists  - in progress
 
+# View stuff
+
+* Have  a field that returns the optional json (only relevant if this was the main entity)
+* Have a field that returns a map of links (empty unless this is the main entity)
+
 #Optionals
-Of primitives and views
+* Of primitives and views
 
 #Lists
 * Need to be able to have lists of views -- done
@@ -39,6 +50,7 @@ The state based approach demoed in Trafficlights looks really simple to use and 
 
 # Validations
 
+* What happens if the interfaces aren't defined
 * LensValidations: add 'exact' as an option, so that we can say 'we do this and only this'
 * Make sure the annotations are set up right (only interface/only clsas etc)
 * Check that if deprecated javascript must be set

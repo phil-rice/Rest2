@@ -38,7 +38,7 @@ public class TrafficLightTest {
     ServiceRequest sr(String method, String uri) {return new ServiceRequest(method, uri, List.of(), "");}
 
     public void populate(TrafficLightsController controller, String id, String light, String location) {
-        controller.lights.put(id, new TrafficLights(id, light, location));
+        controller.store.put(id, new TrafficLights(id, light, location));
 
     }
 
@@ -92,6 +92,7 @@ public class TrafficLightTest {
         setup((controller, server, service) -> {
             Function<ColourView, String> fn = c -> c.id() + c.color();
             assertEquals("1red", ColourView.create(service, "1").thenApply(fn).get());
+            assertEquals("3red", ColourView.create(service, "3").thenApply(fn).get());
             assertEquals("2red", ColourView.create(service, "2").thenApply(fn).get());
 
             assertEquals("1red", ColourView.get(service, "1", fn).get());
@@ -120,9 +121,9 @@ public class TrafficLightTest {
     @Test public void testCanDelete() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            assertTrue(controller.lights.containsKey("1"));
+            assertTrue(controller.store.containsKey("1"));
             assertEquals(Boolean.TRUE, ColourView.delete(service, "1").get());
-            assertFalse(controller.lights.containsKey("1"));
+            assertFalse(controller.store.containsKey("1"));
         });
     }
 
@@ -130,7 +131,7 @@ public class TrafficLightTest {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
             assertEquals("newLocation", LocationView.edit(service, "someId", loc -> loc.withlocation("newLocation")).get().location());
-            assertEquals("newLocation", controller.lights.get("someId").location());
+            assertEquals("newLocation", controller.store.get("someId").location());
             assertEquals("newLocation", LocationView.get(service, "someId", v -> v.location()).get());
         });
     }
