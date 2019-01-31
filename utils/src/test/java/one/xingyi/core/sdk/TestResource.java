@@ -4,12 +4,12 @@ import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.marshelling.JsonWriter;
 
 import java.util.function.Function;
-public class TestEntity implements IXingYiEntity, HasJsonWithLinks<ContextForJson, TestEntity> {
+public class TestResource implements IXingYiResource, HasJsonWithLinks<ContextForJson, TestResource> {
 
     @Override public <J> J toJson(JsonWriter<J> jsonTc, ContextForJson contextForJson) {
         return jsonTc.makeObject("test", "json");
     }
-    @Override public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<TestEntity, String> stateFn) {
+    @Override public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<TestResource, String> stateFn) {
         return jsonWriter.makeObject("some", "json");
     }
 }

@@ -5,12 +5,12 @@ import java.util.List;
 
 public class CodeDom {
 
-    public final List<EntityDom> entityDoms;
+    public final List<ResourceDom> resourceDoms;
     public final List<ViewDom> viewDoms;
-    public final List<ViewDomAndItsEntityDom> viewsAndDoms;
-    public CodeDom(List<EntityDom> entityDoms, List<ViewDom> viewDoms) {
-        this.entityDoms = entityDoms;
+    public final List<ViewDomAndItsResourceDom> viewsAndDoms;
+    public CodeDom(List<ResourceDom> resourceDoms, List<ViewDom> viewDoms) {
+        this.resourceDoms = resourceDoms;
         this.viewDoms = viewDoms;
-        viewsAndDoms = Lists.map(viewDoms, vd -> new ViewDomAndItsEntityDom(vd, Lists.find(entityDoms, ed -> ed.entityNames.originalDefn.equals(vd.viewNames.entityNames.originalDefn))));
+        viewsAndDoms = Lists.map(viewDoms, vd -> new ViewDomAndItsResourceDom(vd, Lists.find(resourceDoms, ed -> ed.entityNames.originalDefn.equals(vd.viewNames.entityNames.originalDefn))));
     }
 }

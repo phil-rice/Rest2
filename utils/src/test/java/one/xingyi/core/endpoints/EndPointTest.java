@@ -1,14 +1,12 @@
 package one.xingyi.core.endpoints;
-import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
-import one.xingyi.core.sdk.TestEntity;
+import one.xingyi.core.sdk.TestResource;
 import one.xingyi.core.utils.FunctionFixture;
-import one.xingyi.core.utils.Strings;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
@@ -19,14 +17,14 @@ public class EndPointTest implements FunctionFixture {
 
     EndpointContext<JsonValue> context = new EndpointContext<JsonValue>(JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, JsonWriter.cheapJson, JsonParser.nullParser(),
             "http://");
-    TestEntity testEntity = new TestEntity();
+    TestResource testEntity = new TestResource();
 
     void checkSR(int statusCode, String json, ServiceResponse serviceResponse) {
         assertEquals(statusCode, serviceResponse.statusCode);
         assertEquals("someJavascript\n---------\n" + json, serviceResponse.body);
     }
 
-    Function<TestEntity, String> stateFn = e -> "someState";
+    Function<TestResource, String> stateFn = e -> "someState";
 
     @Test
     public void getOptionalEntity() {

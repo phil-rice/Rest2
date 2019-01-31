@@ -1,6 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotationProcessors.ActionsDom;
-import one.xingyi.core.codeDom.EntityDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.typeDom.TypeDom;
@@ -39,15 +39,15 @@ public class AbstractDebugFileMaker {
                         "Deprecated " + fieldDom.deprecated)));
     }
 
-    List<String> entityDebugInfo(EntityDom entityDom) {
+    List<String> entityDebugInfo(ResourceDom resourceDom) {
         return Lists.<String>append(
-                List.of("Deprecated: " + entityDom.deprecated),
-                entityNameInfo(entityDom.entityNames),
+                List.of("Deprecated: " + resourceDom.deprecated),
+                entityNameInfo(resourceDom.entityNames),
                 List.of(
-                        "bookmarkAndUrl " + entityDom.bookmark,
-                        "Fields: " + entityDom.fields.allFields.size()
+                        "bookmarkAndUrl " + resourceDom.bookmark,
+                        "Fields: " + resourceDom.fields.allFields.size()
                 ),
-                Formating.indent(Lists.<FieldDom, String>flatMap(entityDom.fields.allFields, this::fieldDebugInfo))
+                Formating.indent(Lists.<FieldDom, String>flatMap(resourceDom.fields.allFields, this::fieldDebugInfo))
         );
     }
     List<String> actionsDomInfo(ActionsDom actionsDom) {

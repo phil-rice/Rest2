@@ -1,6 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotationProcessors.ActionsDom;
-import one.xingyi.core.codeDom.EntityDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.IdAndValue;
@@ -11,7 +11,7 @@ import one.xingyi.core.validation.Result;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
+public class ServerControllerFileMaker implements IFileMaker<ResourceDom> {
 
     List<String> addFromActionsDom(String result, ActionsDom actionsDom) {
         return Lists.append(
@@ -24,18 +24,18 @@ public class ServerControllerFileMaker implements IFileMaker<EntityDom> {
         );
     }
 
-    @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
+    @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
 
-        PackageAndClassName serverEntity = entityDom.entityNames.serverEntity;
+        PackageAndClassName serverEntity = resourceDom.entityNames.serverEntity;
         List<String> manualImports = List.of(serverEntity.asString());
         List<String> result = Lists.append(
-                List.of("//" + entityDom.bookmark),
-                Formating.javaFile(getClass(), entityDom.deprecated,entityDom.entityNames.originalDefn, "interface", entityDom.entityNames.serverController, "",
+                List.of("//" + resourceDom.bookmark),
+                Formating.javaFile(getClass(), resourceDom.deprecated, resourceDom.entityNames.originalDefn, "interface", resourceDom.entityNames.serverController, "",
                         manualImports, CompletableFuture.class, IdAndValue.class, Optional.class),
                 Formating.indent(List.of("String stateFn(" + serverEntity.className + " entity);")),
-                Formating.indent(addFromActionsDom(serverEntity.className, entityDom.actionsDom)),
+                Formating.indent(addFromActionsDom(serverEntity.className, resourceDom.actionsDom)),
                 List.of("}"));
-        return Result.succeed(new FileDefn(entityDom.entityNames.serverController, Lists.join(result, "\n")));
+        return Result.succeed(new FileDefn(resourceDom.entityNames.serverController, Lists.join(result, "\n")));
 
     }
 }

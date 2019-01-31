@@ -15,15 +15,15 @@ import one.xingyi.core.validation.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
 
 
-    List<String> viewAndEntityaccessors(PackageAndClassName clientEntity, String interfaceName, ViewDomAndEntityDomField viewDomAndEntityDomField) {
-        FieldDom viewDom = viewDomAndEntityDomField.viewDomField;
-        Optional<FieldDom> entityDom = viewDomAndEntityDomField.entityDomField;
+    List<String> viewAndEntityaccessors(PackageAndClassName clientEntity, String interfaceName, ViewDomAndResourceDomField viewDomAndResourceDomField) {
+        FieldDom viewDom = viewDomAndResourceDomField.viewDomField;
+        Optional<FieldDom> entityDom = viewDomAndResourceDomField.entityDomField;
         List<String> result = new ArrayList<>();
-        result.add("//View" + viewDomAndEntityDomField.viewDomField);
-        result.add("//Entity" + viewDomAndEntityDomField.entityDomField);
+        result.add("//View" + viewDomAndResourceDomField.viewDomField);
+        result.add("//Entity" + viewDomAndResourceDomField.entityDomField);
         String lensName = entityDom.map(fd -> fd.lensName).orElse("not defined. Is this because of incremental compilation?");
 
         //TODO wow... really ugly
@@ -48,7 +48,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         return result;
     }
 
-    List<String> allFieldAccessorsForView(PackageAndClassName clientEntity, String interfaceName, List<ViewDomAndEntityDomField> fields) {
+    List<String> allFieldAccessorsForView(PackageAndClassName clientEntity, String interfaceName, List<ViewDomAndResourceDomField> fields) {
         return Lists.flatMap(fields, f -> viewAndEntityaccessors(clientEntity, interfaceName, f));
     }
 
@@ -61,8 +61,8 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
         return List.of("public " + classname + "(IXingYi<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + ">xingYi, Object mirror){", Formating.indent + "this.xingYi=xingYi;", Formating.indent + "this.mirror=mirror;", "}");
     }
 
-    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
-        ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
+        ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
         List<String> manualImports = Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName()));
         String result = Lists.<String>join(Lists.<String>append(
                 Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientViewImpl,
@@ -75,7 +75,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsEntityDo
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
                 List.of(Formating.indent + "@Override public IXingYi<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi(){return xingYi;}"),
                 Formating.indent(constructor(viewDom)),
-                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
+                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientViewImpl, result));

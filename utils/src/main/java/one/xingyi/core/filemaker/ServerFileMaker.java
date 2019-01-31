@@ -43,21 +43,21 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> makeCompanions(ServerDom serverDom) {
         return List.of(
                 "public List<IXingYiServerCompanion<?, ?>> companions() {return List.of(",
-                Formating.indent + Lists.mapJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.entityNames.serverCompanion.asString()) + ");}");
+                Formating.indent + Lists.mapJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.entityNames.serverCompanion.asString()) + ");}");
     }
 
     List<String> createFields(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("final EndpointContext<J> context;"),
-                Lists.collect(serverDom.codeDom.entityDoms, ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
+                Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
         );
     }
     List<String> createConstructor(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("public " + serverDom.serverName.className + "(EndpointConfig<J> config," +
-                                Lists.collectJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){// A compilation error here is often caused by incremental compilation",
+                                Lists.collectJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){// A compilation error here is often caused by incremental compilation",
                         Formating.indent + "this.context = config.from(companions());"),
-                Formating.indent(Lists.collect(serverDom.codeDom.entityDoms, ed -> ed.bookmark.isPresent(), ed -> "this." + ed.entityNames.serverController.className + " = " + ed.entityNames.serverController.className + ";")),
+                Formating.indent(Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> "this." + ed.entityNames.serverController.className + " = " + ed.entityNames.serverController.className + ";")),
                 List.of("}")
         );
     }
@@ -65,8 +65,8 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createCompanions(ServerDom serverDom) {
         return List.of(
                 "public List<IXingYiServerCompanion<?, ?>> companions(){return List.of(",
-                Formating.indent + "one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion.companion,//added for url pattern on original bookmark ",
-                Formating.indent + Lists.mapJoin(serverDom.codeDom.entityDoms, ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
+                Formating.indent + "one.xingyi.core.httpClient.server.companion.ResourceDetailsCompanion.companion,//added for url pattern on original bookmark ",
+                Formating.indent + Lists.mapJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
                 ");}");
     }
     List<String> createLens(ServerDom serverDom) {
@@ -77,7 +77,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createEntityCompanions(ServerDom serverDom) {
         return List.of(
                 "public List<HasBookmarkAndUrl> entityCompanions(){return List.of(",
-                Formating.indent + Lists.mapJoin(Lists.filter(serverDom.codeDom.entityDoms, e -> e.bookmark.isPresent()), ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
+                Formating.indent + Lists.mapJoin(Lists.filter(serverDom.codeDom.resourceDoms, e -> e.bookmark.isPresent()), ",", ed -> ed.entityNames.serverCompanion.asString() + ".companion"),
                 ");}");
     }
 
@@ -110,7 +110,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     }
 
     List<String> createEndpoints(ServerDom serverDom) {
-        return Lists.flatMap(serverDom.codeDom.entityDoms, ed -> {
+        return Lists.flatMap(serverDom.codeDom.resourceDoms, ed -> {
             String className = ed.entityNames.serverEntity.className;
             String controllerName = ed.entityNames.serverController.className;
             String companionName = ed.entityNames.serverCompanion.asString();
@@ -148,7 +148,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
 //                List.of("//gets"),
 //                Formating.indent(Lists.map(serverDom.defnNames, Objects::toString)),
                 List.of("//entities"),
-                Formating.indent(Lists.map(serverDom.codeDom.entityDoms, Objects::toString)),
+                Formating.indent(Lists.map(serverDom.codeDom.resourceDoms, Objects::toString)),
                 List.of("*/"),
                 List.of("}")
         ), "\n");

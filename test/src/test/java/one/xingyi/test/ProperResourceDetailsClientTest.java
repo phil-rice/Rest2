@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
-public class ProperEntityDetailsClientTest extends AbstractEntityDetailsClientTest {
+public class ProperResourceDetailsClientTest extends AbstractResourceDetailsClientTest {
 
     private static SimpleServer server;
     private static ExecutorService executorService;

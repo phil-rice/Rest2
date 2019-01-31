@@ -8,12 +8,10 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.MakesFromJson;
-import one.xingyi.core.sdk.IXingYiEntity;
-import one.xingyi.core.state.StateData;
+import one.xingyi.core.sdk.IXingYiResource;
 import one.xingyi.core.utils.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -29,40 +27,40 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 sr.toString() + "\nLegal Endpoints are\n   " + Lists.mapJoin(endPoint.description(), "\n   ", Objects::toString);
     }
 
-    static <J, Entity extends IXingYiEntity & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
+    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<J, Entity>createForOptionalWithLinks(context, 200, stateFn));
     }
-    static <J, Entity extends IXingYiEntity & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Entity> getEntity(
+    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Entity> getEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<>(
                 IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
                 fn,
                 EndpointResult.<J, Entity>createWithLinks(context, 200, stateFn));
     }
-    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Boolean> deleteEntity(
+    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Boolean> deleteEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Boolean>> fn) {
         return new ResourceEndPoint<J, Entity, String, Boolean>(IResourceEndpointAcceptor.<String>apply("delete", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<Boolean>createForNonEntity(200, r -> r.toString()));
     }
-    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
+    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
             EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", path),
                 s -> {System.out.println("in here: " + s); return idAndValueSupplier.get();}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
     }
-    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
+    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<J, Entity>create(context, 201));
     }
-    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, String, Entity> postEntity(
+    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> postEntity(
             EndpointContext<J> context, String templatedPath, List<String> states, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<J, Entity>create(context, 200));
     }
 
-    static <J, Entity extends IXingYiEntity> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
+    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
             MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
                 (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.jsonParser, context.jsonParser.parse(sr.body)))),

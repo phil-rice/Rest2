@@ -1,9 +1,8 @@
 package one.xingyi.core.filemaker;
-import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.codeDom.ViewDomAndItsEntityDom;
+import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.sdk.IXingYiClientViewCompanion;
 import one.xingyi.core.sdk.IXingYiRemoteClientViewCompanion;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
     List<String> getMethod(String returnType) {
         return List.of("public <T> CompletableFuture<T> get(HttpService httpService, String id, Function<" + returnType + ", T> fn){ return httpService.get(this, id, fn);}");
     }
@@ -67,9 +66,9 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsEnt
 
     }
 
-    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
-        ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
-        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsEntityDom);
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
+        ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
+        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
         String parentInterface = Optionals.fold(accessDetails, () -> "IXingYiClientViewCompanion", b -> "IXingYiRemoteClientViewCompanion");
 
         List<String> manualImports = Lists.append(

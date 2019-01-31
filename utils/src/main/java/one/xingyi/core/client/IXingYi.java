@@ -10,20 +10,19 @@ import one.xingyi.core.utils.WrappedException;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import java.util.List;
 import java.util.concurrent.Callable;
-public interface IXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> {
+public interface IXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> {
     Object parse(String s);
     Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name);
     IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker);
 
-    <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
+    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
     objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
 
-    <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>>
+    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>>
     Lens<View, ISimpleList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
 
-    <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
+    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
 }
 
 
@@ -39,7 +38,7 @@ class XingYiExecutionException extends RuntimeException {
     }
 }
 
-class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
+class DefaultXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
 
     final ScriptEngine engine;
     final Invocable inv;
@@ -53,7 +52,7 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
         this.inv = (Invocable) engine;
 //        System.out.println("Duration: " + (System.nanoTime() - time) / 1000000);
     }
-    @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
+    @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
         return rawRender(renderName, view.mirror());
     }
     String rawRender(String name, Object mirror) {
@@ -73,13 +72,13 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
             return new IdAndValue<>(id, maker.make(this, valueMirror));
         });
     }
-    @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> maker2, String name) {
+    @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> maker2, String name) {
         Getter<View, ChildView> getter = t -> XingYiExecutionException.<ChildView>wrap("objectLens.getEntity" + name, javaScript, () -> maker2.make(this, inv.invokeFunction("getL", name, t.mirror())));
         Setter<View, ChildView> setter = (t, s) -> XingYiExecutionException.<View>wrap("objectLens.set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
 
-    @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> Lens<View, ISimpleList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
+    @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ISimpleList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
         Getter<View, ISimpleList<ChildView>> getter = t ->
                 XingYiExecutionException.<ISimpleList<ChildView>>wrap("listLens.getEntity" + name, javaScript,
                         () -> {

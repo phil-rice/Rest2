@@ -7,7 +7,7 @@ import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-public class ViewDomDebugFileMaker extends AbstractDebugFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+public class ViewDomDebugFileMaker extends AbstractDebugFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
 
     List<String> viewNameInfo(ViewNames names) {
         return Lists.append(
@@ -31,8 +31,8 @@ public class ViewDomDebugFileMaker extends AbstractDebugFileMaker implements IFi
         );
     }
 
-    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
-        ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
+        ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
         PackageAndClassName packageAndClassName = viewDom.viewNames.clientView.mapName(e -> e + "DebugInfo");
         List<String> manualImports = Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName()));
 
@@ -42,7 +42,7 @@ public class ViewDomDebugFileMaker extends AbstractDebugFileMaker implements IFi
 
                 viewDebugInfo(viewDom),
                 List.of(""),
-                Optionals.fold(viewDomAndItsEntityDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),
+                Optionals.fold(viewDomAndItsResourceDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),
                 List.of("*/}"));
         return Result.succeed(new FileDefn(packageAndClassName, Lists.join(result, "\n")));
     }

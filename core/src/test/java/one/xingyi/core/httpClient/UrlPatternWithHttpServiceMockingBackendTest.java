@@ -3,8 +3,8 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
-import one.xingyi.core.httpClient.server.companion.EntityDetailsCompanion;
-import one.xingyi.core.httpClient.server.domain.EntityDetails;
+import one.xingyi.core.httpClient.server.companion.ResourceDetailsCompanion;
+import one.xingyi.core.httpClient.server.domain.ResourceDetails;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.JsonValue;
@@ -28,8 +28,8 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     static ServiceRequest serviceRequest = new ServiceRequest("get", url, List.of(), "");
     static ContextForJson context = ContextForJson.forServiceRequest("http://", serviceRequest);
     static JsonWriter<JsonValue> jsonTC = JsonWriter.cheapJson;
-    static String javascript = Files.getText("header.js") + EntityDetailsCompanion.companion.javascript;
-    static String json = new EntityDetails("http://someHost:9000/someUrlPattern{id}").toJsonString(jsonTC, context);
+    static String javascript = Files.getText("header.js") + ResourceDetailsCompanion.companion.javascript;
+    static String json = new ResourceDetails("http://someHost:9000/someUrlPattern{id}").toJsonString(jsonTC, context);
 
     static String responseBody = javascript + IXingYiResponseSplitter.marker + json;
     static ServiceResponse serviceResponse = new ServiceResponse(200, responseBody, List.of());

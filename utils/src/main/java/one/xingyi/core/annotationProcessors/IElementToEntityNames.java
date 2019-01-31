@@ -1,6 +1,5 @@
 package one.xingyi.core.annotationProcessors;
 import lombok.RequiredArgsConstructor;
-import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.validation.Result;

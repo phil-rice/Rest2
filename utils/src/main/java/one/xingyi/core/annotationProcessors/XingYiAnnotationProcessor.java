@@ -52,13 +52,13 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
         try {
-            Set<? extends Element> elements = env.getElementsAnnotatedWith(Entity.class);
+            Set<? extends Element> elements = env.getElementsAnnotatedWith(Resource.class);
 //            log.info("Found these entities: " + elements);
-            List<Result<ElementFail, EntityDom>> entityDomResults = Lists.map(
+            List<Result<ElementFail, ResourceDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
 
-            List<EntityDom> entityDoms = Result.successes(entityDomResults);
+            List<ResourceDom> resourceDoms = Result.successes(entityDomResults);
 //            log.info("Made entityDoms: " + entityDoms);
 
 
@@ -74,7 +74,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 
-            CodeDom codeDom = new CodeDom(entityDoms, viewDoms);
+            CodeDom codeDom = new CodeDom(resourceDoms, viewDoms);
 
             ResultAndFailures<String, List<FileDefn>> codeContentAndIssues = makeContent(codeDom);
             for (String issue : codeContentAndIssues.failures) {
@@ -111,7 +111,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                         String text = Files.getText(file);
 //                log.error(v, "Found textt" + text);
                         Set<String> expectedLens = new HashSet<>(Lists.filter(Arrays.asList(text.split("\n")), l -> l.length() > 0));
-                        Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.entityDoms, ed -> ed.fields.withDeprecatedmap(fd -> fd.lensName)));
+                        Set<String> actualLens = new HashSet<>(Lists.flatMap(codeDom.resourceDoms, ed -> ed.fields.withDeprecatedmap(fd -> fd.lensName)));
                         actualLens.add("lens_EntityDetails_urlPattern");
                         Set<String> originalExpectedLens = new HashSet<>(expectedLens);
                         Set<String> originalActualsLens = new HashSet<>(actualLens);
@@ -150,20 +150,20 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     ResultAndFailures<String, List<FileDefn>> makeContent(CodeDom codeDom) {
-        List<IFileMaker<EntityDom>> entityFileMakes = Arrays.asList(
+        List<IFileMaker<ResourceDom>> entityFileMakes = Arrays.asList(
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
-                new ServerEntityFileMaker(),
+                new ServerResourceFileMaker(),
                 new ServerCompanionFileMaker(),
                 new ServerControllerFileMaker());
-        List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.entityDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
+        List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.resourceDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
         List<FileDefn> fromCodeDom = Result.successes(fromCodeDomResults);
         List<String> fromCodeDomIssues = Result.failures(fromCodeDomResults);
 
-        List<IFileMaker<ViewDomAndItsEntityDom>> viewFileMakers = List.of(
+        List<IFileMaker<ViewDomAndItsResourceDom>> viewFileMakers = List.of(
                 new ViewDomDebugFileMaker(),
                 new ClientViewInterfaceFileMaker(),
-                new ClientEntityFileMaker(),
+                new ClientResourceFileMaker(),
                 new ClientViewCompanionFileMaker(),
                 new ClientViewImplFileMaker()
         );
@@ -185,6 +185,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override public SourceVersion getSupportedSourceVersion() { return SourceVersion.latestSupported(); }
     @Override public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(Entity.class.getName(), View.class.getName(), Server.class.getName(), ValidateManyLens.class.getName());
+        return Set.of(Resource.class.getName(), View.class.getName(), Server.class.getName(), ValidateManyLens.class.getName());
     }
 }

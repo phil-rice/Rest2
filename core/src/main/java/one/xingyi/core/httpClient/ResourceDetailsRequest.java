@@ -8,7 +8,7 @@ import one.xingyi.core.http.ServiceRequest;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class EntityDetailsRequest implements EndpointRequest {
-   public static EntityDetailsRequest create(ServiceRequest serviceRequest, String id){ return new EntityDetailsRequest(serviceRequest.path); }
+public class ResourceDetailsRequest implements EndpointRequest {
+   public static ResourceDetailsRequest create(ServiceRequest serviceRequest, String id){ return new ResourceDetailsRequest(serviceRequest.path); }
    public  final String entityName;
 }

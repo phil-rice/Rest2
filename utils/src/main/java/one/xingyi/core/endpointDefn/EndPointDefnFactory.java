@@ -1,14 +1,11 @@
 package one.xingyi.core.endpointDefn;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import one.xingyi.core.functions.Functions;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.sdk.IXingYiEntity;
+import one.xingyi.core.sdk.IXingYiResource;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 @RequiredArgsConstructor
@@ -16,7 +13,7 @@ import java.util.function.Function;
  * The assumptions here are that there is a backing store and that the end point gets the data out of the backing store using Req
  * Even more the sideeffects are simple functions and not kleislis.
  */
-public class EndPointDefnFactory<State, Req, Entity extends IXingYiEntity> {
+public class EndPointDefnFactory<State, Req, Entity extends IXingYiResource> {
 
     final String initialPath;
     final Function<ServiceRequest, Req> fromFn;

@@ -1,6 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
-import one.xingyi.core.codeDom.EntityDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.FieldListDom;
 import one.xingyi.core.marshelling.*;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
+public class ServerResourceFileMaker implements IFileMaker<ResourceDom> {
 
     String callConstructor(String entityName, FieldListDom dom) {
         return "new " + entityName + "(" + dom.noDeprecatedmapJoin(",", fd -> fd.name) + ")";
@@ -23,7 +23,7 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         return dom.noDeprecatedmap(nv -> "final " + nv.typeDom.forEntity() + " " + nv.name + ";");
     }
 
-    List<String> constructor(EntityDom dom) {
+    List<String> constructor(ResourceDom dom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("public " + dom.entityNames.serverEntity.className + "(" + dom.fields.noDeprecatedmapJoin(",", nv -> nv.typeDom.forEntity() + " " + nv.name) + "){");
@@ -51,9 +51,9 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
         result.add("}");
         return result;
     }
-    List<String> makeJsonForLinks(EntityDom entityDom, String companionName, String entityName, FieldListDom dom) {
+    List<String> makeJsonForLinks(ResourceDom resourceDom, String companionName, String entityName, FieldListDom dom) {
         List<String> result = new ArrayList<>();
-        if (entityDom.bookmark.isEmpty()) return result;
+        if (resourceDom.bookmark.isEmpty()) return result;
         result.add("@XingYiGenerated");
         result.add("public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<" + entityName + ", String> stateFn) {");
         result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.noDeprecatedmapJoin(",",
@@ -63,55 +63,55 @@ public class ServerEntityFileMaker implements IFileMaker<EntityDom> {
     }
 
 
-    public List<String> createEquals(EntityDom entityDom) {
+    public List<String> createEquals(ResourceDom resourceDom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public boolean equals(Object o) {");
         result.add(Formating.indent + "if (this == o) return true;");
         result.add(Formating.indent + "if (o == null || getClass() != o.getClass()) return false;");
-        result.add(Formating.indent + entityDom.entityNames.serverEntity.className + " other = (" + entityDom.entityNames.serverEntity.className + ") o;");
-        result.add(Formating.indent + "return " + entityDom.fields.noDeprecatedmapJoin(" && ", fd -> "Objects.equals(" + fd.name + ",other." + fd.name + ")") + ";");
+        result.add(Formating.indent + resourceDom.entityNames.serverEntity.className + " other = (" + resourceDom.entityNames.serverEntity.className + ") o;");
+        result.add(Formating.indent + "return " + resourceDom.fields.noDeprecatedmapJoin(" && ", fd -> "Objects.equals(" + fd.name + ",other." + fd.name + ")") + ";");
         result.add("}");
         return result;
     }
-    public List<String> createHashcode(EntityDom entityDom) {
+    public List<String> createHashcode(ResourceDom resourceDom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public int hashCode() {");
-        result.add(Formating.indent + "return Objects.hash(" + entityDom.fields.noDeprecatedmapJoin(",", fd -> fd.name) + ");");
+        result.add(Formating.indent + "return Objects.hash(" + resourceDom.fields.noDeprecatedmapJoin(",", fd -> fd.name) + ");");
         result.add("}");
         return result;
     }
-    public List<String> createToString(EntityDom entityDom) {
+    public List<String> createToString(ResourceDom resourceDom) {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public String toString(){");
-        result.add(Formating.indent + "return " + Strings.quote(entityDom.entityNames.serverEntity.className + "(") + "+" +
-                entityDom.fields.noDeprecatedmapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
+        result.add(Formating.indent + "return " + Strings.quote(resourceDom.entityNames.serverEntity.className + "(") + "+" +
+                resourceDom.fields.noDeprecatedmapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
         result.add("}");
         return result;
 
     }
 
 
-    @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
-        String classPostFix = " implements HasJson<ContextForJson>," + entityDom.entityNames.serverInterface.asString();
-        if (entityDom.bookmark.isPresent()) classPostFix += ",HasJsonWithLinks<ContextForJson," + entityDom.entityNames.serverEntity.className + ">";
+    @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
+        String classPostFix = " implements HasJson<ContextForJson>," + resourceDom.entityNames.serverInterface.asString();
+        if (resourceDom.bookmark.isPresent()) classPostFix += ",HasJsonWithLinks<ContextForJson," + resourceDom.entityNames.serverEntity.className + ">";
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(),entityDom.deprecated, entityDom.entityNames.originalDefn, "class", entityDom.entityNames.serverEntity, classPostFix,
+                Formating.javaFile(getClass(), resourceDom.deprecated, resourceDom.entityNames.originalDefn, "class", resourceDom.entityNames.serverEntity, classPostFix,
                         List.of(), XingYiGenerated.class, Objects.class, JsonWriter.class, HasJsonWithLinks.class,
                         ContextForJson.class, HasJson.class, Function.class, ContextForJson.class, JsonParser.class, Lists.class),
-                Formating.indent(fields(entityDom.fields)),
-                Formating.indent(constructor(entityDom)),
-                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverEntity.className, entityDom.fields)),
-                Formating.indent(makeJson(entityDom.fields)),
-                Formating.indent(makeJsonForLinks(entityDom, entityDom.entityNames.serverCompanion.asString(), entityDom.entityNames.serverEntity.asString(), entityDom.fields)),
-                Formating.indent(createEquals(entityDom)),
-                Formating.indent(createHashcode(entityDom)),
-                Formating.indent(createToString(entityDom)),
-                List.of("/*" + entityDom + "*/"),
+                Formating.indent(fields(resourceDom.fields)),
+                Formating.indent(constructor(resourceDom)),
+                Formating.indent(allFieldsAccessors(resourceDom.entityNames.serverEntity.className, resourceDom.fields)),
+                Formating.indent(makeJson(resourceDom.fields)),
+                Formating.indent(makeJsonForLinks(resourceDom, resourceDom.entityNames.serverCompanion.asString(), resourceDom.entityNames.serverEntity.asString(), resourceDom.fields)),
+                Formating.indent(createEquals(resourceDom)),
+                Formating.indent(createHashcode(resourceDom)),
+                Formating.indent(createToString(resourceDom)),
+                List.of("/*" + resourceDom + "*/"),
                 List.of("}")
         ), "\n");
-        return Result.succeed(new FileDefn(entityDom.entityNames.serverEntity, result));
+        return Result.succeed(new FileDefn(resourceDom.entityNames.serverEntity, result));
     }
 }

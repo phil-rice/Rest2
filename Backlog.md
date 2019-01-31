@@ -1,9 +1,28 @@
-# Javascript
+# Immediate tasks
 
-Currently it is being generated but we need to 'manage it'. 
+* Rename Entity to Resource - done
+* Multiple interfaces on client 
+* Validate fields in a views match fields in an entity
+* 'thinking' problem: how do we filter down the view on a child object?
+
+
+# Javascript
+* Kill it!
+* Currently it is being generated but we need to 'manage it'. 
 * Short term just aggregate and store
-* Long term we need the 'correct javascript'for this request.
 * We would like strategies that allow the javascript to be included (piecemeal) or sent with the data
+
+
+# Resource annotation
+
+* Consider a 'make me a view with all fields options'
+
+
+# View annotation 
+
+* Error reporting when name wrong
+* Consider allowing name to be set
+
 
 # Accept Header / Content negotiation
 

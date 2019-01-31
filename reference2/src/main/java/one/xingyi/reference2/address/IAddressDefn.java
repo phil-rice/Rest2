@@ -1,11 +1,11 @@
 package one.xingyi.reference2.address;
 
-import one.xingyi.core.annotations.Entity;
-import one.xingyi.core.sdk.IXingYiEntityDefn;
+import one.xingyi.core.annotations.Resource;
+import one.xingyi.core.sdk.IXingYiResourceDefn;
 
 //@Entity(bookmark = "/address", rootUrl = "{host}/address/{id}")
-@Entity
-public interface IAddressDefn extends IXingYiEntityDefn {
+@Resource
+public interface IAddressDefn extends IXingYiResourceDefn {
     String line1();
     String line2();
     String postcode();

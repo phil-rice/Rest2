@@ -4,18 +4,15 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.annotationProcessors.ActionsDom;
-import one.xingyi.core.annotations.Entity;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
-import one.xingyi.core.names.IServerNames;
-import one.xingyi.core.validation.Result;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class EntityDom {
+public class ResourceDom {
     public final boolean deprecated;
     public final EntityNames entityNames;
     public final Optional<BookmarkAndUrlPattern> bookmark;

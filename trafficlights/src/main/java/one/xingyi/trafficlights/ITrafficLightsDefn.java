@@ -1,15 +1,15 @@
 package one.xingyi.trafficlights;
 import one.xingyi.core.annotations.*;
-import one.xingyi.core.sdk.IXingYiEntityDefn;
+import one.xingyi.core.sdk.IXingYiResourceDefn;
 
 
-@Entity(bookmark = "/lights", rootUrl = "{host}/lights/{id}")
+@Resource(bookmark = "/lights", rootUrl = "{host}/lights/{id}")
 @Delete
 @Get(mustExist = false)
 @Put
 @CreateWithoutId(url = "{host}/lights")
 @Create
-public interface ITrafficLightsDefn extends IXingYiEntityDefn {
+public interface ITrafficLightsDefn extends IXingYiResourceDefn {
     @Field(readOnly = true)
     String id();
     String color();

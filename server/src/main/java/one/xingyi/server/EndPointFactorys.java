@@ -3,8 +3,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import one.xingyi.core.endpoints.*;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.httpClient.EntityDetailsRequest;
-import one.xingyi.core.httpClient.server.domain.EntityDetails;
+import one.xingyi.core.httpClient.ResourceDetailsRequest;
+import one.xingyi.core.httpClient.server.domain.ResourceDetails;
 import one.xingyi.core.utils.Lists;
 
 import java.util.List;
@@ -15,8 +15,8 @@ public interface EndPointFactorys {
 
     static <J> EndPoint entityEndpointFromContext(EndpointContext<J> context, List<HasBookmarkAndUrl> companions) {
         EntityRegister entityRegister = EntityRegister.apply(companions);
-        Function<EntityDetails, String> noStateFn = x -> "";
-        return IResourceEndPoint.<J, EntityDetails, EntityDetailsRequest, Optional<EntityDetails>>create(
+        Function<ResourceDetails, String> noStateFn = x -> "";
+        return IResourceEndPoint.<J, ResourceDetails, ResourceDetailsRequest, Optional<ResourceDetails>>create(
                 new EntityEndpointAcceptor(entityRegister),
                 from -> CompletableFuture.completedFuture(entityRegister.apply(from)),
                 EndpointResult.createForOptional(context, 200));
@@ -26,7 +26,7 @@ public interface EndPointFactorys {
 
 @ToString
 @EqualsAndHashCode
-class EntityEndpointAcceptor implements IResourceEndpointAcceptor<EntityDetailsRequest> {
+class EntityEndpointAcceptor implements IResourceEndpointAcceptor<ResourceDetailsRequest> {
     final EntityRegister entityRegister;
     final List<String> registered;
     public EntityEndpointAcceptor(EntityRegister entityRegister) {
@@ -36,11 +36,11 @@ class EntityEndpointAcceptor implements IResourceEndpointAcceptor<EntityDetailsR
     @Override public List<MethodAndPath> description() {
         return Lists.map(registered, r -> new MethodAndPath("get", r));
     }
-    @Override public Optional<EntityDetailsRequest> apply(ServiceRequest serviceRequest) {
+    @Override public Optional<ResourceDetailsRequest> apply(ServiceRequest serviceRequest) {
         if (serviceRequest.method.equalsIgnoreCase("get") && serviceRequest.urlSegments().size() == 2) {
             String entityname = serviceRequest.path;
             if (entityRegister.registered().contains(entityname))
-                return Optional.of(new EntityDetailsRequest(entityname));
+                return Optional.of(new ResourceDetailsRequest(entityname));
         }
         return Optional.empty();
     }

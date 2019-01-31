@@ -4,26 +4,24 @@ import one.xingyi.core.annotationProcessors.PostDom;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.codeDom.ViewDomAndEntityDomField;
-import one.xingyi.core.codeDom.ViewDomAndItsEntityDom;
-import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.codeDom.ViewDomAndResourceDomField;
+import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEntityDom> {
+public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
 
-    List<String> allFieldsAccessors(String interfaceName, List<ViewDomAndEntityDomField> dom) { return Lists.flatMap(dom, fd -> accessors(interfaceName, fd)); }
+    List<String> allFieldsAccessors(String interfaceName, List<ViewDomAndResourceDomField> dom) { return Lists.flatMap(dom, fd -> accessors(interfaceName, fd)); }
 
-    List<String> accessors(String interfaceName, ViewDomAndEntityDomField viewDomAndEntityDom) {
+    List<String> accessors(String interfaceName, ViewDomAndResourceDomField viewDomAndEntityDom) {
         FieldDom dom = viewDomAndEntityDom.viewDomField;
         List<String> result = new ArrayList<>();
         result.add("//" + dom.typeDom);
@@ -75,9 +73,9 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
                         "(HttpService service, String id){return service.post(" + companionName + "," + Strings.quote(postDom.action) + ",id);}");
     }
 
-    @Override public Result<String, FileDefn> apply(ViewDomAndItsEntityDom viewDomAndItsEntityDom) {
-        ViewDom viewDom = viewDomAndItsEntityDom.viewDom;
-        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsEntityDom);
+    @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
+        ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
+        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
         List<String> manualImports = Lists.append(List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
                 Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
         String result = Lists.join(Lists.append(
@@ -87,7 +85,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsEnt
                         IdAndValue.class, CompletableFuture.class, Optional.class),
                 Formating.indent(getRemoteAccessors(viewDom, accessDetails)),
                 List.of(),
-                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsEntityDom.viewAndEntityFields)),
+                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientView, result));

@@ -25,7 +25,7 @@ import java.util.function.Function;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-abstract class AbstractEntityDetailsClientTest {
+abstract class AbstractResourceDetailsClientTest {
 
     abstract protected Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient();
     abstract protected String expectedHost();
@@ -68,6 +68,7 @@ abstract class AbstractEntityDetailsClientTest {
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
         assertEquals("someName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
+
             }
 
 //    @Test

@@ -2,18 +2,18 @@ package one.xingyi.reference3.person;
 
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.client.ISimpleList;
-import one.xingyi.core.sdk.IXingYiEntityDefn;
+import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference3.address.IAddressDefn;
 import one.xingyi.reference3.address.IAddressLine12ViewDefn;
 import one.xingyi.reference3.telephone.ITelephoneNumberDefn;
 
-@Entity(bookmark = "/person", rootUrl = "{host}/person/{id}")
+@Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
 @Get(mustExist = false)
 @Delete
 @Put
 @CreateWithoutId(url = "{host}/person")
 @Create
-public interface IPersonDefn extends IXingYiEntityDefn {
+public interface IPersonDefn extends IXingYiResourceDefn {
     @Field(readOnly = true)
     String name();
     Integer age();

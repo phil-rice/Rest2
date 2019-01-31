@@ -1,7 +1,7 @@
 package one.xingyi.core.annotationProcessors;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.*;
-import one.xingyi.core.codeDom.EntityDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
@@ -12,7 +12,7 @@ import javax.lang.model.element.TypeElement;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-public interface IElementToEntityDom extends Function<TypeElement, Result<ElementFail, EntityDom>> {
+public interface IElementToEntityDom extends Function<TypeElement, Result<ElementFail, ResourceDom>> {
     static IElementToEntityDom simple(ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToEntityDom(bundle.serverNames(), entityNames, bundle.elementToFieldListDomForEntity(entityNames));}
 }
 @RequiredArgsConstructor
@@ -20,8 +20,8 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
     final IServerNames serverNames;
     final EntityNames entityNames;
     final IElementToFieldListDom elementToFieldListDom;
-    @Override public Result<ElementFail, EntityDom> apply(TypeElement element) {
-        Entity annotation = element.getAnnotation(Entity.class);
+    @Override public Result<ElementFail, ResourceDom> apply(TypeElement element) {
+        Resource annotation = element.getAnnotation(Resource.class);
         String bookmark = annotation.bookmark();
         String url = annotation.rootUrl();
         Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, bookmark, url);
@@ -34,6 +34,6 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
                 Optional.ofNullable(element.getAnnotation(CreateWithoutId.class)).map(create -> new CreateWithoutIdDom(create.url())),
                 pathDoms
         );
-        return elementToFieldListDom.apply(element).map(fieldListDom -> new EntityDom(element.getAnnotation(Deprecated.class) != null, entityNames, bookmarkAndUrlPattern, fieldListDom, actionsDom));
+        return elementToFieldListDom.apply(element).map(fieldListDom -> new ResourceDom(element.getAnnotation(Deprecated.class) != null, entityNames, bookmarkAndUrlPattern, fieldListDom, actionsDom));
     }
 }

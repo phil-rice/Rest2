@@ -1,20 +1,20 @@
 package one.xingyi.core.filemaker;
-import one.xingyi.core.codeDom.EntityDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-public class CodeDomDebugFileMaker extends AbstractDebugFileMaker implements IFileMaker<EntityDom> {
+public class CodeDomDebugFileMaker extends AbstractDebugFileMaker implements IFileMaker<ResourceDom> {
 
-    @Override public Result<String, FileDefn> apply(EntityDom entityDom) {
-        PackageAndClassName packageAndClassName = entityDom.entityNames.serverEntity.mapName(e -> e + "DebugInfo");
+    @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
+        PackageAndClassName packageAndClassName = resourceDom.entityNames.serverEntity.mapName(e -> e + "DebugInfo");
         List<String> result = Lists.append(
-                Formating.javaFile(getClass(), entityDom.deprecated, entityDom.entityNames.originalDefn, "class", packageAndClassName, "", List.of()),
+                Formating.javaFile(getClass(), resourceDom.deprecated, resourceDom.entityNames.originalDefn, "class", packageAndClassName, "", List.of()),
                 List.of("/*"),
-                entityDebugInfo(entityDom),
-                actionsDomInfo(entityDom.actionsDom),
+                entityDebugInfo(resourceDom),
+                actionsDomInfo(resourceDom.actionsDom),
                 List.of("*/}"));
         return Result.succeed(new FileDefn(packageAndClassName, Lists.join(result, "\n")));
     }

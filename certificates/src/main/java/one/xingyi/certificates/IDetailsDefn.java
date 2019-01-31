@@ -1,8 +1,8 @@
 package one.xingyi.certificates;
-import one.xingyi.core.annotations.Entity;
-import one.xingyi.core.sdk.IXingYiEntityDefn;
+import one.xingyi.core.annotations.Resource;
+import one.xingyi.core.sdk.IXingYiResourceDefn;
 
-@Entity
-public interface IDetailsDefn extends IXingYiEntityDefn {
+@Resource
+public interface IDetailsDefn extends IXingYiResourceDefn {
     String powerfulId();
 }

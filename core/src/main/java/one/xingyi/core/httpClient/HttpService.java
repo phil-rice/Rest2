@@ -9,7 +9,7 @@ import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
-import one.xingyi.core.sdk.IXingYiClientEntity;
+import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.IdAndValue;
@@ -27,37 +27,37 @@ public interface HttpService {
     }
     static HttpService defaultServiceWithSimpleJavaclint(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
 
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String method,
             String url,
             Function<View, Result> fn);
 
-    public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url);
+    public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url);
     default CompletableFuture<String> getUrlPattern(String bookmark) {
         return UrlPatternCompanion.companion.primitive(this, "get", bookmark, UrlPattern::urlPattern);
     }
 
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> get(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id,
             Function<View, Result> fn);
-    public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
+    public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn);
 
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id,
             Function<View, Result> fn);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> create(
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<View> create(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn);
     //    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> post(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String urlPattern, String id);
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> process(
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> process(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn);
 
 }
@@ -71,7 +71,7 @@ class DefaultHttpService implements HttpService {
     final IXingYiResponseSplitter splitter;
 
 
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, View> makeEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, View> makeEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
         return serviceResponse -> {//TODO extract the try catch
             try {
                 DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
@@ -83,7 +83,7 @@ class DefaultHttpService implements HttpService {
             }
         };
     }
-    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, Optional<View>> makeOptionalEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, Optional<View>> makeOptionalEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
         return serviceResponse -> {
             try {
                 if (serviceResponse.statusCode == 404) return Optional.empty();
@@ -96,7 +96,7 @@ class DefaultHttpService implements HttpService {
             }
         };
     }
-    @SuppressWarnings("unchecked") <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> Function<ServiceResponse, IdAndValue<View>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+    @SuppressWarnings("unchecked") <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, IdAndValue<View>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
         return serviceResponse -> {
             try {
 
@@ -121,42 +121,42 @@ class DefaultHttpService implements HttpService {
     }
 
 
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).thenApply(makeEntity(clientMaker, serviceRequest).andThen(fn));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).thenApply(sr -> makeOptionalEntity(clientMaker, serviceRequest).apply(sr).map(fn));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).thenApply(makeBoolean(serviceRequest));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).thenApply(makeIdAndValue(clientMaker, serviceRequest));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result>
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result>
     get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "get", urlPattern.replace("{id}", id), fn));//TODO UrlEncoding
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> getOptional(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForOptional(clientMaker, "get", urlPattern.replace("{id}", id), fn));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View>
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<View>
     create(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitive(clientMaker, "post", urlPattern.replace("{id}", id), v -> v));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForIdAndValue(clientMaker, "post", urlPattern.replace("/{id}", "")));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> primitiveForBoolean("delete", urlPattern.replace("{id}", id)));
     }
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> CompletableFuture<View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn) {
         return getUrlPattern(clientMaker.bookmark()).thenCompose(urlPattern -> {
             String url = urlPattern.replace("{id}", id);
             CompletableFuture<View> original = primitive(clientMaker, "get", url, fn);
@@ -169,7 +169,7 @@ class DefaultHttpService implements HttpService {
         });
     }
 
-    @Override public <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> process(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> process(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn) {
         throw new RuntimeException("not implemented yet");
     }
 }
