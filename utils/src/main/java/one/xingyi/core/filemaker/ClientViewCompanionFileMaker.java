@@ -51,13 +51,13 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
     }
 
     List<String> primitiveMethod(ViewDom viewDom) {
-        return List.of("public <T> " + monadDefn.simpleClassName() + "<T> primitive(HttpService httpService, String method, String url, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
+        return List.of("public <T> " + monadDefn.simpleClassName() + "<T> primitive(HttpService" + monadDefn.simpleClassName() + " httpService, String method, String url, Function<" + viewDom.viewNames.clientView.asString() + ", T> fn){",
                 Formating.indent + "return httpService.primitive(this.companion, method, url,fn);",
                 "}");
 
     }
     List<String> getUrlPatternMethod(ViewDom viewDom) {
-        return List.of("public " + monadDefn.simpleClassName() + "<String> getUrlPattern(HttpService service) {return  UrlPatternCompanion.companion.primitive(service, \"get\",this.bookmark(), UrlPattern::urlPattern); }");
+        return List.of("public " + monadDefn.simpleClassName() + "<String> getUrlPattern(HttpService" + monadDefn.simpleClassName() + " service) {return  UrlPatternCompanion.companion.primitive(service, \"get\",this.bookmark(), UrlPattern::urlPattern); }");
 
     }
 
@@ -78,7 +78,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
 
         List<String> manualImports = Lists.append(
                 List.of(monadDefn.fullClassName(),
-                        "one.xingyi.core.httpClient.HttpService",
+                        "one.xingyi.core.httpClient.HttpService" + monadDefn.simpleClassName(),
                         "one.xingyi.core.httpClient.client.view.UrlPattern",
                         "one.xingyi.core.httpClient.client.companion.UrlPatternCompanion"),
                 Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));

@@ -38,23 +38,22 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
 
     List<String> getMethod(String viewName, String companionName) {
         return List.of(
-                "public static <T> " + monadDefn.simpleClassName() + "<T> get(HttpService service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}",
-                "public static <T> "+ monadDefn.simpleClassName()+ "<Optional<T>> getOptional(HttpService service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
+                "public static <T> " + monadDefn.simpleClassName() + "<T> get(HttpService" + monadDefn.simpleClassName() + " service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}",
+                "public static <T> " + monadDefn.simpleClassName() + "<Optional<T>> getOptional(HttpService" + monadDefn.simpleClassName() + " service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
     }
     List<String> editMethod(String viewName, String companionName) {
-
-        return List.of("public static "+ monadDefn.simpleClassName()+ "<" + viewName +
-                " > edit(HttpService service, String id, Function<" + viewName + "," + viewName +
+        return List.of("public static " + monadDefn.simpleClassName() + "<" + viewName +
+                " > edit(HttpService" + monadDefn.simpleClassName() + " service, String id, Function<" + viewName + "," + viewName +
                 "> fn){return service.edit(" + companionName + ",id, fn);}");
     }
     List<String> deleteMethod(String companionName) {
-        return List.of("public static "+ monadDefn.simpleClassName()+ "<Boolean> delete(HttpService service, String id){return service.delete(" + companionName + ",id);}");
+        return List.of("public static " + monadDefn.simpleClassName() + "<Boolean> delete(HttpService" + monadDefn.simpleClassName() + " service, String id){return service.delete(" + companionName + ",id);}");
     }
     List<String> createMethod(String viewName, String companionName) {
-        return List.of("public static " + monadDefn.simpleClassName() + "<" + viewName + "> create(HttpService service, String id){return service.create(" + companionName + ",id);}");
+        return List.of("public static " + monadDefn.simpleClassName() + "<" + viewName + "> create(" + "HttpService" + monadDefn.simpleClassName() + " service, String id){return service.create(" + companionName + ",id);}");
     }
     List<String> createWithoutIdMethod(String viewName, String companionName) {
-        return List.of("public static " + monadDefn.simpleClassName() + "<IdAndValue<" + viewName + ">> create(HttpService service){return service.createWithoutId(" + companionName + ");}");
+        return List.of("public static " + monadDefn.simpleClassName() + "<IdAndValue<" + viewName + ">> create(" + "HttpService" + monadDefn.simpleClassName() + " service){return service.createWithoutId(" + companionName + ");}");
     }
 
     List<String> getRemoteAccessors(ViewDom viewDom, Optional<BookmarkUrlAndActionsDom> bookmarkUrlAndActionsDom) {
@@ -80,7 +79,9 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
     @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
-        List<String> manualImports = Lists.append(List.of(monadDefn.fullClassName(), "one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
+        List<String> manualImports = Lists.append(List.of(monadDefn.fullClassName(),
+                "one.xingyi.core.httpClient.HttpService" + monadDefn.simpleClassName(),
+                "one.xingyi.core.httpClient.client.view.UrlPattern"),
                 Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,

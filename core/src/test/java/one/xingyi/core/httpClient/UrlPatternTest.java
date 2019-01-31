@@ -16,7 +16,7 @@ public class UrlPatternTest {
     String url = "http://localhost:9000/bookmarkAndUrl";
     @Test
     public void testDelegatesGetPrimitiveToHttpService() throws ExecutionException, InterruptedException {
-        HttpService service = mock(HttpService.class);
+        HttpServiceCompletableFuture service = mock(HttpServiceCompletableFuture.class);
         when(service.primitive(UrlPatternCompanion.companion,"get", url, getFn)).thenReturn(CompletableFuture.completedFuture("someUrlPattern"));
         String actual = UrlPatternCompanion.companion.primitive(service, "get", url, getFn).get();
         assertEquals("someUrlPattern", actual);
@@ -24,7 +24,7 @@ public class UrlPatternTest {
 
     @Test
     public void testDelegatesCallToHttpService() throws ExecutionException, InterruptedException {
-        HttpService service = mock(HttpService.class);
+        HttpServiceCompletableFuture service = mock(HttpServiceCompletableFuture.class);
         when(service.get(UrlPatternCompanion.companion, "someId", getFn)).thenReturn(CompletableFuture.completedFuture("someUrlPattern"));
         String actual = UrlPattern.get(service, "someId", getFn).get();
         assertEquals("someUrlPattern", actual);

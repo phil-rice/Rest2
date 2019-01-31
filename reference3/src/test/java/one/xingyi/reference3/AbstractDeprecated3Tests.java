@@ -6,7 +6,7 @@ import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.httpClient.HttpService;
+import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.reference3.address.client.view.AddressLine12View;
 import one.xingyi.reference3.person.PersonController;
@@ -30,8 +30,8 @@ abstract public class AbstractDeprecated3Tests<J> {
     abstract EndpointConfig<JsonValue> config();
     abstract boolean supportsReadingJson();
     EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config(), new PersonController()).allEndpoints());
-    HttpService rawService;
-    HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
+    HttpServiceCompletableFuture rawService;
+    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
 
     @Test public void testJavascriptForLine1() {
         assertFalse(PersonCompanion.companion.javascript, PersonCompanion.companion.javascript().contains("return lens('line1')"));

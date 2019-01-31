@@ -5,7 +5,7 @@ import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.httpClient.HttpService;
+import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.JsonValue;
@@ -38,8 +38,8 @@ abstract class AbstractResourceDetailsClientTest {
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
-    HttpService rawService;
-    HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
+    HttpServiceCompletableFuture rawService;
+    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {

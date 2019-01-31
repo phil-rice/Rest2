@@ -6,7 +6,7 @@ import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.httpClient.HttpService;
+import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.reference4.PersonServer;
 import one.xingyi.reference4.address.client.view.AddressLine12View;
@@ -14,7 +14,6 @@ import one.xingyi.reference4.person.PersonController;
 import one.xingyi.reference4.person.client.view.PersonAddress12View;
 import one.xingyi.reference4.person.client.view.PersonAddresses12View;
 import one.xingyi.reference4.person.client.view.PersonLine12View;
-import one.xingyi.reference4.person.server.companion.PersonCompanion;
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
@@ -22,16 +21,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 abstract public class AbstractDeprecated4Tests<J> {
 
     Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
     abstract EndpointConfig<JsonValue> config();
     abstract boolean supportsReadingJson();
     EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config(), new PersonController()).allEndpoints());
-    HttpService rawService;
-    HttpService service() { if (rawService == null) rawService = HttpService.defaultService("http://localhost:9000", httpClient()); return rawService; }
+    HttpServiceCompletableFuture rawService;
+    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
 
 
     @Test public void testCanReadLine1and2() throws ExecutionException, InterruptedException {

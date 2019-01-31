@@ -3,11 +3,10 @@ import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.httpClient.HttpService;
-import one.xingyi.core.javascript.JavascriptDetailsToString;
-import one.xingyi.core.marshelling.*;
+import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
+import one.xingyi.core.marshelling.DataAndJavaScript;
+import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
-import one.xingyi.core.utils.Files;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
 import one.xingyi.trafficlights.client.view.LocationView;
@@ -28,10 +27,10 @@ public class TrafficLightTest {
     Json jsonParserAndWriter = new Json();
     EndpointConfig<Object> config = EndpointConfig.defaultConfig(jsonParserAndWriter, jsonParserAndWriter);
 
-    public void setup(Consumer3WithException<TrafficLightsController, TrafficLightServer<Object>, HttpService> consumer) throws Exception {
+    public void setup(Consumer3WithException<TrafficLightsController, TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController();
         TrafficLightServer<Object> server = new TrafficLightServer<>(config, controller);
-        HttpService service = HttpService.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
         consumer.accept(controller, server, service);
     }
 

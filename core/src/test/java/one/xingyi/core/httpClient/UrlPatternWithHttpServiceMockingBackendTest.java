@@ -37,7 +37,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     @Test@SuppressWarnings("unchecked")
     public void testCanGet_checkingTheActualServiceRequestAndResponse() throws ExecutionException, InterruptedException {
         Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate = mock(Function.class);
-        HttpService service = HttpService.defaultService(protocolAndHost, delegate);
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService(protocolAndHost, delegate);
         when(delegate.apply(serviceRequest)).thenReturn(CompletableFuture.completedFuture(serviceResponse));
 
         assertEquals("http://someHost:9000/someUrlPattern{id}", service.primitive(UrlPatternCompanion.companion, "get",bookmark, getFn).get());

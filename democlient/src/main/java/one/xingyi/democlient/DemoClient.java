@@ -1,10 +1,10 @@
 package one.xingyi.democlient;
 import one.xingyi.certificates.client.view.IDView;
 import one.xingyi.core.http.JavaHttpClient;
-import one.xingyi.core.httpClient.HttpService;
+import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 public class DemoClient {
     public static void main(String[] args) {
-        HttpService service = HttpService.defaultService("http://localhost:9000", JavaHttpClient.client);
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://localhost:9000", JavaHttpClient.client);
         while (true) {
             try {
                 Thread.sleep(2000);

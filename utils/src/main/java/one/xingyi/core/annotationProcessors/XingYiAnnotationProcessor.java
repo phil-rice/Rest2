@@ -51,7 +51,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override
     //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
-        MonadDefn monadDefn = new EpicMonadDefn();
+        MonadDefn monadDefn = new CompletableFutureDefn();
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
         ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
@@ -78,7 +78,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 
-            CodeDom codeDom = new CodeDom(monadDefn,resourceDoms, viewDoms);
+            CodeDom codeDom = new CodeDom(monadDefn, resourceDoms, viewDoms);
 
             ResultAndFailures<String, List<FileDefn>> codeContentAndIssues = makeContent(codeDom);
             for (String issue : codeContentAndIssues.failures) {
@@ -90,13 +90,21 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             List<Result<ElementFail, ServerDom>> serverDomResults = Lists.map(serverElements, e -> ServerDom.create(names, e, codeDom));
             List<ServerDom> serverDoms = Result.successes(serverDomResults);
-            List<Result<String, FileDefn>> serverContentResult = Lists.map(serverDoms, sd -> makeServer(sd));
-            for (String issue : Result.failures(serverContentResult))
+            List<Result<String, FileDefn>> systemContentResult = Lists.map(serverDoms, sd -> makeServer(sd));
+            for (String issue : Result.failures(systemContentResult))
                 log.error(issue);
-            List<FileDefn> serverContent = Result.successes(serverContentResult);
+            Result<String, FileDefn> t = makeHttpService("one.xingyi.core.httpClient", monadDefn);
 
-            for (FileDefn fileDefn : Lists.append(codeContent, serverContent))
+            t.forEach(x -> {try { makeClassFile(x);} catch (Exception e) {}});
+            List<FileDefn> systemContent = Result.successes(systemContentResult);
+            log.info("Found the following system contents" + Lists.mapJoin(systemContent, ",", s -> s.packageAndClassName.asString()));
+
+            for (FileDefn fileDefn : Lists.append(systemContent, codeContent)) {
+//                log.info("making scode or system content "+fileDefn.packageAndClassName.className);
                 makeClassFile(fileDefn);
+//                log.info("   ... finished "+fileDefn.packageAndClassName.className);
+            }
+            log.info("got to end of creation");
             for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults), Result.failures(serverDomResults)))
                 Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
             Set<? extends Element> validate = env.getElementsAnnotatedWith(ValidateManyLens.class);
@@ -143,7 +151,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 }
             }
 
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             Throwable unwrapped = WrappedException.unWrap(e);
             log.error("In Annotation Processor\n" + Strings.getFrom(unwrapped::printStackTrace));
         }
@@ -151,6 +160,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
     Result<String, FileDefn> makeServer(ServerDom serverDom) {
         return new ServerFileMaker().apply(serverDom);
+    }
+
+    Result<String, FileDefn> makeHttpService(String packageName, MonadDefn monadDefn) {
+        return new HttpServiceFileMaker(packageName).apply(monadDefn);
     }
 
     ResultAndFailures<String, List<FileDefn>> makeContent(CodeDom codeDom) {
