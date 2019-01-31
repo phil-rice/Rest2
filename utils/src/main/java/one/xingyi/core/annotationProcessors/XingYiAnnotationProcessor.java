@@ -53,13 +53,13 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         log.info("Processing XingYi Annotations");
         try {
             Set<? extends Element> elements = env.getElementsAnnotatedWith(Resource.class);
-//            log.info("Found these entities: " + elements);
+            log.info("Found these entities: " + elements);
             List<Result<ElementFail, ResourceDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
 
             List<ResourceDom> resourceDoms = Result.successes(entityDomResults);
-//            log.info("Made entityDoms: " + entityDoms);
+            log.info("Made entityDoms: " + resourceDoms);
 
 
             List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());
@@ -70,7 +70,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     )
             );
             val viewDoms = Result.successes(viewDomResults);
-//            log.info("Made viewDoms: " + viewDoms);
+            log.info("Made viewDoms: " + viewDoms);
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 

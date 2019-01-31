@@ -1,5 +1,4 @@
 package one.xingyi.democlient;
-import one.xingyi.accounts.client.view.AccountsIdView;
 import one.xingyi.certificates.client.view.IDView;
 import one.xingyi.core.http.JavaHttpClient;
 import one.xingyi.core.httpClient.HttpService;
@@ -9,9 +8,10 @@ public class DemoClient {
         while (true) {
             try {
                 Thread.sleep(2000);
+                System.out.println(
 
-                System.out.println(AccountsIdView.get(service, "anyoldid", v -> v.id()).get());
-//                AccountsIdView.edit(service, "asd", v-> v.withid("someNewId"));
+                        IDView.getOptional(service, "id1",
+                                view -> view.xingYi().render("json", view) + "       ==>  " + view.id()).get());
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

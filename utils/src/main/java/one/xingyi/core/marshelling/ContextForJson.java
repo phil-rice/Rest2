@@ -44,7 +44,7 @@ class ServiceRequestContextForJson implements ContextForJson {
     }
     @Override public <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap) {
         J selfLink = jsonWriter.makeObject("_self", serviceRequest.uri.toString());
-        return Optionals.fold(Optional.ofNullable(stateMap.get(stateFn.apply(entity))),
+        return Optionals.fold(Optional.ofNullable(stateMap.get(Optional.ofNullable(stateFn.apply(entity)).orElse(""))),
                 () -> jsonWriter.makeList(List.of(selfLink)),
                 list -> jsonWriter.makeList(Lists.insert(selfLink, Lists.map(list, sd -> jsonWriter.makeObject(sd.action, sd.link)))));
 
