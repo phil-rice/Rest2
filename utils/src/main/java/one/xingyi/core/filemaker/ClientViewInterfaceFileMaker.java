@@ -1,13 +1,15 @@
 package one.xingyi.core.filemaker;
+import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.annotationProcessors.PostDom;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.codeDom.ViewDomAndResourceDomField;
 import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
+import one.xingyi.core.codeDom.ViewDomAndResourceDomField;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
@@ -15,9 +17,11 @@ import one.xingyi.core.validation.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+@RequiredArgsConstructor
 public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
+
+    final MonadDefn monadDefn;
 
     List<String> allFieldsAccessors(String interfaceName, List<ViewDomAndResourceDomField> dom) { return Lists.flatMap(dom, fd -> accessors(interfaceName, fd)); }
 
@@ -34,23 +38,23 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
 
     List<String> getMethod(String viewName, String companionName) {
         return List.of(
-                "public static <T> CompletableFuture<T> get(HttpService service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}",
-                "public static <T> CompletableFuture<Optional<T>> getOptional(HttpService service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
+                "public static <T> " + monadDefn.simpleClassName() + "<T> get(HttpService service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}",
+                "public static <T> "+ monadDefn.simpleClassName()+ "<Optional<T>> getOptional(HttpService service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
     }
     List<String> editMethod(String viewName, String companionName) {
 
-        return List.of("public static CompletableFuture<" + viewName +
+        return List.of("public static "+ monadDefn.simpleClassName()+ "<" + viewName +
                 " > edit(HttpService service, String id, Function<" + viewName + "," + viewName +
                 "> fn){return service.edit(" + companionName + ",id, fn);}");
     }
     List<String> deleteMethod(String companionName) {
-        return List.of("public static CompletableFuture<Boolean> delete(HttpService service, String id){return service.delete(" + companionName + ",id);}");
+        return List.of("public static "+ monadDefn.simpleClassName()+ "<Boolean> delete(HttpService service, String id){return service.delete(" + companionName + ",id);}");
     }
     List<String> createMethod(String viewName, String companionName) {
-        return List.of("public static CompletableFuture<" + viewName + "> create(HttpService service, String id){return service.create(" + companionName + ",id);}");
+        return List.of("public static " + monadDefn.simpleClassName() + "<" + viewName + "> create(HttpService service, String id){return service.create(" + companionName + ",id);}");
     }
     List<String> createWithoutIdMethod(String viewName, String companionName) {
-        return List.of("public static CompletableFuture<IdAndValue<" + viewName + ">> create(HttpService service){return service.createWithoutId(" + companionName + ");}");
+        return List.of("public static " + monadDefn.simpleClassName() + "<IdAndValue<" + viewName + ">> create(HttpService service){return service.createWithoutId(" + companionName + ");}");
     }
 
     List<String> getRemoteAccessors(ViewDom viewDom, Optional<BookmarkUrlAndActionsDom> bookmarkUrlAndActionsDom) {
@@ -69,20 +73,20 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
     }
     private List<String> postMethod(PostDom postDom, String viewName, String companionName) {
         return List.of("//The optional is because if the command needs a state, and that entity isn't in that state it will not be executed",
-                "public static CompletableFuture<" + viewName + ">. " + postDom.action +
+                "public static " + monadDefn.simpleClassName() + "<" + viewName + ">. " + postDom.action +
                         "(HttpService service, String id){return service.post(" + companionName + "," + Strings.quote(postDom.action) + ",id);}");
     }
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
-        List<String> manualImports = Lists.append(List.of("one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
+        List<String> manualImports = Lists.append(List.of(monadDefn.fullClassName(), "one.xingyi.core.httpClient.HttpService", "one.xingyi.core.httpClient.client.view.UrlPattern"),
                 Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class,
-                        IdAndValue.class, CompletableFuture.class, Optional.class),
+                        IdAndValue.class, Optional.class),
                 Formating.indent(getRemoteAccessors(viewDom, accessDetails)),
                 List.of(),
                 Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.filemaker.*;
+import one.xingyi.core.monad.CompletableFutureDefn;
+import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.names.*;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
@@ -48,6 +50,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override
     //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
+        MonadDefn monadDefn = new CompletableFutureDefn();
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
         ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
@@ -74,7 +77,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 
-            CodeDom codeDom = new CodeDom(resourceDoms, viewDoms);
+            CodeDom codeDom = new CodeDom(monadDefn,resourceDoms, viewDoms);
 
             ResultAndFailures<String, List<FileDefn>> codeContentAndIssues = makeContent(codeDom);
             for (String issue : codeContentAndIssues.failures) {
@@ -117,7 +120,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                         Set<String> originalActualsLens = new HashSet<>(actualLens);
                         expectedLens.removeAll(originalActualsLens);
                         if (expectedLens.size() > 0) {
-                            String msg = "("+ annotation.value() +") Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(originalActualsLens, ", ");
+                            String msg = "(" + annotation.value() + ") Sometimes this is caused by incremental compilation\nMissing lens " + expectedLens + "\nActual lens are" + "\n" + Sets.sortedString(originalActualsLens, ", ");
                             if (annotation.error())
                                 log.error(v, msg);
                             else
@@ -126,7 +129,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                         if (annotation.exact()) {
                             actualLens.removeAll(originalExpectedLens);
                             if (actualLens.size() > 0) {
-                                String msg = "("+ annotation.value() +") There are lens supported " + actualLens + " that aren't in the validation file\nActual lens are" + "\n" + Sets.sortedString(originalActualsLens, ", ");
+                                String msg = "(" + annotation.value() + ") There are lens supported " + actualLens + " that aren't in the validation file\nActual lens are" + "\n" + Sets.sortedString(originalActualsLens, ", ");
                                 if (annotation.error())
                                     log.error(v, msg);
                                 else
@@ -155,16 +158,16 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ServerInterfaceFileMaker(),
                 new ServerResourceFileMaker(),
                 new ServerCompanionFileMaker(),
-                new ServerControllerFileMaker());
+                new ServerControllerFileMaker(codeDom.monadDefn));
         List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.resourceDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
         List<FileDefn> fromCodeDom = Result.successes(fromCodeDomResults);
         List<String> fromCodeDomIssues = Result.failures(fromCodeDomResults);
 
         List<IFileMaker<ViewDomAndItsResourceDom>> viewFileMakers = List.of(
                 new ViewDomDebugFileMaker(),
-                new ClientViewInterfaceFileMaker(),
+                new ClientViewInterfaceFileMaker(codeDom.monadDefn),
                 new ClientResourceFileMaker(),
-                new ClientViewCompanionFileMaker(),
+                new ClientViewCompanionFileMaker(codeDom.monadDefn),
                 new ClientViewImplFileMaker()
         );
         List<Result<String, FileDefn>> fromViewDomResults = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));

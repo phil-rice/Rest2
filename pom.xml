@@ -22,7 +22,6 @@
         <module>certificates</module>
         <module>test</module>
         <module>democlient</module>
-        <module>Accounts</module>
     </modules>
     <build>
         <plugins>

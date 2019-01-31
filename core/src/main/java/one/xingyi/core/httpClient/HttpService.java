@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 //TODO This whole class needs sorting out. It is far too big and does too much
+//It also needs to work with the 'monaddefn'
 public interface HttpService {
 
     static HttpService defaultService(String protocolAndHost, Function<ServiceRequest, CompletableFuture<ServiceResponse>> delegate) {
