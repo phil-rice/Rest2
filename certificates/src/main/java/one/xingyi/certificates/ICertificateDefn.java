@@ -9,10 +9,11 @@ import one.xingyi.core.sdk.IXingYiEntityDefn;
 @Put
 @CreateWithoutId(url = "{host}/certificate")
 @Create
-public interface ICertificateDefn  extends IXingYiEntityDefn {
-    String newId();
+public interface ICertificateDefn extends IXingYiEntityDefn {
+//
+   IDetailsDefn child();
 
     @Deprecated
-    @Field(javascript = "return lens('newId');")
+    @Field(javascript = "return compose(lens('child'), lens('powerfulId'));")
     String id();
 }

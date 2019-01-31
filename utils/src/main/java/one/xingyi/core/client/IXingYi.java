@@ -51,7 +51,7 @@ class DefaultXingYi<Entity extends IXingYiClientEntity, View extends IXingYiView
         engine = new NashornScriptEngineFactory().getScriptEngine("--language=es6 ");
         XingYiExecutionException.wrap("initialising", javaScript, () -> engine.eval(javaScript));
         this.inv = (Invocable) engine;
-        System.out.println("Duration: " + (System.nanoTime() - time) / 1000000);
+//        System.out.println("Duration: " + (System.nanoTime() - time) / 1000000);
     }
     @Override public <ChildEntity extends IXingYiClientEntity, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
         return rawRender(renderName, view.mirror());

@@ -14,6 +14,14 @@ public class Strings {
         return stream.toString();
     }
 
+    // pad with " " to the right to the given length (n)
+    public static String padRight(String s, int n) {
+        return String.format("%1$-" + n + "s", s);
+    }
+    // pad with " " to the left to the given length (n)
+    public static String padLeft(String s, int n) {
+        return String.format("%1$" + n + "s", s);
+    }
     public static String noWhitespace(String s) {return s.replaceAll("\\se*", ""); }
     public static String changeQuotes(String s) {return s.replace('\'', '"'); }
 

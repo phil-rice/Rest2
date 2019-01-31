@@ -6,13 +6,11 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJsonWithLinks;
+import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.MakesFromJson;
 import one.xingyi.core.sdk.IXingYiEntity;
 import one.xingyi.core.state.StateData;
-import one.xingyi.core.utils.IdAndValue;
-import one.xingyi.core.utils.Lists;
-import one.xingyi.core.utils.Optionals;
-import one.xingyi.core.utils.WrappedException;
+import one.xingyi.core.utils.*;
 
 import java.util.List;
 import java.util.Map;
@@ -104,12 +102,37 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static EndPoint printlnLog(EndPoint endPoint) {
         return new PrintlnEndpoint(endPoint);
     }
+    static EndPoint printlnDetailsLog(EndPoint endPoint) {
+        return new PrintlnEndpoint(endPoint);
+    }
 }
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
 class PrintlnEndpoint implements EndPoint {
+    final EndPoint endPoint;
+    @Override public List<MethodAndPath> description() {
+        return endPoint.description();
+    }
+    @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest sr) {
+        return endPoint.apply(sr).thenApply(optRes -> {
+            String result = optRes.map(r -> {
+                        if (r.body.contains(IXingYiResponseSplitter.marker))
+                            return IXingYiResponseSplitter.splitter.apply(r).data;
+                        else return sr.body;
+                    }
+            ).orElse("??");
+            System.out.println(Strings.padRight(sr.uri.toString(), 30) + "    " + optRes.map(r -> r.statusCode).orElse(0) + " " + result);
+            return optRes;
+        });
+    }
+}
+
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@ToString
+class PrintlnDetailsEndpoint implements EndPoint {
     final EndPoint endPoint;
     @Override public List<MethodAndPath> description() {
         return endPoint.description();

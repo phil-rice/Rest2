@@ -21,6 +21,7 @@
         <module>trafficlights</module>
         <module>certificates</module>
         <module>test</module>
+        <module>democlient</module>
     </modules>
     <build>
         <plugins>
