@@ -5,6 +5,7 @@ import one.xingyi.core.annotations.*;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.filemaker.*;
 import one.xingyi.core.monad.CompletableFutureDefn;
+import one.xingyi.core.monad.EpicMonadDefn;
 import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.names.*;
 import one.xingyi.core.utils.*;
@@ -50,7 +51,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     @Override
     //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
-        MonadDefn monadDefn = new CompletableFutureDefn();
+        MonadDefn monadDefn = new EpicMonadDefn();
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
         ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
@@ -62,7 +63,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
 
             List<ResourceDom> resourceDoms = Result.successes(entityDomResults);
-            log.info("Made entityDoms: " + resourceDoms);
+//            log.info("Made entityDoms: " + resourceDoms);
 
 
             List<? extends Element> viewElements = Sets.sortedList(env.getElementsAnnotatedWith(View.class), comparator());
@@ -73,7 +74,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                     )
             );
             val viewDoms = Result.successes(viewDomResults);
-            log.info("Made viewDoms: " + viewDoms);
+//            log.info("Made viewDoms: " + viewDoms);
 
             //TODO Work out how to spot at this stage or before if there are classes in the names of fields in views. Best done when the element is available
 

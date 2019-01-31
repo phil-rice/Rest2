@@ -9,6 +9,7 @@ import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
+import one.xingyi.core.monad.Epic;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.core.sdk.IXingYiView;
@@ -36,7 +37,7 @@ public interface HttpService {
 
     public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url);
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url);
-    default CompletableFuture<String> getUrlPattern(String bookmark) {
+    default Epic<String> getUrlPattern(String bookmark) {
         return UrlPatternCompanion.companion.primitive(this, "get", bookmark, UrlPattern::urlPattern);
     }
 
