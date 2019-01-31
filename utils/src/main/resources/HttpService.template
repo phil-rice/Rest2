@@ -26,7 +26,7 @@ public interface HttpService<monad> {
     static HttpService<monad> defaultService(String protocolAndHost, Function<ServiceRequest, <monad><ServiceResponse>> delegate) {
         return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter);
     }
-    static HttpService<monad> defaultServiceWithSimpleJavaclint(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
+    //static HttpService<monad> defaultServiceWithSimpleJavaclient(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
 
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Result> primitive(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,

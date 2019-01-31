@@ -4,6 +4,6 @@ public class EpicMonadDefn implements MonadDefn {
     @Override public String simpleClassName() {
         return "Epic";
     }
-    @Override public String map() { return "thenApply"; }
-    @Override public String flatMap() { return "thenCompose"; }
+    @Override public String map() { return "map"; }
+    @Override public String flatMap() { return "flatMap"; }
 }
