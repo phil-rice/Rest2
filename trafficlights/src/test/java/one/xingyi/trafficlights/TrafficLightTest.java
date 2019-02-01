@@ -22,6 +22,9 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+
+import one.xingyi.trafficlights.TrafficLightServer;
+
 public class TrafficLightTest {
 
     Json jsonParserAndWriter = new Json();

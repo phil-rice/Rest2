@@ -44,10 +44,11 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
         return new ResourceEndPoint<J, Entity, String, Boolean>(IResourceEndpointAcceptor.<String>apply("delete", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<Boolean>createForNonEntity(200, r -> r.toString()));
     }
-    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>> createEntity(
-            EndpointContext<J> context, String path, Supplier<CompletableFuture<IdAndValue<Entity>>> idAndValueSupplier, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint<J, Entity, SuccessfulMatch, IdAndValue<Entity>>(IResourceEndpointAcceptor.<String>apply("post", path),
-                s -> {System.out.println("in here: " + s); return idAndValueSupplier.get();}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
+    static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, Entity, IdAndValue<Entity>> createEntity(
+            EndpointContext<J> context, String path, Function<ServiceRequest, Entity> reqFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> idAndValueMaker, Function<Entity, String> stateFn) {
+        return new ResourceEndPoint<J, Entity, Entity, IdAndValue<Entity>>
+                (IResourceEndpointAcceptor.<Entity>create("post", path, reqFn),
+                        entity -> {System.out.println("in here: " + entity); return idAndValueMaker.apply(entity);}, EndpointResult.<J, Entity>createForIdAndvalue(context, 201));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {

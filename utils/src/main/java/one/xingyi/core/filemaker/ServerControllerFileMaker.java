@@ -3,6 +3,7 @@ import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.codeDom.ResourceDom;
+import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.IdAndValue;
@@ -20,23 +21,24 @@ public class ServerControllerFileMaker implements IFileMaker<ResourceDom> {
 
     List<String> addFromActionsDom(String result, ActionsDom actionsDom) {
         return Lists.append(
-                Optionals.toList(actionsDom.putDom, dom -> ""+ monadDefn.simpleClassName()+ "<" + result + "> put(IdAndValue<" + result + "> idAnd" + result + ");"),
-                Optionals.toList(actionsDom.getDom, dom -> dom.mustExist ? ""+ monadDefn.simpleClassName()+ "<" + result + "> get(String id);" : ""+ monadDefn.simpleClassName()+ "<Optional<" + result + ">> getOptional(String id);"),
-                Optionals.toList(actionsDom.deleteDom, dom -> ""+ monadDefn.simpleClassName()+ "<Boolean> delete(String id);"),
-                Optionals.toList(actionsDom.createDom, dom -> ""+ monadDefn.simpleClassName()+ "<" + result + "> createWithId(String id);"),
-                Optionals.toList(actionsDom.createWithoutIdDom, dom -> ""+ monadDefn.simpleClassName()+ "<IdAndValue<" + result + ">> createWithoutId();"),
-                Lists.map(actionsDom.postDoms, pd -> ""+ monadDefn.simpleClassName()+ "<" + result + "> " + pd.action + "(String id); //" + pd.path + "    " + pd.states)
+                Optionals.toList(actionsDom.putDom, dom -> "" + monadDefn.simpleClassName() + "<" + result + "> put(IdAndValue<" + result + "> idAnd" + result + ");"),
+                Optionals.toList(actionsDom.getDom, dom -> dom.mustExist ? "" + monadDefn.simpleClassName() + "<" + result + "> get(String id);" : "" + monadDefn.simpleClassName() + "<Optional<" + result + ">> getOptional(String id);"),
+                Optionals.toList(actionsDom.deleteDom, dom -> "" + monadDefn.simpleClassName() + "<Boolean> delete(String id);"),
+                Optionals.toList(actionsDom.createDom, dom -> "" + monadDefn.simpleClassName() + "<" + result + "> createWithId(String id);"),
+                Optionals.toList(actionsDom.createWithoutIdDom, dom -> "" + monadDefn.simpleClassName() + "<IdAndValue<" + result + ">> createWithoutId(" + result + " value);"),
+                Optionals.toList(actionsDom.createWithoutIdDom, dom -> result + " createWithoutIdRequestFrom(ServiceRequest serviceRequest);"),
+                Lists.map(actionsDom.postDoms, pd -> "" + monadDefn.simpleClassName() + "<" + result + "> " + pd.action + "(String id); //" + pd.path + "    " + pd.states)
         );
     }
 
     @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
 
         PackageAndClassName serverEntity = resourceDom.entityNames.serverEntity;
-        List<String> manualImports = List.of(monadDefn.fullClassName(),serverEntity.asString());
+        List<String> manualImports = List.of(monadDefn.fullClassName(), serverEntity.asString());
         List<String> result = Lists.append(
                 List.of("//" + resourceDom.bookmark),
                 Formating.javaFile(getClass(), resourceDom.deprecated, resourceDom.entityNames.originalDefn, "interface", resourceDom.entityNames.serverController, "",
-                        manualImports,  IdAndValue.class, Optional.class),
+                        manualImports, IdAndValue.class, Optional.class, ServiceRequest.class),
                 Formating.indent(List.of("String stateFn(" + serverEntity.className + " entity);")),
                 Formating.indent(addFromActionsDom(serverEntity.className, resourceDom.actionsDom)),
                 List.of("}"));

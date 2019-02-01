@@ -1,5 +1,6 @@
 package one.xingyi.core.endpoints;
 
+import lombok.RequiredArgsConstructor;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
@@ -19,6 +20,9 @@ public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest
     static IResourceEndpointAcceptor<SuccessfulMatch> apply(String method, String templatedPath) {
         return new ResourceEndpointNoFromAcceptor(method, templatedPath);
     }
+    static <Req> IResourceEndpointAcceptor<Req> create(String method, String path, Function<ServiceRequest, Req> reqFn) {
+        return new ResourceEndpointFnFromAcceptor(method, path, reqFn);
+    }
 
     String method();
     String templatedPath();
@@ -26,6 +30,29 @@ public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest
     default <T> Function<ServiceRequest, CompletableFuture<Optional<T>>> andIfMatches(Function<From, CompletableFuture<T>> fn) {
         return sr -> Optionals.fold(apply(sr), () -> CompletableFuture.completedFuture(Optional.empty()), from -> fn.apply(from).thenApply(t -> Optional.of(t)));
     }
+}
+
+
+class ResourceEndpointFnFromAcceptor<From> implements IResourceEndpointAcceptor<From> {
+    final String method;
+    final String path;
+    final Function<ServiceRequest, From> reqFn;
+     final String templatedPath;
+    public ResourceEndpointFnFromAcceptor(String method, String templatedPath, Function<ServiceRequest, From> reqFn) {
+        this.method = method;
+        this.templatedPath = templatedPath;
+        this.path = templatedPath.replace("{host}", "");
+        this.reqFn = reqFn;
+    }
+    @Override public String method() { return method; }
+    @Override public String templatedPath() { return templatedPath; }
+    @Override public Optional<From> apply(ServiceRequest serviceRequest) {
+        if (method.equalsIgnoreCase(serviceRequest.method) && path.equalsIgnoreCase(serviceRequest.path))
+            return Optional.of(reqFn.apply(serviceRequest));
+        else
+            return Optional.empty();
+    }
+    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, templatedPath)); }
 }
 
 class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAcceptor<From> {

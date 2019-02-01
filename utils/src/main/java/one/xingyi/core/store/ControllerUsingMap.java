@@ -1,5 +1,6 @@
 package one.xingyi.core.store;
 
+import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.RunnableWithException;
 import one.xingyi.core.utils.WrappedException;
@@ -37,10 +38,13 @@ public abstract class ControllerUsingMap<T> {
     public CompletableFuture<T> createWithId(String id) {
         return wrap(id, () -> { store.put(id, prototype(id)); });
     }
-    public CompletableFuture<IdAndValue<T>> createWithoutId() {
+    public CompletableFuture<IdAndValue<T>> createWithoutId(T t) {
         String id = store.size() + "";
         store.put(id, prototype(id));
         return CompletableFuture.completedFuture(new IdAndValue<>(id, prototype(id)));
     }
+
+    public T createWithoutIdRequestFrom(ServiceRequest serviceRequest) { return prototype(Integer.toString(store.size())); }
+
 
 }
