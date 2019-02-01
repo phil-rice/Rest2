@@ -10,7 +10,7 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 @CreateWithoutId(url = "{host}/lights")
 @Create
 public interface ITrafficLightsDefn extends IXingYiResourceDefn {
-    @Field(readOnly = true)
+//    @Field(readOnly = true)
     String id();
     String color();
     String location();

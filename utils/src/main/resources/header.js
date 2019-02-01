@@ -24,6 +24,11 @@ function setInList(list, n, item) {
     newList[n] = item;
     return newList;
 }
+function addToList(list,  item) {
+    var newList = list.splice();
+    newList.push(item);
+    return newList;
+}
 
 function makeArray() {
     var result = [];

@@ -1,10 +1,7 @@
 package one.xingyi.trafficlights;
-import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.Header;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.utils.Files;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
@@ -20,7 +17,7 @@ public class TrafficLightsJsonTest {
 
     String tl(String id, String colour) {
         ContextForJson context = ContextForJson.forServiceRequest("http://", new ServiceRequest("get", "/some/thing", List.of(new Header("host", "someHost")), ""));
-        Object trafficLights = new TrafficLights(id, colour, "someLocation").toJsonWithLinks(jsonParserAndWriter, context, new TrafficLightsController()::stateFn);
+        Object trafficLights = new TrafficLights(id, colour, "someLocation").toJsonWithLinks(jsonParserAndWriter, context, new TrafficLightsController(jsonParserAndWriter)::stateFn);
         return jsonParserAndWriter.fromJ(trafficLights);
     }
 

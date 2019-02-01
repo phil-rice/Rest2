@@ -35,7 +35,7 @@ public interface HttpService<monad> {
             Function<View, Result> fn);
 
     public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Boolean> primitiveForBoolean(String method, String url);
-    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url,View view);
     default <monad><String> getUrlPattern(String bookmark) {
         return UrlPatternCompanion.companion.primitive(this, "get", bookmark, UrlPattern::urlPattern);
     }
@@ -54,7 +54,7 @@ public interface HttpService<monad> {
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><View> create(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker,
             String id);
-    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker, View view);
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id);
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn);
     //    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> <monad><View> post(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String urlPattern, String id);
@@ -136,8 +136,8 @@ class DefaultHttpService<monad> implements HttpService<monad> {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
         return service.apply(serviceRequest).<map>(makeBoolean(serviceRequest));
     }
-    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url) {
-        ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url,View view) {
+        ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), view.xingYi().render("json", view));
         return service.apply(serviceRequest).<map>(makeIdAndValue(clientMaker, serviceRequest));
     }
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Result>
@@ -151,8 +151,8 @@ class DefaultHttpService<monad> implements HttpService<monad> {
     create(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
         return getUrlPattern(clientMaker.bookmark()).<flatMap>(urlPattern -> primitive(clientMaker, "post", urlPattern.replace("{id}", id), v -> v));
     }
-    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker) {
-        return getUrlPattern(clientMaker.bookmark()).<flatMap>(urlPattern -> primitiveForIdAndValue(clientMaker, "post", urlPattern.replace("/{id}", "")));
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker, View view) {
+        return getUrlPattern(clientMaker.bookmark()).<flatMap>(urlPattern -> primitiveForIdAndValue(clientMaker, "post", urlPattern.replace("/{id}", ""),view));
     }
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id) {
         return getUrlPattern(clientMaker.bookmark()).<flatMap>(urlPattern -> primitiveForBoolean("delete", urlPattern.replace("{id}", id)));

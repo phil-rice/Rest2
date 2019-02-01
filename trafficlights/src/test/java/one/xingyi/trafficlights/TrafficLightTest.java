@@ -23,16 +23,14 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import one.xingyi.trafficlights.TrafficLightServer;
-
 public class TrafficLightTest {
 
     Json jsonParserAndWriter = new Json();
     EndpointConfig<Object> config = EndpointConfig.defaultConfig(jsonParserAndWriter, jsonParserAndWriter);
 
-    public void setup(Consumer3WithException<TrafficLightsController, TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
-        TrafficLightsController controller = new TrafficLightsController();
-        TrafficLightServer<Object> server = new TrafficLightServer<>(config, controller);
+    public void setup(Consumer3WithException<TrafficLightsController<Object>, one.xingyi.trafficlights.TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
+        TrafficLightsController controller = new TrafficLightsController(jsonParserAndWriter);
+        one.xingyi.trafficlights.TrafficLightServer<Object> server = new one.xingyi.trafficlights.TrafficLightServer<>(config, controller);
         HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
         consumer.accept(controller, server, service);
     }
@@ -105,9 +103,9 @@ public class TrafficLightTest {
     @Test public void testCanCreateWithoutId() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            assertEquals("2red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
-            assertEquals("3red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
-            assertEquals("4red", ColourView.create(service).thenApply(idV -> idV.id + idV.t.color()).get());
+            ColourView prototype = ColourView.get(service, "someId", x -> x).get();
+            assertEquals("somered", ColourView.create(service, prototype.withid("some")).thenApply(idV -> idV.id + idV.t.color()).get());
+            assertEquals("othergreen", ColourView.create(service, prototype.withid("other").withcolor("green")).thenApply(idV -> idV.id + idV.t.color()).get());
         });
     }
 
@@ -131,9 +129,12 @@ public class TrafficLightTest {
 
     @Test public void testCanEdit() throws Exception {
         setup((controller, server, service) -> {
+
+
             populate(controller, "someId", "red", "someLocation");
             assertEquals("newLocation", LocationView.edit(service, "someId", loc -> loc.withlocation("newLocation")).get().location());
-            assertEquals("newLocation", controller.store.get("someId").location());
+            TrafficLights lights = controller.store.get("someId");
+            assertEquals("newLocation", lights.location());
             assertEquals("newLocation", LocationView.get(service, "someId", v -> v.location()).get());
         });
     }

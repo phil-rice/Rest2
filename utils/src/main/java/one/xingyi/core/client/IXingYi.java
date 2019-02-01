@@ -85,7 +85,9 @@ class DefaultXingYi<Entity extends IXingYiClientResource, View extends IXingYiVi
                             ScriptObjectMirror mirror = ((ScriptObjectMirror) inv.invokeFunction("getL", name, t.mirror()));
                             return new MirroredSimpleList<ChildView>(mirror,
                                     o -> childMaker.make(this, o),
-                                    (n, child) -> (ScriptObjectMirror) WrappedException.wrapCallable(() -> inv.invokeFunction("setInList", mirror, n, child.mirror())));
+                                    (n, child) -> (ScriptObjectMirror) WrappedException.wrapCallable(() -> inv.invokeFunction("setInList", mirror, n, child.mirror())),
+                                    child -> (ScriptObjectMirror) WrappedException.wrapCallable(() -> inv.invokeFunction("addToList", mirror, child.mirror()))
+                            );
                         });
         Setter<View, ISimpleList<ChildView>> setter =
                 (t, s) -> XingYiExecutionException.<View>wrap("listLens.set" + name, javaScript,

@@ -5,10 +5,9 @@ import one.xingyi.core.sdk.IXingYiViewDefn;
 
 @View
 public interface IColourViewDefn extends IXingYiViewDefn<ITrafficLightsDefn> {
-    @Field(readOnly = true)
+//    @Field(readOnly = true)
     String id();
 
-    @Field(readOnly = true)
     String color();
 
 }

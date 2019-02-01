@@ -1,15 +1,21 @@
 package one.xingyi.trafficlights;
 import one.xingyi.core.http.ServiceRequest;
+import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.store.ControllerUsingMap;
 import one.xingyi.core.utils.IdAndValue;
+import one.xingyi.trafficlights.server.companion.TrafficLightsCompanion;
 import one.xingyi.trafficlights.server.controller.ITrafficLightsController;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-public class TrafficLightsController extends ControllerUsingMap<TrafficLights> implements ITrafficLightsController {
-    public TrafficLightsController() {
+
+
+public class TrafficLightsController<J> extends ControllerUsingMap<TrafficLights> implements ITrafficLightsController {
+    final JsonParser<J> parser;
+    public TrafficLightsController(JsonParser<J> parser) {
         super("TrafficLights");
+        this.parser = parser;
         store.put("1", new TrafficLights("1", "red", "someLocation"));
     }
     CompletableFuture<TrafficLights> map(String id, Function<TrafficLights, TrafficLights> fn) {
@@ -17,7 +23,13 @@ public class TrafficLightsController extends ControllerUsingMap<TrafficLights> i
         store.put(id, newLight);
         return CompletableFuture.completedFuture(newLight);
     }
-
+    @Override public TrafficLights createWithoutIdRequestFrom(ServiceRequest serviceRequest) {
+        return TrafficLightsCompanion.companion.fromJson(parser, parser.parse(serviceRequest.body));
+    }
+    @Override public CompletableFuture<IdAndValue<TrafficLights>> createWithoutId(TrafficLights trafficLights) {
+        store.put(trafficLights.id(), trafficLights);
+        return CompletableFuture.completedFuture(new IdAndValue<TrafficLights>(trafficLights.id(), trafficLights));
+    }
     @Override public String stateFn(TrafficLights trafficLights) { return trafficLights.color(); }
 
     @Override protected TrafficLights prototype(String id) { return new TrafficLights(id, "red", ""); }

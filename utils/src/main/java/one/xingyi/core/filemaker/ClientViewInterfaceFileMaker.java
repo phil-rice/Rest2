@@ -53,7 +53,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
         return List.of("public static " + monadDefn.simpleClassName() + "<" + viewName + "> create(" + "HttpService" + monadDefn.simpleClassName() + " service, String id){return service.create(" + companionName + ",id);}");
     }
     List<String> createWithoutIdMethod(String viewName, String companionName) {
-        return List.of("public static " + monadDefn.simpleClassName() + "<IdAndValue<" + viewName + ">> create(" + "HttpService" + monadDefn.simpleClassName() + " service){return service.createWithoutId(" + companionName + ");}");
+        return List.of("public static " + monadDefn.simpleClassName() + "<IdAndValue<" + viewName + ">> create(" + "HttpService" + monadDefn.simpleClassName() + " service, " + viewName + " view){return service.createWithoutId(" + companionName + ", view);}");
     }
 
     List<String> getRemoteAccessors(ViewDom viewDom, Optional<BookmarkUrlAndActionsDom> bookmarkUrlAndActionsDom) {

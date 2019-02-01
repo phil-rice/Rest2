@@ -12,18 +12,23 @@ public class MirroredSimpleList<T> implements ISimpleList<T> {
     private final List<Object> asList;
     private Function<Object, T> maker;
     private BiFunction<Integer, T, ScriptObjectMirror> setter;
-    public MirroredSimpleList(ScriptObjectMirror mirror, Function<Object, T> maker, BiFunction<Integer, T, ScriptObjectMirror> setter) {
+    private Function<T, ScriptObjectMirror> addFn;
+    public MirroredSimpleList(ScriptObjectMirror mirror, Function<Object, T> maker, BiFunction<Integer, T, ScriptObjectMirror> setter, Function<T, ScriptObjectMirror> addFn) {
         this.mirror = mirror;
         this.asList = mirror.to(List.class);
         this.maker = maker;
         this.setter = setter;
+        this.addFn = addFn;
     }
     @Override public int size() {
         return asList.size();
     }
     @Override public T get(int n) { return maker.apply(asList.get(0)); }
     @Override public ISimpleList<T> withItem(int n, T t) {
-        return new MirroredSimpleList<>(setter.apply(n, t), maker, setter);
+        return new MirroredSimpleList<>(setter.apply(n, t), maker, setter, addFn);
+    }
+    @Override public ISimpleList<T> append(T t) {
+        return new MirroredSimpleList<T>(addFn.apply(t), maker, setter, addFn);
     }
 
     @Override public Iterator<T> iterator() {
