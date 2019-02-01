@@ -25,7 +25,7 @@ function setInList(list, n, item) {
     return newList;
 }
 function addToList(list,  item) {
-    var newList = list.splice();
+    var newList = list.slice();
     newList.push(item);
     return newList;
 }

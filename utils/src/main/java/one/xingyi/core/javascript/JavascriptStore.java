@@ -11,7 +11,7 @@ import java.util.List;
 public interface JavascriptStore {
     List<JavascriptDetails> find(List<String> lensNames);
 
-    static JavascriptStore constant(String javascript) { return new ConstantJavascriptStore(Digestor.sha256, javascript);}
+    static JavascriptStore constant(String javascript) { return new ConstantJavascriptStore(Digestor.sha256(), javascript);}
     static JavascriptStore fromEntities(String rootjavascript, List<IXingYiServerCompanion<?, ?>> companions) {
         return constant(Lists.foldLeft(rootjavascript, companions, (acc, c) -> acc + "\n" + c.javascript()));
     }

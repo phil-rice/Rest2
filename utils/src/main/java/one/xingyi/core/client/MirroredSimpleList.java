@@ -1,6 +1,7 @@
 package one.xingyi.core.client;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import lombok.ToString;
+import one.xingyi.core.utils.Function3;
 
 import java.util.Iterator;
 import java.util.List;
@@ -11,9 +12,9 @@ public class MirroredSimpleList<T> implements ISimpleList<T> {
     public final ScriptObjectMirror mirror;
     private final List<Object> asList;
     private Function<Object, T> maker;
-    private BiFunction<Integer, T, ScriptObjectMirror> setter;
-    private Function<T, ScriptObjectMirror> addFn;
-    public MirroredSimpleList(ScriptObjectMirror mirror, Function<Object, T> maker, BiFunction<Integer, T, ScriptObjectMirror> setter, Function<T, ScriptObjectMirror> addFn) {
+    private Function3<ScriptObjectMirror, Integer, T, ScriptObjectMirror> setter;
+    private BiFunction<ScriptObjectMirror, T, ScriptObjectMirror> addFn;
+    public MirroredSimpleList(ScriptObjectMirror mirror, Function<Object, T> maker, Function3<ScriptObjectMirror, Integer, T, ScriptObjectMirror> setter, BiFunction<ScriptObjectMirror, T, ScriptObjectMirror> addFn) {
         this.mirror = mirror;
         this.asList = mirror.to(List.class);
         this.maker = maker;
@@ -23,12 +24,12 @@ public class MirroredSimpleList<T> implements ISimpleList<T> {
     @Override public int size() {
         return asList.size();
     }
-    @Override public T get(int n) { return maker.apply(asList.get(0)); }
+    @Override public T get(int n) { return maker.apply(asList.get(n)); }
     @Override public ISimpleList<T> withItem(int n, T t) {
-        return new MirroredSimpleList<>(setter.apply(n, t), maker, setter, addFn);
+        return new MirroredSimpleList<>(setter.apply(mirror, n, t), maker, setter, addFn);
     }
     @Override public ISimpleList<T> append(T t) {
-        return new MirroredSimpleList<T>(addFn.apply(t), maker, setter, addFn);
+        return new MirroredSimpleList<T>(addFn.apply(mirror, t), maker, setter, addFn);
     }
 
     @Override public Iterator<T> iterator() {
