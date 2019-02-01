@@ -14,6 +14,7 @@ public class Reference1 {
     public static void main(String[] args) {
         PersonServer<JsonValue> server = new PersonServer<>(EndpointConfig.defaultConfigNoParser, new PersonController());
         new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(server.endpoint()), 9000).start();
+
         System.out.println("Started backend 1: " + server.lens());
         System.out.println(Lists.mapJoin(server.endpoint().description(), "\n", Objects::toString));
     }
