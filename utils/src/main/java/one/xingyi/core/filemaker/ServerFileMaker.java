@@ -55,7 +55,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createConstructor(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("public " + serverDom.serverName.className + "(EndpointConfig<J> config," +
-                                Lists.collectJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){// A compilation error here is often caused by incremental compilation",
+                                Lists.collectJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){// A compilation error here is often caused by incremental compilation. It might also be because there are no bookmarked/rootUrl resouces (see the @Resource annotation)",
                         Formating.indent + "this.context = config.from(companions());"),
                 Formating.indent(Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> "this." + ed.entityNames.serverController.className + " = " + ed.entityNames.serverController.className + ";")),
                 List.of("}")
@@ -106,7 +106,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 "}"));
     }
     List<String> createEntityEndpoint(ServerDom serverDom) {
-        return List.of("public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}");
+        return List.of("//A compilation error here might be because you haven't added a maven dependency to the 'core' jar","public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}");
     }
 
     List<String> createEndpoints(ServerDom serverDom) {
@@ -116,7 +116,8 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
             String companionName = ed.entityNames.serverCompanion.asString();
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
-                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::create", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::createWithId", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpointWithStateFn("create" + className, "createEntity", dom.path, controllerName + "::createWithoutId", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b.urlPattern, controllerName + "::put", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.getDom, dom -> dom.mustExist ?
                             createEndpointWithStateFn("get" + className, "getEntity", b.urlPattern,
@@ -124,7 +125,6 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                             createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", b.urlPattern,
                                     controllerName + "::getOptional", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
-                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createEndpointWithStateFn("create" + className, "createEntity", dom.path, controllerName + "::create", controllerName + "::stateFn")),
                     Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern + dom.path, controllerName + "::" + dom.action, controllerName + "::stateFn"))));
         });
     }

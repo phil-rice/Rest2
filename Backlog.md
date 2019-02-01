@@ -1,6 +1,7 @@
 # Immediate tasks
 
 * Rename Entity to Resource - done
+* Rewrite the horrible bits of code!
 * Multiple interfaces on client 
 * Validate fields in a views match fields in an entity
 * 'thinking' problem: how do we filter down the view on a child object?

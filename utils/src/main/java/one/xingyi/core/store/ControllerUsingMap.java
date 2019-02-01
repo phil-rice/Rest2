@@ -34,10 +34,10 @@ public abstract class ControllerUsingMap<T> {
         store.remove(id);
         return CompletableFuture.completedFuture(true);
     }
-    public CompletableFuture<T> create(String id) {
+    public CompletableFuture<T> createWithId(String id) {
         return wrap(id, () -> { store.put(id, prototype(id)); });
     }
-    public CompletableFuture<IdAndValue<T>> create() {
+    public CompletableFuture<IdAndValue<T>> createWithoutId() {
         String id = store.size() + "";
         store.put(id, prototype(id));
         return CompletableFuture.completedFuture(new IdAndValue<>(id, prototype(id)));

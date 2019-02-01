@@ -86,6 +86,7 @@ public class ServerResourceFileMaker implements IFileMaker<ResourceDom> {
         List<String> result = new ArrayList<>();
         result.add("@XingYiGenerated");
         result.add("@Override public String toString(){");
+        result.add("//If you get a compilation error here, it might be because there are no fields defined");
         result.add(Formating.indent + "return " + Strings.quote(resourceDom.entityNames.serverEntity.className + "(") + "+" +
                 resourceDom.fields.noDeprecatedmapJoin("+" + Strings.quote(",") + "+", fd -> fd.name) + "+" + Strings.quote(")") + ";");
         result.add("}");

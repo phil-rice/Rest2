@@ -7,7 +7,7 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 @Delete
 @Get(mustExist = false)
 @Put
-@CreateWithoutId(url = "{host}/certificate")
+//@CreateWithoutId(url = "{host}/certificate")
 @Create
 public interface ICertificateDefn extends IXingYiResourceDefn {
 //        String id();

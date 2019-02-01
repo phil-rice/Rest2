@@ -57,7 +57,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         log.info("Processing XingYi Annotations");
         try {
             Set<? extends Element> elements = env.getElementsAnnotatedWith(Resource.class);
-            log.info("Found these entities: " + elements);
+//            log.info("Found these entities: " + elements);
             List<Result<ElementFail, ResourceDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),
                     e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
