@@ -7,6 +7,7 @@ import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
+import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.reference4.address.client.view.AddressLine12View;
 import one.xingyi.reference4.person.PersonController;
@@ -27,7 +28,13 @@ abstract public class AbstractDeprecated4Tests<J> {
     abstract boolean supportsReadingJson();
     EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config(), new PersonController()).allEndpoints());
     HttpServiceCompletableFuture rawService;
-    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
+    HttpServiceCompletableFuture service() {
+        if (rawService == null) {
+            Function<ServiceRequest, CompletableFuture<ServiceResponse>> client = httpClient();
+            rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", client);
+        }
+        return rawService;
+    }
 
 
     @Test public void testCanReadLine1and2() throws ExecutionException, InterruptedException {
@@ -57,7 +64,7 @@ abstract public class AbstractDeprecated4Tests<J> {
                 AddressLine12View newItem = v.addresses().get(0).withline1("newLine1");
                 IResourceList<AddressLine12View> addresses = v.addresses();
                 MirroredResourceList<AddressLine12View> newList = (MirroredResourceList<AddressLine12View>) addresses.withItem(0, newItem);
-                ScriptObjectMirror newListAsJava= (ScriptObjectMirror) newList.mirror;
+                ScriptObjectMirror newListAsJava = (ScriptObjectMirror) newList.mirror;
                 return newList.get(0).line1();
             }).get());
             assertEquals("newLine2", PersonAddresses12View.get(service(), "id1", v -> v.addresses().withItem(0, v.addresses().get(0).withline2("newLine2")).get(0).line2()).get());

@@ -118,7 +118,7 @@ class PrintlnEndpoint implements EndPoint {
         return endPoint.apply(sr).thenApply(optRes -> {
             String result = optRes.map(r -> {
                         if (r.body.contains(IXingYiResponseSplitter.marker))
-                            return IXingYiResponseSplitter.splitter.apply(r).data;
+                            return IXingYiResponseSplitter.rawSplit(r).data;
                         else return sr.body;
                     }
             ).orElse("??");

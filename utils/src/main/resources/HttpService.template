@@ -24,7 +24,7 @@ import java.util.function.Function;
 public interface HttpService<monad> {
 
     static HttpService<monad> defaultService(String protocolAndHost, Function<ServiceRequest, <monad><ServiceResponse>> delegate) {
-        return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter);
+        return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter(delegate));
     }
     //static HttpService<monad> defaultServiceWithSimpleJavaclient(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
 
@@ -72,45 +72,20 @@ class DefaultHttpService<monad> implements HttpService<monad> {
     final IXingYiResponseSplitter splitter;
 
 
-    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, View> makeEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
-        return serviceResponse -> {//TODO extract the try catch
-            try {
-                DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-                IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
-                Object mirror = xingYi.parse(dataAndJavaScript.data);
-                return clientMaker.make(xingYi, mirror);
-            } catch (Exception e) {
-                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
-            }
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, CompletableFuture<View>> makeEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+        return serviceResponse -> IXingYiResponseSplitter.fromServiceResponse(factory,splitter, clientMaker, serviceRequest, serviceResponse, Function.identity());
+    }
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, CompletableFuture<Optional<View>>> makeOptionalEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+        return serviceResponse -> {
+            if (serviceResponse.statusCode == 404) return <monad>.completedFuture(Optional.empty());
+            return IXingYiResponseSplitter.fromServiceResponse(factory, splitter,clientMaker, serviceRequest, serviceResponse, Optional::of);
         };
     }
-    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, Optional<View>> makeOptionalEntity(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
-        return serviceResponse -> {
-            try {
-                if (serviceResponse.statusCode == 404) return Optional.empty();
-                DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-                IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
-                Object mirror = xingYi.parse(dataAndJavaScript.data);
-                return Optional.of(clientMaker.make(xingYi, mirror));
-            } catch (Exception e) {
-                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
-            }
-        };
-    }
-    @SuppressWarnings("unchecked") <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, IdAndValue<View>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
-        return serviceResponse -> {
-            try {
 
-                DataAndJavaScript dataAndJavaScript = splitter.apply(serviceResponse);
-                IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
-                Object mirror = xingYi.parse(dataAndJavaScript.data);
-                IdAndValue result = xingYi.getIdAndValue(mirror, clientMaker);
-                return result;
-            } catch (Exception e) {
-                throw new RuntimeException("Have thrown unexpected exception.\n" + serviceRequest + "\n" + serviceResponse, e);
-            }
-        };
+    @SuppressWarnings("unchecked") <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Function<ServiceResponse, CompletableFuture<IdAndValue<View>>> makeIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest) {
+        return serviceResponse -> IXingYiResponseSplitter.fromServiceResponse(factory, splitter,clientMaker, serviceRequest, serviceResponse, view -> view.xingYi().getIdAndValue(view.mirror(), clientMaker));
     }
+
     Function<ServiceResponse, Boolean> makeBoolean(ServiceRequest serviceRequest) {
         return serviceResponse -> {
             try {
@@ -122,23 +97,23 @@ class DefaultHttpService<monad> implements HttpService<monad> {
     }
 
 
-    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Result> primitive(
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> primitive(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
-        return service.apply(serviceRequest).<map>(makeEntity(clientMaker, serviceRequest).andThen(fn));
+        return service.apply(serviceRequest).thenCompose(sr->makeEntity(clientMaker, serviceRequest).apply(sr).thenApply(fn));
     }
-    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Optional<Result>> primitiveForOptional(
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Optional<Result>> primitiveForOptional(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url, Function<View, Result> fn) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
-        return service.apply(serviceRequest).<map>(sr -> makeOptionalEntity(clientMaker, serviceRequest).apply(sr).map(fn));
+        return service.apply(serviceRequest).thenCompose(sr -> makeOptionalEntity(clientMaker, serviceRequest).apply(sr).thenApply(optView->optView.map(fn)));
     }
-    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Boolean> primitiveForBoolean(String method, String url) {
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Boolean> primitiveForBoolean(String method, String url) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), "");
-        return service.apply(serviceRequest).<map>(makeBoolean(serviceRequest));
+        return service.apply(serviceRequest).thenApply(makeBoolean(serviceRequest));
     }
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><IdAndValue<View>> primitiveForIdAndValue(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String method, String url,View view) {
         ServiceRequest serviceRequest = new ServiceRequest(method, url.startsWith("/") ? protocolAndHost + url : url, List.of(), view.xingYi().render("json", view));
-        return service.apply(serviceRequest).<map>(makeIdAndValue(clientMaker, serviceRequest));
+        return service.apply(serviceRequest).<flatMap>(makeIdAndValue(clientMaker, serviceRequest));
     }
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Result>
     get(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, Result> fn) {
@@ -165,7 +140,7 @@ class DefaultHttpService<monad> implements HttpService<monad> {
                 @SuppressWarnings("unchecked")
                 String json = o.xingYi().render("json", o);
                 ServiceRequest serviceRequest = new ServiceRequest("put", url.startsWith("/") ? protocolAndHost + url : url, List.of(), json);
-                return service.apply(serviceRequest).<map>(makeEntity(clientMaker, serviceRequest));
+                return service.apply(serviceRequest).<flatMap>(makeEntity(clientMaker, serviceRequest));
             });
         });
     }

@@ -45,7 +45,7 @@ public class TrafficLightTest {
     void checkSr(int statusCode, String json, ServiceResponse serviceResponse) {
         assertEquals(statusCode, serviceResponse.statusCode);
         String body = serviceResponse.body;
-        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.splitter.apply(serviceResponse);
+        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.rawSplit(serviceResponse);
         assertTrue(body, body.startsWith(config.rootJavascript));
         assertEquals(json, dataAndJavaScript.data);
     }

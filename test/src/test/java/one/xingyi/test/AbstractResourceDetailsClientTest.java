@@ -75,7 +75,7 @@ abstract class AbstractResourceDetailsClientTest {
 //    public void testGetAddress() throws ExecutionException, InterruptedException {
 //        assertEquals(Optional.of(address), addressStore.read("add1").get());
 //        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'),
-//                IXingYiResponseSplitter.splitter.apply(entityEndpoints.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
+//                IXingYiResponseSplitter.inLineOnlySplitter.apply(entityEndpoints.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
 //
 //        assertEquals("someLine1", client.get(IAddressLine12.class, "add1", IAddressLine12::line1).get());
 //    }
