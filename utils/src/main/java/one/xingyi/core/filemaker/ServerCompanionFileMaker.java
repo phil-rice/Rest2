@@ -1,6 +1,6 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
-import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
@@ -55,7 +55,7 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                 Formating.javaFile(getClass(), resourceDom.deprecated, resourceDom.entityNames.originalDefn, "class", resourceDom.entityNames.serverCompanion,
                         " implements " + implementsString,
                         List.of(resourceDom.entityNames.serverEntity.asString()),
-                        IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, ISimpleList.class, Lists.class,
+                        IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, IResourceList.class, Lists.class,
                         IXingYiServesResourceCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(resourceDom)),

@@ -1,7 +1,7 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.ISimpleMap;
 import one.xingyi.core.annotations.XingYiGenerated;
-import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.optics.Lens;
@@ -69,7 +69,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsResource
                         " implements " + viewDom.viewNames.clientView.asString() + ",IXingYiClientImpl<" +
                                 viewDom.viewNames.clientEntity.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + ">", manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
-                        ISimpleList.class, Lens.class, ISimpleMap.class),
+                        IResourceList.class, Lens.class, ISimpleMap.class),
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
                 Formating.indent(fields(viewDom)),
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),

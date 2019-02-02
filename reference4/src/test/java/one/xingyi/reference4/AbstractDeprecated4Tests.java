@@ -1,14 +1,13 @@
 package one.xingyi.reference4;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import one.xingyi.core.client.ISimpleList;
-import one.xingyi.core.client.MirroredSimpleList;
+import one.xingyi.core.client.IResourceList;
+import one.xingyi.core.client.MirroredResourceList;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.JsonValue;
-import one.xingyi.reference4.PersonServer;
 import one.xingyi.reference4.address.client.view.AddressLine12View;
 import one.xingyi.reference4.person.PersonController;
 import one.xingyi.reference4.person.client.view.PersonAddress12View;
@@ -56,8 +55,8 @@ abstract public class AbstractDeprecated4Tests<J> {
         if (supportsReadingJson()) {
             assertEquals("newLine1", PersonAddresses12View.get(service(), "id1", v -> {
                 AddressLine12View newItem = v.addresses().get(0).withline1("newLine1");
-                ISimpleList<AddressLine12View> addresses = v.addresses();
-                MirroredSimpleList<AddressLine12View> newList = (MirroredSimpleList<AddressLine12View>) addresses.withItem(0, newItem);
+                IResourceList<AddressLine12View> addresses = v.addresses();
+                MirroredResourceList<AddressLine12View> newList = (MirroredResourceList<AddressLine12View>) addresses.withItem(0, newItem);
                 ScriptObjectMirror newListAsJava= (ScriptObjectMirror) newList.mirror;
                 return newList.get(0).line1();
             }).get());

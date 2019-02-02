@@ -1,7 +1,7 @@
 package one.xingyi.reference4.person;
 
 import one.xingyi.core.annotations.*;
-import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference4.address.IAddressDefn;
 import one.xingyi.reference4.address.IAddressLine12ViewDefn;
@@ -28,9 +28,9 @@ public interface IPersonDefn extends IXingYiResourceDefn {
 
     @Deprecated
     @Field(javascript = "return identityLens();")
-    ISimpleList<IAddressLine12ViewDefn> address();
+    IResourceList<IAddressLine12ViewDefn> address();
 
     @Deprecated
     @Field(javascript = "return itemAsListLens();")
-    ISimpleList<IAddressDefn> addresses();
+    IResourceList<IAddressDefn> addresses();
 }

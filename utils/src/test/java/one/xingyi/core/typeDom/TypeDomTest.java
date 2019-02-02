@@ -1,5 +1,5 @@
 package one.xingyi.core.typeDom;
-import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.embedded.Embedded;
 import one.xingyi.core.names.IClassNameStrategy;
@@ -7,8 +7,6 @@ import one.xingyi.core.names.IPackageNameStrategy;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.validation.Result;
 import org.junit.Test;
-
-import java.util.List;
 
 import static one.xingyi.core.utils.Strings.lift;
 import static org.junit.Assert.assertEquals;
@@ -27,19 +25,19 @@ public class TypeDomTest {
     EmbeddedType embeededStringPt = new EmbeddedType(embeddedStringPn.asString(), stringPt);
 
     PackageAndClassName intPn = pn(Integer.class.getName());
-    PackageAndClassName listIntPn = pn(lift(ISimpleList.class.getName(), Integer.class.getName()));
+    PackageAndClassName listIntPn = pn(lift(IResourceList.class.getName(), Integer.class.getName()));
     PrimitiveType intPt = new PrimitiveType(intPn);
 //    ListType listIntPt = new ListType(listIntPn.asString(), intPt);
     PackageAndClassName embeddedIntPn = pn(lift(Embedded.class.getName(), Integer.class.getName()));
     EmbeddedType embeededIntPt = new EmbeddedType(embeddedIntPn.asString(), intPt);
 
     PackageAndClassName doublePn = pn(Double.class.getName());
-    PackageAndClassName listDoublePn = pn(lift(ISimpleList.class.getName(), Double.class.getName()));
+    PackageAndClassName listDoublePn = pn(lift(IResourceList.class.getName(), Double.class.getName()));
     PrimitiveType doublePt = new PrimitiveType(doublePn);
 //    ListType listDoublePt = new ListType(listDoublePn.asString(), doublePt);
 
     PackageAndClassName booleanPn = pn(Boolean.class.getName());
-    PackageAndClassName listBooleanPn = pn(lift(ISimpleList.class.getName(), Boolean.class.getName()));
+    PackageAndClassName listBooleanPn = pn(lift(IResourceList.class.getName(), Boolean.class.getName()));
     PrimitiveType booleanPt = new PrimitiveType(booleanPn);
 //    ListType listBooleanPt = new ListType(listBooleanPn.asString(), booleanPt);
 
@@ -75,9 +73,9 @@ public class TypeDomTest {
         assertEquals("a.b.server.domain.IPerson", viewType.forEntity());
         assertEquals("a.b.client.view.Person", viewType.forView());
 
-        TypeDom listType = TypeDom.create(names, "one.xingyi.core.client.ISimpleList<a.b.IPersonDefn>").result().get();
-        assertEquals("one.xingyi.core.client.ISimpleList<a.b.server.domain.IPerson>", listType.forEntity());
-        assertEquals("one.xingyi.core.client.ISimpleList<a.b.client.view.Person>", listType.forView());
+        TypeDom listType = TypeDom.create(names, "one.xingyi.core.client.IResourceList<a.b.IPersonDefn>").result().get();
+        assertEquals("one.xingyi.core.client.IResourceList<a.b.server.domain.IPerson>", listType.forEntity());
+        assertEquals("one.xingyi.core.client.IResourceList<a.b.client.view.Person>", listType.forView());
 
     }
 

@@ -1,7 +1,7 @@
 package one.xingyi.reference3.person;
 
 import one.xingyi.core.annotations.*;
-import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference3.address.IAddressDefn;
 import one.xingyi.reference3.address.IAddressLine12ViewDefn;
@@ -18,7 +18,7 @@ public interface IPersonDefn extends IXingYiResourceDefn {
     String name();
     Integer age();
 
-    ISimpleList<IAddressDefn> addresses();
+    IResourceList<IAddressDefn> addresses();
     ITelephoneNumberDefn telephone();
 
     //==========

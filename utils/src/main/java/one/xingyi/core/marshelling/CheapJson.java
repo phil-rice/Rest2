@@ -1,11 +1,7 @@
 package one.xingyi.core.marshelling;
-import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 class CheapJson implements JsonWriter<JsonValue> {
     public String jsonValueFor(Object obj) {
 //        if (obj instanceof ISimpleList) return Lists.mapJoin(((ISimpleList) obj).toList(), ",", this::jsonValueFor);
@@ -28,7 +24,7 @@ class CheapJson implements JsonWriter<JsonValue> {
         }
         return new JsonObject(builder + "}");
     }
-    @Override public <T> JsonValue makeList(ISimpleList<T> items) {
+    @Override public <T> JsonValue makeList(IResourceList<T> items) {
         return  new JsonObject("[" + Lists.mapJoin(items.toList(), ",", this::jsonValueFor) + "]");
     }
     @Override public JsonValue liftString(String string) {

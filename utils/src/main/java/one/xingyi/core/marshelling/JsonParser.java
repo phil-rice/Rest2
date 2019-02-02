@@ -1,5 +1,4 @@
 package one.xingyi.core.marshelling;
-import one.xingyi.core.client.ISimpleList;
 
 import java.util.List;
 public interface JsonParser<J> {
