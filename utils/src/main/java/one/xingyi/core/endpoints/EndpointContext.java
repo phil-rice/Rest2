@@ -24,14 +24,14 @@ public class EndpointContext<J> {
 
 
     public <Entity extends HasJson<ContextForJson>> String resultBody(ServiceRequest serviceRequest, String rootUrl, Entity entity) {
-        val json = jsonWriter.fromJ(entity.toJson(jsonWriter, ContextForJson.forServiceRequest(protocol, serviceRequest)));
-        return resultBodyForJson(rootUrl, json);
+        ContextForJson context = ContextForJson.forServiceRequest(protocol, serviceRequest);
+        val json = jsonWriter.fromJ(entity.toJson(jsonWriter, context));
+        return resultBodyForJson(context.template(rootUrl), json);
     }
     public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyWithLinks(ServiceRequest serviceRequest, String rootUrl, Entity entity, Function<Entity, String> stateFn) {
         ContextForJson context = ContextForJson.forServiceRequest(protocol, serviceRequest);
         String json = jsonWriter.fromJ(entity.toJsonWithLinks(jsonWriter, context, stateFn));
-        val javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
-        return mergeJavascriptAndJson.merge(context.template(rootUrl), javascript, json);
+        return resultBodyForJson(context.template(rootUrl),  json);
     }
 
     public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, String rootUrl, IdAndValue<Entity> entity) {
@@ -40,7 +40,7 @@ public class EndpointContext<J> {
         return resultBodyForJson(contextForJson.template(rootUrl), jsonWriter.fromJ(j));
     }
      String resultBodyForJson(String rootUrl, String json) {
-        val javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
+         String javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
         return mergeJavascriptAndJson.merge(rootUrl, javascript, json);
     }
 }

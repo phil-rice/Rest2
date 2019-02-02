@@ -25,7 +25,7 @@ public class EndpointConfig<J> {
 
     public static EndpointConfig<JsonValue> defaultConfigNoParser = defaultConfig(JsonWriter.cheapJson, JsonParser.nullParser());
     public static <J> EndpointConfig<J> defaultConfig(JsonWriter<J> jsonWriter, JsonParser<J> jsonParser) {
-        return new EndpointConfig<>(Files.getText("header.js"), jsonWriter, jsonParser, "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple);
+        return new EndpointConfig<>(Files.getText("header.js"), jsonWriter, jsonParser, "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.byLinks);
     }
 
     public EndpointContext<J> from(List<IXingYiServerCompanion<?, ?>> companions) {

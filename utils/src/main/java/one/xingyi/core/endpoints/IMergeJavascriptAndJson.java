@@ -7,7 +7,7 @@ public interface IMergeJavascriptAndJson {
     String merge(String rootUrl, String javascript, String json);
 
     static IMergeJavascriptAndJson simple = new SimpleMergeJavascriptAndJson();
-    static IMergeJavascriptAndJson byLinks(String prefix) {return new ByLinksJavascriptAndJson(prefix);}
+    static IMergeJavascriptAndJson byLinks = new ByLinksJavascriptAndJson();
     ;
 }
 class SimpleMergeJavascriptAndJson implements IMergeJavascriptAndJson {
@@ -17,8 +17,7 @@ class SimpleMergeJavascriptAndJson implements IMergeJavascriptAndJson {
 }
 @RequiredArgsConstructor
 class ByLinksJavascriptAndJson implements IMergeJavascriptAndJson {
-    final String rootUrl;
     @Override public String merge(String rootUrl, String javascript, String json) {
-        return this.rootUrl + rootUrl + "/" + Digestor.digestor().apply(javascript).digest + IXingYiResponseSplitter.marker + json;
+        return rootUrl.replace("{id}", "code/" + Digestor.digestor().apply(javascript).digest) + IXingYiResponseSplitter.marker + json;
     }
 }

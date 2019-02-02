@@ -112,7 +112,11 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 "}"));
     }
     List<String> createEntityEndpoint(ServerDom serverDom) {
-        return List.of("//A compilation error here might be because you haven't added a maven dependency to the 'core' jar", "public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}");
+
+        return List.of(
+                "//A compilation error here might be because you haven't added a maven dependency to the 'core' jar",
+                "public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}",
+                "  public EndPoint entityCodeEndpoint(){ return  EndPoint.javascript(context, \"{host}/code\");}");
     }
     List<String> createCodeEndpoint(ServerDom serverDom) {
         return Lists.map(serverDom.codeDom.servedresourceDoms, rd -> "public EndPoint " + rd.entityNames.serverEntity.className +

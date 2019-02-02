@@ -29,7 +29,7 @@ public interface IXingYiResponseSplitter extends Function<ServiceResponse, Compl
     }
 
     //TODO Work out where to put this. Probably move it into httpService.template
-    static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> fromServiceResponse(IXingYiFactory factory,IXingYiResponseSplitter splitter, IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest, ServiceResponse serviceResponse, Function<View, Result> resultFn) {
+    static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> CompletableFuture<Result> fromServiceResponse(IXingYiFactory factory, IXingYiResponseSplitter splitter, IXingYiRemoteAccessDetails<Entity, View> clientMaker, ServiceRequest serviceRequest, ServiceResponse serviceResponse, Function<View, Result> resultFn) {
         try {
             return splitter.apply(serviceResponse).thenApply(dataAndJavaScript -> {
                 try {
@@ -60,10 +60,15 @@ class XingYiResponseSplitter implements IXingYiResponseSplitter {
     @Override public CompletableFuture<DataAndJavaScript> apply(ServiceResponse serviceResponse) {
         DataAndJavaScript dataAndJavaScriptLinks = IXingYiResponseSplitter.rawSplit(serviceResponse);
         String urlOrJavascript = dataAndJavaScriptLinks.javascript;
-        if (urlOrJavascript.startsWith("http")) {
-            CompletableFuture<ServiceResponse> javascriptFuture = service.apply(new ServiceRequest("get", urlOrJavascript, List.of(), ""));
+        if (urlOrJavascript.startsWith("http") || urlOrJavascript.startsWith("/")) {
+            ServiceRequest javascriptServiceRequest = new ServiceRequest("get", urlOrJavascript, List.of(), "");
+            CompletableFuture<ServiceResponse> javascriptFuture = service.apply(javascriptServiceRequest);
             return javascriptFuture.thenApply(sr -> {
-                if (sr.statusCode < 300) throw new RuntimeException("Unexpected response getting javascript: " + serviceResponse + "\nOriginal response was" + serviceResponse);
+                if (sr.statusCode >= 300) throw new RuntimeException(
+                        "Unexpected response getting javascript: " + serviceResponse +
+                        "\nOriginal response was" + serviceResponse +
+                        "\nJavascript request " + javascriptServiceRequest +
+                        "\nJavascript response" + sr);
                 return new DataAndJavaScript(dataAndJavaScriptLinks.data, sr.body);
             });
         } else return CompletableFuture.completedFuture(dataAndJavaScriptLinks);
