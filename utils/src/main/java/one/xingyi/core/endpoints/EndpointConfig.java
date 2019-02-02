@@ -21,11 +21,14 @@ public class EndpointConfig<J> {
     public final JsonParser<J> jsonParser;
     public final String protocol;
     public final JavascriptDetailsToString javascriptDetailsToString;
+    public final IMergeJavascriptAndJson mergeJavascriptAndJson;
 
     public static EndpointConfig<JsonValue> defaultConfigNoParser = defaultConfig(JsonWriter.cheapJson, JsonParser.nullParser());
-    public static <J> EndpointConfig<J> defaultConfig(JsonWriter<J> jsonWriter, JsonParser<J> jsonParser) {return new EndpointConfig<>(Files.getText("header.js"), jsonWriter, jsonParser, "http://", JavascriptDetailsToString.simple);}
+    public static <J> EndpointConfig<J> defaultConfig(JsonWriter<J> jsonWriter, JsonParser<J> jsonParser) {
+        return new EndpointConfig<>(Files.getText("header.js"), jsonWriter, jsonParser, "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple);
+    }
 
     public EndpointContext<J> from(List<IXingYiServerCompanion<?, ?>> companions) {
-        return new EndpointContext<J>(JavascriptStore.fromEntities(rootJavascript, companions), javascriptDetailsToString, jsonWriter, jsonParser, protocol);
+        return new EndpointContext<J>(JavascriptStore.fromEntities(rootJavascript, companions), javascriptDetailsToString, mergeJavascriptAndJson, jsonWriter, jsonParser, protocol);
     }
 }

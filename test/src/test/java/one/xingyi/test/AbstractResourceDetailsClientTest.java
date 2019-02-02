@@ -47,6 +47,11 @@ abstract class AbstractResourceDetailsClientTest {
         assertEquals(expectedHost() + "/person/{id}", UrlPatternCompanion.companion.primitive(service(), "get", "/person", e -> e.urlPattern()).get());
     }
 
+    @Test
+    public void testGetJavascript(){
+
+    }
+
 
     @Test
     public void testGetUrlPattern() throws ExecutionException, InterruptedException {

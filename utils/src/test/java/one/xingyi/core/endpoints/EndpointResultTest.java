@@ -17,7 +17,7 @@ public class EndpointResultTest implements FunctionFixture {
 
     ServiceRequest serviceRequestNoHost = new ServiceRequest("someMethod", "/somePath", List.of(), "");
     ServiceRequest serviceRequestHost = new ServiceRequest("someMethod", "/somePath", List.of(new Header("host", "someHost")), "");
-    EndpointContext<JsonValue> context = new EndpointConfig<JsonValue>("rootJavascript", JsonWriter.cheapJson, JsonParser.nullParser(), "http://", JavascriptDetailsToString.simple).from(List.of());
+    EndpointContext<JsonValue> context = new EndpointConfig<JsonValue>("rootJavascript", JsonWriter.cheapJson, JsonParser.nullParser(), "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple).from(List.of());
 
 
     Function<TestResource, String> stateFn = e -> "someState";

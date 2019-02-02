@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.javascript.JavascriptDetailsToString;
+import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
@@ -93,6 +95,12 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 
     static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints);}
 
+    static <J> EndPoint javascript(EndpointContext<J> config, String prefix) {
+        String javascript = config.javascriptDetailsToString.apply(config.javascriptStore.find(List.of()));
+        DigestAndString digestAndString = Digestor.digestor().apply(javascript);
+        return new StaticEndpoint(EndpointAcceptor0.exact("get", prefix + "/" + digestAndString.digest),
+                new ServiceResponse(200, digestAndString.string, List.of()));
+    }
 
     static EndPoint staticEndpoint(EndpointAcceptor0 acceptor, ServiceResponse serviceResponse) {
         return new StaticEndpoint(acceptor, serviceResponse);

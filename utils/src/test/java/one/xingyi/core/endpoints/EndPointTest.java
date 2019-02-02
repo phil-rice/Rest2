@@ -15,7 +15,9 @@ import java.util.function.Function;
 import static org.junit.Assert.*;
 public class EndPointTest implements FunctionFixture {
 
-    EndpointContext<JsonValue> context = new EndpointContext<JsonValue>(JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, JsonWriter.cheapJson, JsonParser.nullParser(),
+    EndpointContext<JsonValue> context = new EndpointContext<JsonValue>(
+            JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple,
+            JsonWriter.cheapJson, JsonParser.nullParser(),
             "http://");
     TestResource testEntity = new TestResource();
 

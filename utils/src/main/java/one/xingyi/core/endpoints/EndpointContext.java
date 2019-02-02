@@ -19,6 +19,7 @@ import java.util.function.Function;
 public class EndpointContext<J> {
     public final JavascriptStore javascriptStore;
     public final JavascriptDetailsToString javascriptDetailsToString;
+    public final IMergeJavascriptAndJson mergeJavascriptAndJson;
     public final JsonWriter<J> jsonWriter;
     public final JsonParser<J> jsonParser;
     public final String protocol;
@@ -30,9 +31,9 @@ public class EndpointContext<J> {
     }
     public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyWithLinks(ServiceRequest serviceRequest, Entity entity, Function<Entity, String> stateFn) {
         ContextForJson context = ContextForJson.forServiceRequest(protocol, serviceRequest);
-        val javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
         String json = jsonWriter.fromJ(entity.toJsonWithLinks(jsonWriter, context, stateFn));
-        return javascript + IXingYiResponseSplitter.marker + json;
+        val javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
+        return mergeJavascriptAndJson.merge(javascript, json);
     }
 
     public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, IdAndValue<Entity> entity) {
@@ -41,6 +42,6 @@ public class EndpointContext<J> {
     }
     public String resultBodyForJson(String json) {
         val javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
-        return javascript + IXingYiResponseSplitter.marker + json;
+        return mergeJavascriptAndJson.merge(javascript, json);
     }
 }
