@@ -4,21 +4,21 @@ import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Digestor;
 public interface IMergeJavascriptAndJson {
 
-    String merge(String javascript, String json);
+    String merge(String entity, String javascript, String json);
 
     static IMergeJavascriptAndJson simple = new SimpleMergeJavascriptAndJson();
     static IMergeJavascriptAndJson byLinks(String prefix) {return new ByLinksJavascriptAndJson(prefix);}
     ;
 }
 class SimpleMergeJavascriptAndJson implements IMergeJavascriptAndJson {
-    @Override public String merge(String javascript, String json) {
+    @Override public String merge(String entity, String javascript, String json) {
         return javascript + IXingYiResponseSplitter.marker + json;
     }
 }
 @RequiredArgsConstructor
 class ByLinksJavascriptAndJson implements IMergeJavascriptAndJson {
     final String prefix;
-    @Override public String merge(String javascript, String json) {
-        return Digestor.digestor().apply(javascript).digest + IXingYiResponseSplitter.marker + json;
+    @Override public String merge(String rootUrl, String javascript, String json) {
+        return prefix + rootUrl + "/" + Digestor.digestor().apply(javascript).digest + IXingYiResponseSplitter.marker + json;
     }
 }

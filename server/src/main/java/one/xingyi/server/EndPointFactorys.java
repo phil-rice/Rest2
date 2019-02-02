@@ -4,6 +4,7 @@ import lombok.ToString;
 import one.xingyi.core.endpoints.*;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.httpClient.ResourceDetailsRequest;
+import one.xingyi.core.httpClient.server.companion.ResourceDetailsCompanion;
 import one.xingyi.core.httpClient.server.domain.ResourceDetails;
 import one.xingyi.core.utils.Lists;
 
@@ -19,7 +20,7 @@ public interface EndPointFactorys {
         return IResourceEndPoint.<J, ResourceDetails, ResourceDetailsRequest, Optional<ResourceDetails>>create(
                 new EntityEndpointAcceptor(entityRegister),
                 from -> CompletableFuture.completedFuture(entityRegister.apply(from)),
-                EndpointResult.createForOptional(context, 200));
+                EndpointResult.createForOptional(context, 200, ResourceDetailsCompanion.companion.bookmarkAndUrl().urlPattern));
     }
 
 }

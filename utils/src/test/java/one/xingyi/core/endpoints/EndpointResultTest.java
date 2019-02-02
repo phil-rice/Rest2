@@ -23,14 +23,14 @@ public class EndpointResultTest implements FunctionFixture {
     Function<TestResource, String> stateFn = e -> "someState";
 
     @Test public void testCreate() {
-        ServiceResponse serviceResponse = EndpointResult.create(context, 314).apply(serviceRequestHost, new TestResource());
+        ServiceResponse serviceResponse = EndpointResult.create(context, "/some/{id}", 314).apply(serviceRequestHost, new TestResource());
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("rootJavascript\n" +
                 "---------\n" +
                 "{\"test\":\"json\"}", serviceResponse.body);
     }
     @Test public void testCreateForIdAndValue() {
-        ServiceResponse serviceResponse = EndpointResult.createForIdAndvalue(context, 314).apply(serviceRequestHost, new IdAndValue<>("someId", new TestResource()));
+        ServiceResponse serviceResponse = EndpointResult.createForIdAndvalue(context, "/some/{id}", 314).apply(serviceRequestHost, new IdAndValue<>("someId", new TestResource()));
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("rootJavascript\n" +
                 "---------\n" +
