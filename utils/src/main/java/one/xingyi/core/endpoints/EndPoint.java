@@ -95,8 +95,8 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 
     static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints);}
 
-    static <J> EndPoint javascript(EndpointContext<J> config, String prefix) {
-        String javascript = config.javascriptDetailsToString.apply(config.javascriptStore.find(List.of()));
+    static <J> EndPoint javascript(EndpointContext<J> context, String prefix) {
+        String javascript = context.javascriptDetailsToString.apply(context.javascriptStore.find(List.of()));
         DigestAndString digestAndString = Digestor.digestor().apply(javascript);
         return new StaticEndpoint(EndpointAcceptor0.exact("get", prefix + "/" + digestAndString.digest),
                 new ServiceResponse(200, digestAndString.string, List.of()));
@@ -162,6 +162,7 @@ class StaticEndpoint implements EndPoint {
     final ServiceResponse serviceResponse;
     @Override public List<MethodAndPath> description() { return acceptor.description(); }
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
+
         return CompletableFuture.completedFuture(Optionals.from(acceptor.apply(serviceRequest), () -> serviceResponse));
     }
 }

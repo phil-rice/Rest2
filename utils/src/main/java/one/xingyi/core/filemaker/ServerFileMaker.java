@@ -48,7 +48,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
 
     List<String> createFields(ServerDom serverDom) {
         return Lists.<String>append(
-                List.of("final EndpointContext<J> context;"),
+                List.of("public final EndpointContext<J> context;"),
                 Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
         );
     }
@@ -114,6 +114,10 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createEntityEndpoint(ServerDom serverDom) {
         return List.of("//A compilation error here might be because you haven't added a maven dependency to the 'core' jar", "public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}");
     }
+    List<String> createCodeEndpoint(ServerDom serverDom) {
+        return Lists.map(serverDom.codeDom.servedresourceDoms, rd -> "public EndPoint " + rd.entityNames.serverEntity.className +
+                "codeEndpoint() {return EndPoint.javascript(context, " + Strings.quote(rd.bookmark.get().urlPattern.replace("{id}", "code")) + ");}");
+    }
 
     List<String> createEndpoints(ServerDom serverDom) {
         return Lists.flatMap(serverDom.codeDom.resourceDoms, ed -> {
@@ -147,6 +151,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent(createEntityCompanions(serverDom)),
                 Formating.indent(createCompanions(serverDom)),
                 Formating.indent(createEntityEndpoint(serverDom)),
+                Formating.indent(createCodeEndpoint(serverDom)),
                 Formating.indent(createEndpoints(serverDom)),
                 Formating.indent(createLens(serverDom)),
 //                Formating.indent(makeSimpleServer(serverDom)),

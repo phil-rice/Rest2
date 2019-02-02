@@ -1,6 +1,5 @@
 package one.xingyi.core.endpoints;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
 
@@ -15,16 +14,22 @@ public interface EndpointAcceptor0 extends Function<ServiceRequest, Boolean>, Me
     }
 }
 
-@RequiredArgsConstructor
+
 @EqualsAndHashCode
 @ToString
 class ExactAcceptor0 implements EndpointAcceptor0 {
     final String method;
-    final String path;
+    final String templatedPath;
+     final String path;
+    public ExactAcceptor0(String method, String templatedPath) {
+        this.method = method;
+        this.templatedPath = templatedPath;
+        this.path = templatedPath.replace("{host}", "");
+    }
     @Override public Boolean apply(ServiceRequest sr) {
         return sr.method.equalsIgnoreCase(method) && sr.uri.getPath().equalsIgnoreCase(path);
     }
     @Override public List<MethodAndPath> description() {
-        return List.of(new MethodAndPath(method, path));
+        return List.of(new MethodAndPath(method, templatedPath));
     }
 }

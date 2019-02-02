@@ -33,8 +33,8 @@ public class EndPointTest implements FunctionFixture {
     }
     @Test
     public void getEntity() throws ExecutionException, InterruptedException {
-//        checkSR(200, Strings.changeQuotes("{'some':'json'}"), EndPoint.getEntity(context, "/path/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/path/someId")).get().get());
-//        checkSR(200, Strings.changeQuotes("{'some':'json'}"), EndPoint.getEntity(context, "{host}/path/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/path/someId")).get().get());
+//        checkSR(200, Strings.changeQuotes("{'some':'json'}"), EndPoint.getEntity(context, "/templatedPath/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/templatedPath/someId")).get().get());
+//        checkSR(200, Strings.changeQuotes("{'some':'json'}"), EndPoint.getEntity(context, "{host}/templatedPath/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/templatedPath/someId")).get().get());
     }
     @Test
     public void deleteEntity() {

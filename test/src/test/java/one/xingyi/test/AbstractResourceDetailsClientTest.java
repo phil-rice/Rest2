@@ -10,6 +10,7 @@ import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.UnexpectedResponse;
+import one.xingyi.core.utils.DigestAndString;
 import one.xingyi.json.Json;
 import one.xingyi.reference3.PersonServer;
 import one.xingyi.reference3.person.PersonController;
@@ -18,6 +19,7 @@ import one.xingyi.reference3.person.client.view.PersonLine12View;
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -34,7 +36,8 @@ abstract class AbstractResourceDetailsClientTest {
     static EndpointConfig<Object> config = EndpointConfig.defaultConfig(json, json);
 
 
-    static EndPoint entityEndpoints = EndPoint.compose(new PersonServer<>(config, new PersonController()).allEndpoints());
+    static PersonServer<Object> server = new PersonServer<>(config, new PersonController());
+    static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints());
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
@@ -48,8 +51,12 @@ abstract class AbstractResourceDetailsClientTest {
     }
 
     @Test
-    public void testGetJavascript(){
-
+    public void testGetJavascript() throws ExecutionException, InterruptedException {
+        DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
+        ServiceRequest sr = new ServiceRequest("get", expectedHost() + "/person/code/" + digestAndString.digest, List.of(), "");
+        ServiceResponse serviceResponse = httpClient().apply(sr).get();
+        assertEquals(serviceResponse.toString(),200, serviceResponse.statusCode);
+        assertEquals(digestAndString.string, serviceResponse.body);
     }
 
 
@@ -74,7 +81,7 @@ abstract class AbstractResourceDetailsClientTest {
     public void testGetPerson() throws ExecutionException, InterruptedException {
         assertEquals("someName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
 
-            }
+    }
 
 //    @Test
 //    public void testGetAddress() throws ExecutionException, InterruptedException {

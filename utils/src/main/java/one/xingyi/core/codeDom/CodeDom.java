@@ -8,11 +8,13 @@ public class CodeDom {
 
     public final MonadDefn monadDefn;
     public final List<ResourceDom> resourceDoms;
+    public final List<ResourceDom> servedresourceDoms;
     public final List<ViewDom> viewDoms;
     public final List<ViewDomAndItsResourceDom> viewsAndDoms;
     public CodeDom(MonadDefn monadDefn, List<ResourceDom> resourceDoms, List<ViewDom> viewDoms) {
         this.monadDefn = monadDefn;
         this.resourceDoms = resourceDoms;
+        this.servedresourceDoms=Lists.filter(resourceDoms, rd->rd.bookmark.isPresent());
         this.viewDoms = viewDoms;
         viewsAndDoms = Lists.map(viewDoms, vd -> new ViewDomAndItsResourceDom(vd, Lists.find(resourceDoms, ed -> ed.entityNames.originalDefn.equals(vd.viewNames.entityNames.originalDefn))));
     }

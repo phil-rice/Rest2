@@ -15,7 +15,7 @@ public interface Digestor extends Function<String, DigestAndString> {
         return new Digestor() {
             MessageDigest digest = WrappedException.wrapCallable(() -> MessageDigest.getInstance("SHA-256"));
             @Override public DigestAndString apply(String s) {
-                return new DigestAndString(Base64.getEncoder().encodeToString(digest.digest(s.getBytes(StandardCharsets.UTF_8))), s);
+                return new DigestAndString(Base64.getUrlEncoder().encodeToString(digest.digest(s.getBytes(StandardCharsets.UTF_8))), s);
             }
         };
     }
