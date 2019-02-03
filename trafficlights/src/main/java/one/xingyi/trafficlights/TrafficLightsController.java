@@ -19,11 +19,15 @@ public class TrafficLightsController<J> extends ControllerUsingMap<TrafficLights
         store.put("1", new TrafficLights("1", "red", "someLocation"));
     }
     CompletableFuture<TrafficLights> map(String id, Function<TrafficLights, TrafficLights> fn) {
-        TrafficLights newLight = fn.apply(store.get(id));
+        TrafficLights t = store.get(id);
+        if (t == null) throw new RuntimeException("Tried to access id: " + id + " which doesn't exist. Legal values are: " + store);
+        TrafficLights newLight = fn.apply(t);
         store.put(id, newLight);
+        System.out.println("created new traffic light " + id + "->" + newLight + "    "+ store);
         return CompletableFuture.completedFuture(newLight);
     }
     @Override public TrafficLights createWithoutIdRequestFrom(ServiceRequest serviceRequest) {
+
         return TrafficLightsCompanion.companion.fromJson(parser, parser.parse(serviceRequest.body));
     }
     @Override public CompletableFuture<IdAndValue<TrafficLights>> createWithoutId(TrafficLights trafficLights) {

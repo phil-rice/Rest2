@@ -36,7 +36,9 @@ public abstract class ControllerUsingMap<T> {
         return CompletableFuture.completedFuture(true);
     }
     public CompletableFuture<T> createWithId(String id) {
-        return wrap(id, () -> { store.put(id, prototype(id)); });
+        return wrap(id, () -> {
+            T prototype = prototype(id);
+            store.put(id, prototype); });
     }
     public CompletableFuture<IdAndValue<T>> createWithoutId(T t) {
         String id = store.size() + "";

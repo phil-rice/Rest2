@@ -54,7 +54,7 @@ class SimpleServerNames implements IServerNames {
     }
     @Override public String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath) { return Strings.from(annotationLensPath, fieldName); }
     @Override public Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl) {//TODO review this business logic
-        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), (b,u)->new BookmarkCodeAndUrlPattern(b,u, Strings.from(codeUrl).orElse(b+"/code")));
+        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), (b,u)->new BookmarkCodeAndUrlPattern(b,u, Strings.from(codeUrl).orElse("{host}"+ b+"/code")));
     }
 
 }

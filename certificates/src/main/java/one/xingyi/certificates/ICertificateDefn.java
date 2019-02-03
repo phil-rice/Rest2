@@ -3,7 +3,7 @@ package one.xingyi.certificates;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 
-@Resource(bookmark = "/certificate", rootUrl = "/certificate/{id}/somethingcool")
+@Resource(bookmark = "/certificate", rootUrl = "{host}/certificate/{id}/somethingcool")
 @Delete
 @Get(mustExist = false)
 @Put

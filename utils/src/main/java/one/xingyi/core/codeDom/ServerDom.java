@@ -10,7 +10,6 @@ import one.xingyi.core.validation.Result;
 import javax.lang.model.element.Element;
 @RequiredArgsConstructor
 @ToString
-@Resource
 @EqualsAndHashCode
 public class ServerDom {
     public final PackageAndClassName originalDefn;

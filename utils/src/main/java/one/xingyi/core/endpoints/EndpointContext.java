@@ -23,24 +23,24 @@ public class EndpointContext<J> {
     public final String protocol;
 
 
-    public <Entity extends HasJson<ContextForJson>> String resultBody(ServiceRequest serviceRequest, String rootUrl, Entity entity) {
+    public <Entity extends HasJson<ContextForJson>> String resultBody(ServiceRequest serviceRequest, String codeUrl, Entity entity) {
         ContextForJson context = ContextForJson.forServiceRequest(protocol, serviceRequest);
         val json = jsonWriter.fromJ(entity.toJson(jsonWriter, context));
-        return resultBodyForJson(context.template(rootUrl), json);
+        return resultBodyForJson(context.template(codeUrl), json);
     }
-    public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyWithLinks(ServiceRequest serviceRequest, String rootUrl, Entity entity, Function<Entity, String> stateFn) {
+    public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyWithLinks(ServiceRequest serviceRequest, String codeUrl, Entity entity, Function<Entity, String> stateFn) {
         ContextForJson context = ContextForJson.forServiceRequest(protocol, serviceRequest);
         String json = jsonWriter.fromJ(entity.toJsonWithLinks(jsonWriter, context, stateFn));
-        return resultBodyForJson(context.template(rootUrl),  json);
+        return resultBodyForJson(context.template(codeUrl),  json);
     }
 
-    public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, String rootUrl, IdAndValue<Entity> entity) {
+    public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, String codeUrl, IdAndValue<Entity> entity) {
         ContextForJson contextForJson = ContextForJson.forServiceRequest(protocol, serviceRequest);
         J j = IdAndValue.toJson(entity, jsonWriter, contextForJson);
-        return resultBodyForJson(contextForJson.template(rootUrl), jsonWriter.fromJ(j));
+        return resultBodyForJson(contextForJson.template(codeUrl), jsonWriter.fromJ(j));
     }
-     String resultBodyForJson(String rootUrl, String json) {
+     String resultBodyForJson(String codeUrl, String json) {
          String javascript = javascriptDetailsToString.apply(javascriptStore.find(List.of()));
-        return mergeJavascriptAndJson.merge(rootUrl, javascript, json);
+        return mergeJavascriptAndJson.merge(codeUrl, javascript, json);
     }
 }

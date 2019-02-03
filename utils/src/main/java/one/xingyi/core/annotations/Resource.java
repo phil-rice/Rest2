@@ -11,6 +11,6 @@ public @interface Resource {
     String bookmark() default "";
     /** The root url for the end points about this resource. The client does not have access to this except through the book marked url*/
     String rootUrl() default "";
-    /** Where the code will be served from.Defaults to '{bookmark}/code' */
+    /** Where the code will be served from.Defaults to '{host}{bookmark}/code' */
     String codeUrl() default "";
 }

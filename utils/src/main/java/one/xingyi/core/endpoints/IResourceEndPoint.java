@@ -22,7 +22,9 @@ class ResourceEndPoint<J, Entity extends IXingYiResource, Request, Result> imple
     final Function<Request, CompletableFuture<Result>> fn;
     final EndpointResult<Result> endpointResult;
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
-        return acceptor.andIfMatches(from -> fn.apply(from).thenApply(result -> endpointResult.apply(serviceRequest, result))).apply(serviceRequest);
+        return acceptor.andIfMatches(from -> fn.apply(from).thenApply(result ->
+                endpointResult.apply(serviceRequest, result))).
+                apply(serviceRequest);
     }
 
     @Override public List<MethodAndPath> description() { return acceptor.description(); }

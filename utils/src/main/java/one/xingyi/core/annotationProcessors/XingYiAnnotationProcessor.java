@@ -57,6 +57,13 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         log.info("Processing XingYi Annotations");
         try {
             Set<? extends Element> elements = env.getElementsAnnotatedWith(Resource.class);
+            List<? extends Element> badlyConfigured = Lists.filter(new ArrayList<>(elements), e -> {
+                String rootUrl = e.getAnnotation(Resource.class).rootUrl();
+                return rootUrl.length() > 0 && !rootUrl.startsWith("{host}");
+            });
+            for (Element bad : badlyConfigured)
+                log.error(bad, "Root Url Needs to start with {host}");
+
 //            log.info("Found these entities: " + elements);
             List<Result<ElementFail, ResourceDom>> entityDomResults = Lists.map(
                     Sets.sortedList(elements, comparator()),

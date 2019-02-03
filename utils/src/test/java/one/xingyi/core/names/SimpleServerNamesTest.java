@@ -60,7 +60,7 @@ public class SimpleServerNamesTest {
         assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", "",""));
         assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "just bookmark", "",""));
         assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", "justget",""));
-        assertEquals(Optional.of(new BookmarkCodeAndUrlPattern("overrideB", "overrideU", "overrideB/code")),
+        assertEquals(Optional.of(new BookmarkCodeAndUrlPattern("overrideB", "overrideU", "{host}overrideB/code")),
                 serverNames.bookmarkAndUrl(entityNames, "overrideB", "overrideU", ""));
         assertEquals(Optional.of(new BookmarkCodeAndUrlPattern("overrideB", "overrideU", "overrideC")),
                 serverNames.bookmarkAndUrl(entityNames, "overrideB", "overrideU", "overrideC"));

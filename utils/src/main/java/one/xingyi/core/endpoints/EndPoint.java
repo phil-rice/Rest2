@@ -55,22 +55,26 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
             EndpointContext<J> context, String path, String codePath, Function<ServiceRequest, Entity> reqFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> idAndValueMaker, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, Entity, IdAndValue<Entity>>
                 (IResourceEndpointAcceptor.<Entity>create("post", path, reqFn),
-                        entity -> idAndValueMaker.apply(entity),
+                        entity ->
+                        {
+                            return idAndValueMaker.apply(entity);
+                        },
                         EndpointResult.<J, Entity>createForIdAndvalue(context, codePath, 201));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
             EndpointContext<J> context, String templatedPath, String codePath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>create(context, codePath, 201));
+                x->fn.apply(x),
+                EndpointResult.<J, Entity>create(context, codePath, 201));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> postEntity(
-            EndpointContext<J> context, String templatedPath, String codePath,List<String> states, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            EndpointContext<J> context, String templatedPath, String codePath, List<String> states, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
                 fn, EndpointResult.<J, Entity>create(context, codePath, 200));
     }
 
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
-            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath,String codeUrl, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath, String codeUrl, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
                 (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.jsonParser, context.jsonParser.parse(sr.body)))),
                 fn, EndpointResult.<J, Entity>create(context, codeUrl, 200));
@@ -136,7 +140,7 @@ class PrintlnEndpoint implements EndPoint {
                         else return sr.body;
                     }
             ).orElse("??");
-            System.out.println(Strings.padRight(sr.uri.toString(), 30) + "    " + optRes.map(r -> r.statusCode).orElse(0) + " " + result);
+            System.out.println(Strings.padRight(sr.method,5) + Strings.padRight(sr.uri.toString(), 80) + "    " + optRes.map(r -> r.statusCode).orElse(0) + " " + result);
             return optRes;
         });
     }
