@@ -1,5 +1,6 @@
 package one.xingyi.core.marshelling;
 import one.xingyi.core.client.IResourceList;
+import one.xingyi.core.optics.Lens;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 class CheapJson implements JsonWriter<JsonValue> {
@@ -30,6 +31,7 @@ class CheapJson implements JsonWriter<JsonValue> {
     @Override public JsonValue liftString(String string) {
         return new JsonObject(Strings.quote(escape(string)));
     }
+
     @Override public String fromJ(JsonValue jsonValue) { return jsonValue.asString(); }
 
     String escape(String s) {

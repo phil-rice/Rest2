@@ -14,6 +14,8 @@ public class Strings {
         return stream.toString();
     }
 
+    public static List<String> split(String s, String splitter) {return Lists.filter(Arrays.asList(s.split(splitter)), item -> item.length() > 0);}
+
     // pad with " " to the right to the given length (n)
     public static String padRight(String s, int n) {
         return String.format("%1$-" + n + "s", s);
