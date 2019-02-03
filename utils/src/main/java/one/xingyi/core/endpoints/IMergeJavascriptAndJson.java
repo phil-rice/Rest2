@@ -20,7 +20,7 @@ class ByLinksJavascriptAndJson implements IMergeJavascriptAndJson {
     @Override public String merge(String rootUrl, String javascript, String json) {
 
         String digest = Digestor.digestor().apply(javascript).digest;
-        String codeUrl = rootUrl.contains("{id}") ? rootUrl.replace("{id}", "code/" + digest) : rootUrl + "/code/" + digest; //TODO THis is an utter bodge. Need to sort this out
+        String codeUrl =rootUrl + "/" + digest;
         return codeUrl + IXingYiResponseSplitter.marker + json;
     }
 }

@@ -20,7 +20,7 @@ public interface EndPointFactorys {
         return IResourceEndPoint.<J, ResourceDetails, ResourceDetailsRequest, Optional<ResourceDetails>>create(
                 new EntityEndpointAcceptor(entityRegister),
                 from -> CompletableFuture.completedFuture(entityRegister.apply(from)),
-                EndpointResult.createForOptional(context, 200, ResourceDetailsCompanion.companion.bookmarkAndUrl().urlPattern));
+                EndpointResult.createForOptional(context, 200, ResourceDetailsCompanion.companion.bookmarkAndUrl().code));
     }
 
 }

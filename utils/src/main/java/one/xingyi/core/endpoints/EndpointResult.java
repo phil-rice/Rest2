@@ -26,8 +26,11 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
     static <J, Entity extends HasJson<ContextForJson>> EndpointResult<Optional<Entity>> createForOptional(EndpointContext<J> context, int statusCodeIfPresent, String rootUrl) {
         return (sr, r) -> Optionals.fold(r, () -> ServiceResponse.notFound(""), result -> ServiceResponse.jsonString(statusCodeIfPresent, context.resultBody(sr, rootUrl, result)));
     }
-    static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Result> createWithLinks(EndpointContext<J> context, int statusCode, String roolUrl, Function<Result, String> stateFn) {
-        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyWithLinks(sr, roolUrl, r, stateFn));
+    static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Result> createWithLinks(
+            EndpointContext<J> context,
+            int statusCode, String codeUrl,
+            Function<Result, String> stateFn) {
+        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyWithLinks(sr, codeUrl, r, stateFn));
     }
     static <J, Result extends HasJsonWithLinks<ContextForJson, Result>> EndpointResult<Optional<Result>> createForOptionalWithLinks(EndpointContext<J> context, int statusCode, String rootUrl, Function<Result, String> stateFn) {
         return (sr, r) -> Optionals.fold(r,

@@ -11,6 +11,8 @@ public class BookmarkCodeAndUrlPattern {
     public final String urlPattern;
     public final String code;
 
+    public BookmarkCodeAndUrlPattern withUrl(String url){return new BookmarkCodeAndUrlPattern(bookmark, url, code);}
+    public BookmarkCodeAndUrlPattern withMoreUrl(String extra){return new BookmarkCodeAndUrlPattern(bookmark+extra, urlPattern, code);}
     public static BookmarkCodeAndUrlPattern invalid = new BookmarkCodeAndUrlPattern("invalid", "invalid", "invalid");
     public String toJson() {return Strings.changeQuotes("{'urlPattern':'" + urlPattern + "'}");}
 

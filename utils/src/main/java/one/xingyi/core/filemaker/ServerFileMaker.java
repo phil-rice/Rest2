@@ -81,46 +81,52 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 ");}");
     }
 
-    List<String> createWithNoIdEndpoint(String methodName, String method, String bookmark, String reqFn, String function, String stateFn) {
+    String bookmarkAndCode(BookmarkCodeAndUrlPattern b) {return Strings.quote(b.urlPattern) + "," + Strings.quote(b.code);}
+    List<String> createWithNoIdEndpoint(String methodName, String method, BookmarkCodeAndUrlPattern bookmark, String reqFn, String function, String stateFn) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark) + ", " + reqFn + "," + function + "," + stateFn + ");",
+                Formating.indent + "return EndPoint." + method + "(context, " + bookmarkAndCode(bookmark) + ", " + reqFn + "," + function + "," + stateFn + ");",
                 "}"));
     }
-    List<String> createEndpointWithStateFn(String methodName, String method, String bookmark, String function, String stateFn) {
+    List<String> createEndpointWithStateFn(String methodName, String method, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark) + ", " + function + "," + stateFn + ");",
+                Formating.indent + "return EndPoint." + method + "(context, " + bookmarkAndCode(bookmark) + ", " + function + "," + stateFn + ");",
                 "}"));
     }
-    List<String> createEndpoint(String methodName, String method, String bookmark, String function) {
+    List<String> createEndpoint(String methodName, String method, BookmarkCodeAndUrlPattern bookmark, String function) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark) + ", " + function + ");",
+                Formating.indent + "return EndPoint." + method + "(context, " + bookmarkAndCode(bookmark) + ", " + function + ");",
                 "}"));
     }
-    List<String> createPutEndpoint(String methodName, String companionName, String bookmark, String function, String stateFn) {
+    List<String> deleteEndpoint(String methodName, String method, BookmarkCodeAndUrlPattern bookmark, String function) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + Strings.quote(bookmark) + ", " + function + "," + stateFn + ");",
+                Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark.urlPattern) + ", " + function + ");",
                 "}"));
     }
-    List<String> createPostEndpoint(String methodName, List<String> states, String bookmark, String function, String stateFn) {
+    List<String> createPutEndpoint(String methodName, String companionName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
         return Lists.append(List.of(
                 "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint.postEntity(context, " + Strings.quote(bookmark) + ", " + "List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + "," + stateFn + ");",
+                Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + bookmarkAndCode(bookmark) + ", " + function + "," + stateFn + ");",
+                "}"));
+    }
+    List<String> createPostEndpoint(String methodName, List<String> states, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
+        return Lists.append(List.of(
+                "public EndPoint " + methodName + "() {",
+                Formating.indent + "return EndPoint.postEntity(context, " + bookmarkAndCode(bookmark) + ", " + "List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + "," + stateFn + ");",
                 "}"));
     }
     List<String> createEntityEndpoint(ServerDom serverDom) {
-
         return List.of(
                 "//A compilation error here might be because you haven't added a maven dependency to the 'core' jar",
                 "public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}",
-                "  public EndPoint entityCodeEndpoint(){ return  EndPoint.javascript(context, \"{host}/code\");}");
+                "  public EndPoint entityCodeEndpoint(){ return  EndPoint.javascript(context, \"{host}/resource/code\");}");
     }
     List<String> createCodeEndpoint(ServerDom serverDom) {
         return Lists.map(serverDom.codeDom.servedresourceDoms, rd -> "public EndPoint " + rd.entityNames.serverEntity.className +
-                "codeEndpoint() {return EndPoint.javascript(context, " + Strings.quote(rd.bookmark.get().urlPattern.replace("{id}", "code")) + ");}");
+                "codeEndpoint() {return EndPoint.javascript(context, " + Strings.quote(rd.bookmark.get().code) + ");}");
     }
 
     List<String> createEndpoints(ServerDom serverDom) {
@@ -130,16 +136,16 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
             String companionName = ed.entityNames.serverCompanion.asString();
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
-                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", b.urlPattern, controllerName + "::createWithId", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createWithNoIdEndpoint("create" + className, "createEntity", dom.path, controllerName + "::createWithoutIdRequestFrom", controllerName + "::createWithoutId", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b.urlPattern, controllerName + "::put", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", b, controllerName + "::createWithId", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createWithNoIdEndpoint("create" + className, "createEntity", b.withUrl(dom.path), controllerName + "::createWithoutIdRequestFrom", controllerName + "::createWithoutId", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b, controllerName + "::put", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.getDom, dom -> dom.mustExist ?
-                            createEndpointWithStateFn("get" + className, "getEntity", b.urlPattern,
+                            createEndpointWithStateFn("get" + className, "getEntity", b,
                                     controllerName + "::get", controllerName + "::stateFn") :
-                            createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", b.urlPattern,
+                            createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", b,
                                     controllerName + "::getOptional", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.deleteDom, dom -> createEndpoint("delete" + className, "deleteEntity", b.urlPattern, controllerName + "::delete")),
-                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.urlPattern + dom.path, controllerName + "::" + dom.action, controllerName + "::stateFn"))));
+                    Optionals.flatMap(ed.actionsDom.deleteDom, dom -> deleteEndpoint("delete" + className, "deleteEntity", b, controllerName + "::delete")),
+                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.withMoreUrl(dom.path), controllerName + "::" + dom.action, controllerName + "::stateFn"))));
         });
     }
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {

@@ -29,17 +29,22 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 sr.toString() + "\nLegal Endpoints are\n   " + Lists.mapJoin(endPoint.description(), "\n   ", Objects::toString);
     }
 
-    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
-            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Optional<Entity>>> fn, Function<Entity, String> stateFn) {
+    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>>
+    IResourceEndPoint<J, Entity, String, Optional<Entity>> getOptionalEntity(
+            EndpointContext<J> context,
+            String templatedPath,
+            String codePath,
+            Function<String, CompletableFuture<Optional<Entity>>> fn,
+            Function<Entity, String> stateFn) {
         return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>createForOptionalWithLinks(context, 200,templatedPath, stateFn));
+                fn, EndpointResult.<J, Entity>createForOptionalWithLinks(context, 200, codePath, stateFn));
     }
     static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint<J, Entity, String, Entity> getEntity(
-            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            EndpointContext<J> context, String templatedPath, String codePath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<>(
                 IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
                 fn,
-                EndpointResult.<J, Entity>createWithLinks(context, 200,templatedPath, stateFn));
+                EndpointResult.<J, Entity>createWithLinks(context, 200, codePath, stateFn));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Boolean> deleteEntity(
             EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Boolean>> fn) {
@@ -47,27 +52,28 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 fn, EndpointResult.<Boolean>createForNonEntity(200, r -> r.toString()));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, Entity, IdAndValue<Entity>> createEntity(
-            EndpointContext<J> context, String path, Function<ServiceRequest, Entity> reqFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> idAndValueMaker, Function<Entity, String> stateFn) {
+            EndpointContext<J> context, String path, String codePath, Function<ServiceRequest, Entity> reqFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> idAndValueMaker, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, Entity, IdAndValue<Entity>>
                 (IResourceEndpointAcceptor.<Entity>create("post", path, reqFn),
-                        entity -> {System.out.println("in here: " + entity); return idAndValueMaker.apply(entity);}, EndpointResult.<J, Entity>createForIdAndvalue(context, path,201));
+                        entity -> idAndValueMaker.apply(entity),
+                        EndpointResult.<J, Entity>createForIdAndvalue(context, codePath, 201));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> createEntityWithId(
-            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            EndpointContext<J> context, String templatedPath, String codePath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>create(context, templatedPath,201));
+                fn, EndpointResult.<J, Entity>create(context, codePath, 201));
     }
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, String, Entity> postEntity(
-            EndpointContext<J> context, String templatedPath, List<String> states, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            EndpointContext<J> context, String templatedPath, String codePath,List<String> states, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>create(context, templatedPath,200));
+                fn, EndpointResult.<J, Entity>create(context, codePath, 200));
     }
 
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
-            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
+            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath,String codeUrl, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
                 (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.jsonParser, context.jsonParser.parse(sr.body)))),
-                fn, EndpointResult.<J, Entity>create(context, templatedPath,200));
+                fn, EndpointResult.<J, Entity>create(context, codeUrl, 200));
     }
 
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(EndPoint original) {
