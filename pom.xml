@@ -22,6 +22,7 @@
         <module>certificates</module>
         <module>test</module>
         <module>democlient</module>
+        <module>performance</module>
     </modules>
     <build>
         <plugins>

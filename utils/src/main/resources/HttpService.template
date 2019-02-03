@@ -24,7 +24,7 @@ import java.util.function.Function;
 public interface HttpService<monad> {
 
     static HttpService<monad> defaultService(String protocolAndHost, Function<ServiceRequest, <monad><ServiceResponse>> delegate) {
-        return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.xingYi, IXingYiResponseSplitter.splitter(delegate));
+        return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter(delegate));
     }
     //static HttpService<monad> defaultServiceWithSimpleJavaclient(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
 

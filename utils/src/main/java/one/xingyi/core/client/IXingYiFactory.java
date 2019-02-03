@@ -16,20 +16,25 @@ public interface IXingYiFactory {
     static IXingYiFactory xingYi = new XingYiCachedFactory();
 }
 class XingYiCachedFactory implements IXingYiFactory {
+    ThreadLocal<SingleThreadedXingYiCachedFactory> factory = new ThreadLocal<>() {//this might not work... Want to 'not share' these. Basically should get rid of javascript soon!
+        @Override protected SingleThreadedXingYiCachedFactory initialValue() {
+            return new SingleThreadedXingYiCachedFactory();
+        }
+    };
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String javascript) {
+        return factory.get().apply(javascript);
+    }
+}
+class SingleThreadedXingYiCachedFactory implements IXingYiFactory {
 
-    final Object lock = new Object();
     final Map<Integer, IXingYi> cache = new HashMap<>();
     @SuppressWarnings("unchecked")
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String javascript) {
         int hash = javascript.hashCode();
-        synchronized (lock) {
-            IXingYi result = cache.get(hash);
-            if (result != null) return result;
-        }
-        DefaultXingYi result = new DefaultXingYi(javascript);
-        synchronized (lock) {
-            cache.putIfAbsent(hash, result);
-            return cache.get(hash);
-        }
+        IXingYi result = cache.get(hash);
+        if (result != null) return result;
+        result = new DefaultXingYi(javascript);
+        cache.putIfAbsent(hash, result);
+        return cache.get(hash);
     }
 }
