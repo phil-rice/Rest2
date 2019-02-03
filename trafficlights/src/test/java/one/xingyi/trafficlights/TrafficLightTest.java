@@ -7,10 +7,12 @@ import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.DataAndJavaScript;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
+import one.xingyi.core.utils.DigestAndString;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
 import one.xingyi.trafficlights.client.view.LocationView;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
+import one.xingyi.trafficlights.TrafficLightServer;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -42,11 +44,12 @@ public class TrafficLightTest {
 
     }
 
-    void checkSr(int statusCode, String json, ServiceResponse serviceResponse) {
+    void checkSr(TrafficLightServer server, int statusCode, String json, ServiceResponse serviceResponse) {
         assertEquals(statusCode, serviceResponse.statusCode);
         String body = serviceResponse.body;
         DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        assertTrue(body, body.startsWith(config.rootJavascript));
+        DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
+        assertTrue(body, body.contains(digestAndString.digest+IXingYiResponseSplitter.marker));
         assertEquals(json, dataAndJavaScript.data);
     }
 
@@ -57,9 +60,9 @@ public class TrafficLightTest {
     @Test
     public void testCanGetEntity() throws Exception {
         setup((controller, server, service) -> {
-            checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "/lights")).get().get());
-            checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.endpoint().apply(sr("get", "/lights")).get().get());
-            checkSr(200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "http://somehost/lights")).get().get());
+            checkSr(server,200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "/lights")).get().get());
+            checkSr(server,200, "{\"urlPattern\":\"/lights/{id}\"}", server.endpoint().apply(sr("get", "/lights")).get().get());
+            checkSr(server,200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "http://somehost/lights")).get().get());
         });
     }
 
@@ -67,7 +70,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpoint() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}",
+            checkSr(server,200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}",
                     server.getOptionalTrafficLights().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
@@ -76,7 +79,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpointUsingAllEndpoints() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
+            checkSr(server,200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }

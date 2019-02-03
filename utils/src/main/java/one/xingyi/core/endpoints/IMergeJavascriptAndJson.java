@@ -18,6 +18,9 @@ class SimpleMergeJavascriptAndJson implements IMergeJavascriptAndJson {
 @RequiredArgsConstructor
 class ByLinksJavascriptAndJson implements IMergeJavascriptAndJson {
     @Override public String merge(String rootUrl, String javascript, String json) {
-        return rootUrl.replace("{id}", "code/" + Digestor.digestor().apply(javascript).digest) + IXingYiResponseSplitter.marker + json;
+
+        String digest = Digestor.digestor().apply(javascript).digest;
+        String codeUrl = rootUrl.contains("{id}") ? rootUrl.replace("{id}", "code/" + digest) : rootUrl + "/code/" + digest; //TODO THis is an utter bodge. Need to sort this out
+        return codeUrl + IXingYiResponseSplitter.marker + json;
     }
 }
