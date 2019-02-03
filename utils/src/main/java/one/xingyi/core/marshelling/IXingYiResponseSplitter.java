@@ -1,5 +1,6 @@
 package one.xingyi.core.marshelling;
 import lombok.RequiredArgsConstructor;
+import one.xingyi.core.Cache;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.client.IXingYiFactory;
 import one.xingyi.core.http.ServiceRequest;
@@ -7,6 +8,7 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.core.sdk.IXingYiView;
+import one.xingyi.core.utils.WrappedException;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -52,26 +54,34 @@ class SimpleXingYiResponseSplitter implements IXingYiResponseSplitter {
     }
 }
 
-@RequiredArgsConstructor
 //This latter will need to be generated like HttpService is, so as to decouple from the CompletableFuture
 class XingYiResponseSplitter implements IXingYiResponseSplitter {
     final Function<ServiceRequest, CompletableFuture<ServiceResponse>> service;
-
+    final Cache<String, CompletableFuture<ServiceResponse>> javascriptCache;
+    public XingYiResponseSplitter(Function<ServiceRequest, CompletableFuture<ServiceResponse>> service) {
+        this.service = service;
+        this.javascriptCache = Cache.dumbCache(url -> service.apply(new ServiceRequest("get", url, List.of(), "")));
+    }
     @Override public CompletableFuture<DataAndJavaScript> apply(ServiceResponse serviceResponse) {
         DataAndJavaScript dataAndJavaScriptLinks = IXingYiResponseSplitter.rawSplit(serviceResponse);
         String urlOrJavascript = dataAndJavaScriptLinks.javascript;
         if (urlOrJavascript.startsWith("http") || urlOrJavascript.startsWith("/")) {
-            ServiceRequest javascriptServiceRequest = new ServiceRequest("get", urlOrJavascript, List.of(), "");
-            CompletableFuture<ServiceResponse> javascriptFuture = service.apply(javascriptServiceRequest);
-            return javascriptFuture.thenApply(sr -> {
-                if (sr.statusCode >= 300) throw new RuntimeException(
-                        "Unexpected response getting javascript: " + serviceResponse +
-                        "\nOriginal response was" + serviceResponse +
-                        "\nJavascript request " + javascriptServiceRequest +
-                        "\nJavascript response" + sr);
-                return new DataAndJavaScript(dataAndJavaScriptLinks.data, sr.body);
-            });
+            return javascriptCache.apply(urlOrJavascript).thenApply(sr -> {
+                checkServiceResponse(serviceResponse, urlOrJavascript, sr);
+                return sr.body;
+            }).thenApply(javascript -> new DataAndJavaScript(dataAndJavaScriptLinks.data, javascript)).
+                    exceptionally(WrappedException.wrapFnWithE(e -> {javascriptCache.invalidate(urlOrJavascript); throw e;}));
         } else return CompletableFuture.completedFuture(dataAndJavaScriptLinks);
 
+    }
+    private void checkServiceResponse(ServiceResponse serviceResponse, String url, ServiceResponse sr) {
+        if (sr.statusCode >= 300) {
+            javascriptCache.invalidate(url);
+            throw new RuntimeException(
+                    "Unexpected response getting javascript: " + serviceResponse +
+                            "\nOriginal response was" + serviceResponse +
+                            "\nJavascript url was " + url +
+                            "\nJavascript response" + sr);
+        }
     }
 }

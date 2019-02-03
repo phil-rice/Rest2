@@ -44,9 +44,11 @@ public class WrappedException extends RuntimeException {
         return from -> {
             try {
                 return fn.apply(from);
+            } catch (Error e) {
+                throw e;
             } catch (RuntimeException e) {
                 throw e;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 throw new WrappedException(e);
             }
         };

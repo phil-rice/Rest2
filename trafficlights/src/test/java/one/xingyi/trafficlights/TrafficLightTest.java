@@ -34,7 +34,7 @@ public class TrafficLightTest {
     public void setup(Consumer3WithException<TrafficLightsController<Object>, one.xingyi.trafficlights.TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController(jsonParserAndWriter);
         one.xingyi.trafficlights.TrafficLightServer<Object> server = new one.xingyi.trafficlights.TrafficLightServer<>(config, controller);
-        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://somehost", EndPoint.toKliesli(server.endpoint()));
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://somehost", EndPoint.toKliesli(EndPoint.printlnLog(server.endpoint())));
         consumer.accept(controller, server, service);
     }
 

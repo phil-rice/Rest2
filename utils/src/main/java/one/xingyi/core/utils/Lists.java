@@ -19,7 +19,9 @@ public class Lists {
             for (T t : list)
                 result.add(fn.apply(t));
             return result;
-        } catch (Exception e) {
+        } catch (Error e) {
+            throw e;
+        } catch (Throwable e) {
             throw new WrappedException(e);
         }
     }
