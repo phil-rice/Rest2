@@ -2,7 +2,7 @@ package one.xingyi.core.annotationProcessors;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.codeDom.ResourceDom;
-import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.utils.Lists;
@@ -24,7 +24,7 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
         Resource annotation = element.getAnnotation(Resource.class);
         String bookmark = annotation.bookmark();
         String url = annotation.rootUrl();
-        Optional<BookmarkAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, bookmark, url);
+        Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, bookmark, url, annotation.codeUrl());
         List<PostDom> pathDoms = Lists.collect(element.getEnclosedElements(), e -> e.getAnnotation(Post.class) != null, e -> PostDom.create(e.getSimpleName().toString(), e.getAnnotation(Post.class), url));
         ActionsDom actionsDom = new ActionsDom(//TODO Move into own mini interface
                 Optional.ofNullable(element.getAnnotation(Get.class)).map(get -> new GetDom(get.mustExist())),

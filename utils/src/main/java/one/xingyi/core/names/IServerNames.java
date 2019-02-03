@@ -3,7 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.codeDom.PackageAndClassName;
-import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
@@ -15,7 +15,7 @@ public interface IServerNames {
     Result<String, ViewNames> viewName(String className, String entityClassName);
     String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
     String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
-    Optional<BookmarkAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl);
+    Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl);
 }
 
 @RequiredArgsConstructor
@@ -53,8 +53,8 @@ class SimpleServerNames implements IServerNames {
         return Strings.from(annotationLensName, "lens_" + entityElementName.entityNameForLens + "_" + fieldName);
     }
     @Override public String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath) { return Strings.from(annotationLensPath, fieldName); }
-    @Override public Optional<BookmarkAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl) {//TODO review this business logic
-        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), BookmarkAndUrlPattern::new);
+    @Override public Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl) {//TODO review this business logic
+        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), (b,u)->new BookmarkCodeAndUrlPattern(b,u, Strings.from(codeUrl).orElse(b+"/code")));
     }
 
 }

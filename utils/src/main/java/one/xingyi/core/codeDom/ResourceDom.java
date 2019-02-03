@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.annotationProcessors.ActionsDom;
-import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
 
 import java.util.Optional;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class ResourceDom {
     public final boolean deprecated;
     public final EntityNames entityNames;
-    public final Optional<BookmarkAndUrlPattern> bookmark;
+    public final Optional<BookmarkCodeAndUrlPattern> bookmark;
     public final FieldListDom fields;
     public final ActionsDom actionsDom;
 

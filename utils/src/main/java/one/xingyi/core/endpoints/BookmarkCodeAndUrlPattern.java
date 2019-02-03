@@ -6,10 +6,12 @@ import one.xingyi.core.utils.Strings;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class BookmarkAndUrlPattern {
+public class BookmarkCodeAndUrlPattern {
     public final String bookmark;
     public final String urlPattern;
-    public static BookmarkAndUrlPattern invalid = new BookmarkAndUrlPattern("invalid", "invalid");
+    public final String code;
+
+    public static BookmarkCodeAndUrlPattern invalid = new BookmarkCodeAndUrlPattern("invalid", "invalid", "invalid");
     public String toJson() {return Strings.changeQuotes("{'urlPattern':'" + urlPattern + "'}");}
 
 }

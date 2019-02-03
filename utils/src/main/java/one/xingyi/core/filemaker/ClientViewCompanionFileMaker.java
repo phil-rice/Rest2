@@ -4,7 +4,7 @@ import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
-import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.sdk.IXingYiClientViewCompanion;
 import one.xingyi.core.sdk.IXingYiRemoteClientViewCompanion;
@@ -66,7 +66,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
                 Lists.append(accessorMethods(viewDom, b),
                         primitiveMethod(viewDom),
                         getUrlPatternMethod(viewDom),
-                        List.of("@Override public String bookmark(){return " + Strings.quote(b.bookmarkAndUrlPattern.bookmark) + ";}",
+                        List.of("@Override public String bookmark(){return " + Strings.quote(b.bookmarkCodeAndUrlPattern.bookmark) + ";}",
                                 "@Override public String acceptHeader(){return " + Strings.quote("not implemented yet") + ";}")));
 
     }
@@ -91,7 +91,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
                                 viewDom.viewNames.clientViewImpl.asString() +
                                 ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, IXingYiClientViewCompanion.class,
-                        IXingYiRemoteClientViewCompanion.class, IXingYi.class, BookmarkAndUrlPattern.class,
+                        IXingYiRemoteClientViewCompanion.class, IXingYi.class, BookmarkCodeAndUrlPattern.class,
                         Function.class, IdAndValue.class),
 
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),

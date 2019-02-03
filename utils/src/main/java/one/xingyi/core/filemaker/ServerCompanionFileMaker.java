@@ -2,7 +2,7 @@ package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.codeDom.ResourceDom;
-import one.xingyi.core.endpoints.BookmarkAndUrlPattern;
+import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
@@ -19,7 +19,9 @@ import java.util.Optional;
 public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
 
     List<String> createBookmarkAndUrl(ResourceDom resourceDom) {
-        return Optionals.fold(resourceDom.bookmark, () -> List.of(), b -> List.of("@Override public BookmarkAndUrlPattern bookmarkAndUrl(){return new BookmarkAndUrlPattern(" + Strings.quote(b.bookmark) + "," + Strings.quote(b.urlPattern) + ");}"));
+        return Optionals.fold(resourceDom.bookmark, () -> List.of(), b ->
+                List.of("@Override public BookmarkCodeAndUrlPattern bookmarkAndUrl(){return new BookmarkCodeAndUrlPattern(" +
+                        Strings.quote(b.bookmark) + "," + Strings.quote(b.urlPattern) + "," + Strings.quote(b.code) + ");}"));
     }
 
 
@@ -56,7 +58,7 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                         " implements " + implementsString,
                         List.of(resourceDom.entityNames.serverEntity.asString()),
                         IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, IResourceList.class, Lists.class,
-                        IXingYiServesResourceCompanion.class, XingYiGenerated.class, Optional.class, BookmarkAndUrlPattern.class, HasBookmarkAndUrl.class),
+                        IXingYiServesResourceCompanion.class, XingYiGenerated.class, Optional.class, BookmarkCodeAndUrlPattern.class, HasBookmarkAndUrl.class),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(resourceDom)),
                 Formating.indent(createCompanion(resourceDom)),
