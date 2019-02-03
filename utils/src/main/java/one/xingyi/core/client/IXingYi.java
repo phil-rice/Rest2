@@ -2,7 +2,6 @@ package one.xingyi.core.client;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import lombok.RequiredArgsConstructor;
-import one.xingyi.core.annotations.Resource;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.Getter;
 import one.xingyi.core.optics.Lens;
@@ -14,10 +13,12 @@ import one.xingyi.core.utils.WrappedException;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import java.util.concurrent.Callable;
+
+//I tried to make the object a generic 'mirror' but the impact was enormous, and there seemed to be little win
 public interface IXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> {
     Object parse(String s);
     Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name);
-    IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker);
+    IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker); //TODO Dog food this in the same way that we did with UrlPattern
 
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
     objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
@@ -28,29 +29,41 @@ public interface IXingYi<Entity extends IXingYiClientResource, View extends IXin
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
 }
 
-//@RequiredArgsConstructor
-//class FromJsonXingYi<J, Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
-//    final JsonParserAndWriter<J> json;
-//    @Override public Object parse(String s) { return null; }
-//    @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-//        return null;
-//    }
-//    @Override public IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker) {
-//        return null;
-//    }
-//    @Override
-//    public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
-//        return null;
-//    }
-//    @Override
-//    public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
-//        return null;
-//    }
-//    @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
-//        return null;
-//    }
-//}
-//
+@RequiredArgsConstructor
+class FromJsonXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
+    final JsonParserAndWriter<Object> json;
+    static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Lens<View, Object> viewToMirrorL(IXingYiClientFactory<Entity, View> maker) {
+        return Lens.create(View::mirror, (v, m) -> maker.make(v.xingYi(), m));
+    }
+    <OtherEntity extends IXingYiClientResource, OtherView extends IXingYiView<OtherEntity>> Lens<Object, OtherView> mirrorToViewL(IXingYiClientFactory<OtherEntity, OtherView> maker) {
+        return Lens.create(m -> maker.make(this, m), (m, v) -> v.mirror());
+    }
+    <OtherEntity extends IXingYiClientResource, OtherView extends IXingYiView<OtherEntity>>
+    Lens<Object, IResourceList<OtherView>> mirrorToListViewL(IXingYiClientFactory<OtherEntity, OtherView> maker) {
+        throw new RuntimeException("Don't do lists yet");
+    }
+
+    @Override public Object parse(String s) { return json.parse(s); }
+    @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return viewToMirrorL(maker).andThen(json.lensToChild(name)).andThen(json.lensToString());
+    }
+    @Override
+    public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
+        return viewToMirrorL(maker).andThen(json.lensToChild(name)).andThen(mirrorToViewL(childMaker));
+    }
+    @Override public IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker) {
+        return new IdAndValue<>(json.asString(mirror, "id"), maker.make(this, json.child(mirror, "value")));
+    }
+    @Override
+    public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
+       throw new RuntimeException("don't do lists yet");
+    }
+    @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
+        if (renderName.equalsIgnoreCase("json")) return json.fromJ(view.mirror());
+        throw new RuntimeException("Unrecognised renderName" + renderName + " only legal value is 'json'");
+    }
+}
+
 
 class XingYiExecutionException extends RuntimeException {
     XingYiExecutionException(String s, Exception e) {super(s, e);}
