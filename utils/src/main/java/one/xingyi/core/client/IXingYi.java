@@ -32,6 +32,10 @@ public interface IXingYi<Entity extends IXingYiClientResource, View extends IXin
 @RequiredArgsConstructor
 class FromJsonXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
     final JsonParserAndWriter<Object> json;
+    final String listOfLensDescriptions;
+
+    //TODO This following code is messed up. It's not going through the lens descriptions.
+
     static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Lens<View, Object> viewToMirrorL(IXingYiClientFactory<Entity, View> maker) {
         return Lens.create(View::mirror, (v, m) -> maker.make(v.xingYi(), m));
     }

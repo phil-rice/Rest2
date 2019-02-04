@@ -1,11 +1,13 @@
 package one.xingyi.core.client;
+import lombok.RequiredArgsConstructor;
+import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiView;
 
 import java.util.HashMap;
 import java.util.Map;
 public interface IXingYiFactory {
-    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String javascript);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String javascriptOrListOfLens);
 
     static IXingYiFactory simple = new IXingYiFactory() {
         @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String javascript) {
@@ -14,6 +16,16 @@ public interface IXingYiFactory {
     };
 
     static IXingYiFactory xingYi = new XingYiCachedFactory();
+
+    static IXingYiFactory fromJson(JsonParserAndWriter<Object> parser) { return new FromJsonFactory(parser);}
+}
+
+@RequiredArgsConstructor
+class FromJsonFactory implements IXingYiFactory {
+    final JsonParserAndWriter<Object> json;
+    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String listOfLens) {
+        return new FromJsonXingYi<>(json, listOfLens);
+    }
 }
 class XingYiCachedFactory implements IXingYiFactory {
     ThreadLocal<SingleThreadedXingYiCachedFactory> factory = new ThreadLocal<>() {//this might not work... Want to 'not share' these. Basically should get rid of javascript soon!
