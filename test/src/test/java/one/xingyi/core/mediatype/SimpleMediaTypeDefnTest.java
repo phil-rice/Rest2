@@ -36,7 +36,7 @@ public abstract class SimpleMediaTypeDefnTest<Server extends IMediaTypeServerDef
 
     ServiceRequest serviceRequest = new ServiceRequest("get", "/who/cares", List.of(
             new Header("host", "somehost"),
-            new Header("accept", "application/xingyi.json.javascript.person")), "unimportant");
+            new Header("accept", acceptHeader())), "unimportant");
     ContextForJson contextForJson = ContextForJson.forServiceRequest("http://", serviceRequest);
 
     @Test public void testCanParseAndThenRetrievePersonOnServer() {

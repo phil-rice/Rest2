@@ -49,7 +49,8 @@ abstract class JsonServerMediaTypeDefn<J, Entity extends IXingYiResource> extend
     }
     @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Entity o) {
         String data = o.toJsonString(parserAndWriter, context);
-        String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(context.acceptHeader())));
+        String acceptHeader = context.acceptHeader();
+        String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(acceptHeader)));
         return new DataAndDefn(data, defn);
     }
 }
