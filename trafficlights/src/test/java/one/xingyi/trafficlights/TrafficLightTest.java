@@ -4,16 +4,14 @@ import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
-import one.xingyi.core.marshelling.DataAndJavaScript;
+import one.xingyi.core.marshelling.DataAndDefn;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
 import one.xingyi.core.utils.DigestAndString;
-import one.xingyi.core.utils.Lists;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
 import one.xingyi.trafficlights.client.view.LocationView;
 import one.xingyi.trafficlights.server.domain.TrafficLights;
-import one.xingyi.trafficlights.TrafficLightServer;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,7 +27,7 @@ import static org.junit.Assert.fail;
 public class TrafficLightTest {
 
     Json jsonParserAndWriter = new Json();
-    EndpointConfig<Object> config = EndpointConfig.defaultConfig(jsonParserAndWriter, jsonParserAndWriter);
+    EndpointConfig<Object> config = EndpointConfig.defaultConfig(jsonParserAndWriter);
 
     public void setup(Consumer3WithException<TrafficLightsController<Object>, one.xingyi.trafficlights.TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController(jsonParserAndWriter);
@@ -48,10 +46,10 @@ public class TrafficLightTest {
     void checkSr(TrafficLightServer server, int statusCode, String json, ServiceResponse serviceResponse) {
         assertEquals(statusCode, serviceResponse.statusCode);
         String body = serviceResponse.body;
-        DataAndJavaScript dataAndJavaScript = IXingYiResponseSplitter.rawSplit(serviceResponse);
+        DataAndDefn dataAndDefn = IXingYiResponseSplitter.rawSplit(serviceResponse);
         DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
         assertTrue(body, body.contains(digestAndString.digest+IXingYiResponseSplitter.marker));
-        assertEquals(json, dataAndJavaScript.data);
+        assertEquals(json, dataAndDefn.data);
     }
 
     void checkSrNotFound(ServiceResponse serviceResponse) {

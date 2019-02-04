@@ -76,7 +76,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J, Entity extends IXingYiResource> IResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity> putEntity(
             MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath, String codeUrl, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
         return new ResourceEndPoint<J, Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
-                (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.jsonParser, context.jsonParser.parse(sr.body)))),
+                (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.parserAndWriter, context.parserAndWriter.parse(sr.body)))),
                 fn, EndpointResult.<J, Entity>create(context, codeUrl, 200));
     }
 

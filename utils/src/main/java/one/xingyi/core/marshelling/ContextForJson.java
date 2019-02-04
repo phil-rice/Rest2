@@ -16,6 +16,7 @@ public interface ContextForJson {
     String protocol();
 
     String template(String raw);
+    String acceptHeader();
     static ContextForJson nullContext = new NullContext();
     static ContextForJson forServiceRequest(String protocol, ServiceRequest serviceRequest) { return new ServiceRequestContextForJson(protocol, serviceRequest);}
     <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap);
@@ -27,6 +28,7 @@ class NullContext implements ContextForJson {
         return "";
     }
     @Override public String template(String raw) { return raw.replace("{host}", ""); }
+    @Override public String acceptHeader() { return "";}
     @Override public <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap) {
         return jsonWriter.makeObject();
     }
@@ -42,6 +44,7 @@ class ServiceRequestContextForJson implements ContextForJson {
     @Override public String template(String raw) {
         return raw.replace("{host}", serviceRequest.header("host").map(s -> protocol + s).orElse(""));
     }
+    @Override public String acceptHeader() {        return serviceRequest.header("accept").orElse("");}
     @Override public <J, Entity> J links(JsonWriter<J> jsonWriter, Entity entity, Function<Entity, String> stateFn, Map<String, List<StateData>> stateMap) {
         J selfLink = jsonWriter.makeObject("_self", serviceRequest.uri.toString());
         return Optionals.fold(Optional.ofNullable(stateMap.get(Optional.ofNullable(stateFn.apply(entity)).orElse(""))),

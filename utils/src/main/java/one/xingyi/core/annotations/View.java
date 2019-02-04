@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME) // Need to keep them around for testing
 public @interface View {
-      /** defaults some javascript that is added if the view is used. Each field can also define javascript*/
+      /** defaults some defn that is added if the view is used. Each field can also define defn*/
     String javascript() default "";
 
 }

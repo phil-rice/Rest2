@@ -17,7 +17,7 @@ public class EndPointTest implements FunctionFixture {
 
     EndpointContext<JsonValue> context = new EndpointContext<JsonValue>(
             JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple,
-            JsonWriter.cheapJson, JsonParser.nullParser(),
+            JsonWriter.cheapJson,
             "http://");
     TestResource testEntity = new TestResource();
 
@@ -33,8 +33,8 @@ public class EndPointTest implements FunctionFixture {
     }
     @Test
     public void getEntity() throws ExecutionException, InterruptedException {
-//        checkSR(200, Strings.changeQuotes("{'some':'json'}"), EndPoint.getEntity(context, "/templatedPath/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/templatedPath/someId")).get().get());
-//        checkSR(200, Strings.changeQuotes("{'some':'json'}"), EndPoint.getEntity(context, "{host}/templatedPath/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/templatedPath/someId")).get().get());
+//        checkSR(200, Strings.changeQuotes("{'some':'parserAndWriter'}"), EndPoint.getEntity(context, "/templatedPath/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/templatedPath/someId")).get().get());
+//        checkSR(200, Strings.changeQuotes("{'some':'parserAndWriter'}"), EndPoint.getEntity(context, "{host}/templatedPath/{id}", kleisli("someId", testEntity),stateFn).apply(ServiceRequest.sr("get", "/templatedPath/someId")).get().get());
     }
     @Test
     public void deleteEntity() {

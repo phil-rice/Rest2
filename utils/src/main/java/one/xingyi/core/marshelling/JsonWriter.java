@@ -18,7 +18,7 @@ public interface JsonWriter<J> {
     String fromJ(J j);
 
 
-    static JsonWriter<JsonValue> cheapJson = new CheapJson();
+    static JsonParserAndWriter<JsonValue> cheapJson = new CheapJson();
 }
 
 

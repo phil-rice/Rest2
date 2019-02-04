@@ -1,5 +1,4 @@
 package one.xingyi.core.marshelling;
-import lombok.RequiredArgsConstructor;
 import one.xingyi.core.Cache;
 import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.client.IXingYiFactory;
@@ -13,21 +12,25 @@ import one.xingyi.core.utils.WrappedException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-public interface IXingYiResponseSplitter extends Function<ServiceResponse, CompletableFuture<DataAndJavaScript>> {
+import java.util.function.Supplier;
+public interface IXingYiResponseSplitter extends Function<ServiceResponse, CompletableFuture<DataAndDefn>> {
 
     static String marker = "\n---------\n";
     static IXingYiResponseSplitter inLineOnlySplitter = new SimpleXingYiResponseSplitter();
     static IXingYiResponseSplitter splitter(Function<ServiceRequest, CompletableFuture<ServiceResponse>> service) { return new XingYiResponseSplitter(service);}
-    static DataAndJavaScript rawSplit(ServiceResponse serviceResponse) {
+    static DataAndDefn rawSplit(ServiceResponse serviceResponse) {
         if (serviceResponse.statusCode >= 300)
             throw new UnexpectedResponse(serviceResponse);
         String body = serviceResponse.body;
+        return rawSplitString(body, () -> new UnexpectedResponse("no marker found", serviceResponse));
+    }
+
+    static public DataAndDefn rawSplitString(String body, Supplier<RuntimeException> exceptionSupplier) {
         int index = body.indexOf(SimpleXingYiResponseSplitter.marker);
-        if (index == -1)
-            throw new UnexpectedResponse("no marker found", serviceResponse);
+        if (index == -1) throw exceptionSupplier.get();
         String javascript = body.substring(0, index);
         String data = body.substring(index + marker.length());
-        return new DataAndJavaScript(data, javascript);
+        return new DataAndDefn(data, javascript);
     }
 
     //TODO Work out where to put this. Probably move it into httpService.template
@@ -35,7 +38,7 @@ public interface IXingYiResponseSplitter extends Function<ServiceResponse, Compl
         try {
             return splitter.apply(serviceResponse).thenApply(dataAndJavaScript -> {
                 try {
-                    IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.javascript);
+                    IXingYi<Entity, View> xingYi = factory.<Entity, View>apply(dataAndJavaScript.defn);
                     Object mirror = xingYi.parse(dataAndJavaScript.data);
                     return resultFn.apply(clientMaker.make(xingYi, mirror));
                 } catch (Exception e) {
@@ -49,7 +52,7 @@ public interface IXingYiResponseSplitter extends Function<ServiceResponse, Compl
 }
 
 class SimpleXingYiResponseSplitter implements IXingYiResponseSplitter {
-    @Override public CompletableFuture<DataAndJavaScript> apply(ServiceResponse serviceResponse) {
+    @Override public CompletableFuture<DataAndDefn> apply(ServiceResponse serviceResponse) {
         return CompletableFuture.completedFuture(IXingYiResponseSplitter.rawSplit(serviceResponse));
     }
 }
@@ -62,23 +65,23 @@ class XingYiResponseSplitter implements IXingYiResponseSplitter {
         this.service = service;
         this.javascriptCache = Cache.dumbCache(url -> service.apply(new ServiceRequest("get", url, List.of(), "")));
     }
-    @Override public CompletableFuture<DataAndJavaScript> apply(ServiceResponse serviceResponse) {
-        DataAndJavaScript dataAndJavaScriptLinks = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        String urlOrJavascript = dataAndJavaScriptLinks.javascript;
+    @Override public CompletableFuture<DataAndDefn> apply(ServiceResponse serviceResponse) {
+        DataAndDefn dataAndDefnLinks = IXingYiResponseSplitter.rawSplit(serviceResponse);
+        String urlOrJavascript = dataAndDefnLinks.defn;
         if (urlOrJavascript.startsWith("http") || urlOrJavascript.startsWith("/")) {
             return javascriptCache.apply(urlOrJavascript).thenApply(sr -> {
                 checkServiceResponse(serviceResponse, urlOrJavascript, sr);
                 return sr.body;
-            }).thenApply(javascript -> new DataAndJavaScript(dataAndJavaScriptLinks.data, javascript)).
+            }).thenApply(javascript -> new DataAndDefn(dataAndDefnLinks.data, javascript)).
                     exceptionally(WrappedException.wrapFnWithE(e -> {javascriptCache.invalidate(urlOrJavascript); throw e;}));
-        } else return CompletableFuture.completedFuture(dataAndJavaScriptLinks);
+        } else return CompletableFuture.completedFuture(dataAndDefnLinks);
 
     }
     private void checkServiceResponse(ServiceResponse serviceResponse, String url, ServiceResponse sr) {
         if (sr.statusCode >= 300) {
             javascriptCache.invalidate(url);
             throw new RuntimeException(
-                    "Unexpected response getting javascript: " + serviceResponse +
+                    "Unexpected response getting defn: " + serviceResponse +
                             "\nOriginal response was" + serviceResponse +
                             "\nJavascript url was " + url +
                             "\nJavascript response" + sr);

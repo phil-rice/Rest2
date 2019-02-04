@@ -5,7 +5,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class DataAndJavaScript {
+public class DataAndDefn {
     public final String data;
-    public final String javascript;
+    public final String defn;
+
+    public String asString() {return defn + IXingYiResponseSplitter.marker + data;}
 }

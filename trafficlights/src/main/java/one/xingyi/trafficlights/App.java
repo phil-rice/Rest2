@@ -12,7 +12,7 @@ import java.util.Objects;
 public class App {
     public static void main(String[] args) {
         Json json = new Json();
-        EndpointConfig<Object> defaultConfigNoParser = EndpointConfig.defaultConfig(json, json);
+        EndpointConfig<Object> defaultConfigNoParser = EndpointConfig.defaultConfig(json);
         one.xingyi.trafficlights.TrafficLightServer<Object> trafficLightServer = new one.xingyi.trafficlights.TrafficLightServer<>(defaultConfigNoParser, new TrafficLightsController(json));
         new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(trafficLightServer.endpoint()), 9000).start();
         System.out.println("Started traffic lights: " + trafficLightServer.lens());

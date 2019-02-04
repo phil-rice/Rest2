@@ -16,7 +16,7 @@ public class ServiceResponse {
     public final String body;
     public final List<Header> headers;
 
-    public static <J> ServiceResponse jsonString(int status, String json) { return new ServiceResponse(status, json, Arrays.asList(new Header("Content-type", "application/json"))); }
+    public static <J> ServiceResponse jsonString(int status, String json) { return new ServiceResponse(status, json, Arrays.asList(new Header("Content-type", "application/parserAndWriter"))); }
     public static ServiceResponse html(int status, String body) { return new ServiceResponse(status, body, Arrays.asList(new Header("Content-type", "text/html"))); }
     public static ServiceResponse notFound(String msg) { return ServiceResponse.html(404, msg); }
 }

@@ -35,6 +35,7 @@ class FromJsonXingYi<Entity extends IXingYiClientResource, View extends IXingYiV
     final String listOfLensDescriptions;
 
     //TODO This following code is messed up. It's not going through the lens descriptions.
+    //This class should become just an adapater to a store
 
     static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Lens<View, Object> viewToMirrorL(IXingYiClientFactory<Entity, View> maker) {
         return Lens.create(View::mirror, (v, m) -> maker.make(v.xingYi(), m));
@@ -63,8 +64,8 @@ class FromJsonXingYi<Entity extends IXingYiClientResource, View extends IXingYiV
        throw new RuntimeException("don't do lists yet");
     }
     @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
-        if (renderName.equalsIgnoreCase("json")) return json.fromJ(view.mirror());
-        throw new RuntimeException("Unrecognised renderName" + renderName + " only legal value is 'json'");
+        if (renderName.equalsIgnoreCase("parserAndWriter")) return json.fromJ(view.mirror());
+        throw new RuntimeException("Unrecognised renderName" + renderName + " only legal value is 'parserAndWriter'");
     }
 }
 

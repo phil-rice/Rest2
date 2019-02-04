@@ -10,8 +10,8 @@ public class DemoClient {
                 Thread.sleep(2000);
                 System.out.println(
 
-                        IDView.getOptional(service, "id1",
-                                view -> view.xingYi().render("json", view) + "       ==>  " + view.id()).get());
+                        IDView.getOptional(service, "id1", view -> view.xingYi().render("parserAndWriter", view) + "       ==>  " + view.id()).get());
+//                        IDView.edit(service, "id1", id->id.withid("someNewId")).get();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }

@@ -101,7 +101,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
             for (String issue : Result.failures(systemContentResult))
                 log.error(issue);
             Result<String, FileDefn> t = makeHttpService("one.xingyi.core.httpClient", monadDefn);
-
             t.forEach(x -> {try { makeClassFile(x);} catch (Exception e) {}});
             List<FileDefn> systemContent = Result.successes(systemContentResult);
             log.info("Found the following system contents" + Lists.mapJoin(systemContent, ",", s -> s.packageAndClassName.asString()));

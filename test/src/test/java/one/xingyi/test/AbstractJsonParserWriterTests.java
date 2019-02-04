@@ -15,7 +15,7 @@ public abstract class AbstractJsonParserWriterTests<J> extends AbstractJsonWrite
         J json = jsonParser().parse(jsonString);
         assertEquals("someName", jsonParser().asString(jsonParser().child(json, "name")));
         assertEquals(23, jsonParser().asInt(jsonParser().child(json, "age")));
-//        assertEquals("someLine1", jsonParser().asString(jsonParser().child(jsonParser().child(json, "addresses"), "line1")));
+//        assertEquals("someLine1", jsonParser().asString(jsonParser().child(jsonParser().child(parserAndWriter, "addresses"), "line1")));
     }
 
     @Test

@@ -26,8 +26,8 @@ public class FieldDom {
 //    public static FieldDom apply(IServerNames names, EntityNames entityNames, TypeDom typeDom, String fieldName, Field field) {
 //        String lensName = names.entityLensName(entityNames, fieldName, field.lensName());
 //        String lensPath = names.entityLensPath(entityNames, fieldName, field.lensPath());
-//        String javascript = Strings.from(field.javascript(), "function lens_" + lensName + "(){ return lens('" + lensPath + "');};");
-//        return new FieldDom(typeDom, fieldName, field.readOnly(), lensName, lensPath, javascript);
+//        String defn = Strings.from(field.defn(), "function lens_" + lensName + "(){ return lens('" + lensPath + "');};");
+//        return new FieldDom(typeDom, fieldName, field.readOnly(), lensName, lensPath, defn);
 //
 //    }
 }

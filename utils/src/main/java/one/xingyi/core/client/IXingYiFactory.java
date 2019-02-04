@@ -28,7 +28,7 @@ class FromJsonFactory implements IXingYiFactory {
     }
 }
 class XingYiCachedFactory implements IXingYiFactory {
-    ThreadLocal<SingleThreadedXingYiCachedFactory> factory = new ThreadLocal<>() {//this might not work... Want to 'not share' these. Basically should get rid of javascript soon!
+    ThreadLocal<SingleThreadedXingYiCachedFactory> factory = new ThreadLocal<>() {//this might not work... Want to 'not share' these. Basically should get rid of defn soon!
         @Override protected SingleThreadedXingYiCachedFactory initialValue() {
             return new SingleThreadedXingYiCachedFactory();
         }

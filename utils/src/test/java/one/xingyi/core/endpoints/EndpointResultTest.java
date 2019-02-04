@@ -17,7 +17,7 @@ public class EndpointResultTest implements FunctionFixture {
 
     ServiceRequest serviceRequestNoHost = new ServiceRequest("someMethod", "/somePath", List.of(), "");
     ServiceRequest serviceRequestHost = new ServiceRequest("someMethod", "/somePath", List.of(new Header("host", "someHost")), "");
-    EndpointContext<JsonValue> context = new EndpointConfig<JsonValue>("rootJavascript", JsonWriter.cheapJson, JsonParser.nullParser(), "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple).from(List.of());
+    EndpointContext<JsonValue> context = new EndpointConfig<JsonValue>("rootJavascript", JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple).from(List.of());
 
 
     Function<TestResource, String> stateFn = e -> "someState";
@@ -27,14 +27,14 @@ public class EndpointResultTest implements FunctionFixture {
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("rootJavascript\n" +
                 "---------\n" +
-                "{\"test\":\"json\"}", serviceResponse.body);
+                "{\"test\":\"parserAndWriter\"}", serviceResponse.body);
     }
     @Test public void testCreateForIdAndValue() {
         ServiceResponse serviceResponse = EndpointResult.createForIdAndvalue(context, "/some/{id}", 314).apply(serviceRequestHost, new IdAndValue<>("someId", new TestResource()));
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("rootJavascript\n" +
                 "---------\n" +
-                "{\"id\":\"someId\",\"value\":{\"test\":\"json\"}}", serviceResponse.body);
+                "{\"id\":\"someId\",\"value\":{\"test\":\"parserAndWriter\"}}", serviceResponse.body);
     }
     @Test public void testCreateForNonEntity() {
         TestResource entity = new TestResource();

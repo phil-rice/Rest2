@@ -16,12 +16,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 public class MirroredSimpleListTest implements IReferenceFixture3 {
-    EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json(), new Json());
+    EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json());
     EndpointContext<Object> context = config.from(List.of(PersonCompanion.companion, AddressCompanion.companion));
 
     IXingYiFactory factory = IXingYiFactory.simple;
     IXingYi xingyi = factory.apply(context.javascriptDetailsToString.apply(context.javascriptStore.find(List.of())));
-    String personJson = config.jsonWriter.fromJ(IReferenceFixture3.person.toJson(config.jsonWriter, ContextForJson.nullContext));
+    String personJson = config.parserAndWriter.fromJ(IReferenceFixture3.person.toJson(config.parserAndWriter, ContextForJson.nullContext));
     PersonAddresses12ViewImpl view = new PersonAddresses12ViewImpl(xingyi, xingyi.parse(personJson));
 
     @Test

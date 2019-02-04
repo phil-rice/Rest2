@@ -33,7 +33,7 @@ abstract class AbstractResourceDetailsClientTest {
     abstract protected String expectedHost();
 
     static Json json = new Json();
-    static EndpointConfig<Object> config = EndpointConfig.defaultConfig(json, json);
+    static EndpointConfig<Object> config = EndpointConfig.defaultConfig(json);
 
 
     static PersonServer<Object> server = new PersonServer<>(config, new PersonController());

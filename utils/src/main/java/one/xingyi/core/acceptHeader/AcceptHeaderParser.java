@@ -14,7 +14,7 @@ class SimpleAcceptHeaderParser implements AcceptHeaderParser {
     @Override public AcceptHeaderDetails apply(String header) {
         List<String> parts = Lists.filter(Arrays.asList(header.split("\\.")), part -> part.length() > 0);
         if (parts.size() < 2) return AcceptHeaderDetails.invalid();
-        if (!parts.get(0).equalsIgnoreCase("application/xingyi") || !parts.get(1).equalsIgnoreCase("json"))
+        if (!parts.get(0).equalsIgnoreCase("application/xingyi") || !parts.get(1).equalsIgnoreCase("parserAndWriter"))
             return AcceptHeaderDetails.invalid();
         List<String> lensNames = Lists.map(parts.subList(2, parts.size()), s -> trimName(header, s));
 

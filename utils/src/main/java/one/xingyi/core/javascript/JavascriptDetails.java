@@ -14,7 +14,7 @@ public class JavascriptDetails {
         this.digest = digestAndString.digest;
         this.javascriptFragment = digestAndString.string;
     }
-//    public static JavascriptDetails apply(String name, String javascript) {
-//        return new JavascriptDetails(name, javascript.hashCode() + "", javascript);
+//    public static JavascriptDetails apply(String name, String defn) {
+//        return new JavascriptDetails(name, defn.hashCode() + "", defn);
 //    }
 }
