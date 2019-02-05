@@ -17,11 +17,9 @@ import java.util.Map;
 public class LensStore<J> {
     public JsonParserAndWriter<J> parser;
     public final List<LensLine> defns;
-    public final Map<String, Lens<J, ?>> map;
 
     public LensStore(List<LensLine> defns) {
         this.defns = defns;
-        this.map = Lists.aggLeft(new HashMap<String, Lens<J, ?>>(), defns, (acc, d) -> acc.put(d.lensName, d.asLens(parser)));
     }
 
     public <E> Lens<J, String> stringLens(String person_name) {

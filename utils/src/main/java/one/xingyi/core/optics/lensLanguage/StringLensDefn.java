@@ -13,6 +13,7 @@ import one.xingyi.core.optics.Lens;
 @EqualsAndHashCode
 public class StringLensDefn implements LensDefn {
     public final String name;
-    public final String className;
     @Override public String name() { return name; }
+    @Override public String asString() { return name + "/string"; }
+
 }

@@ -24,7 +24,7 @@ public interface IXingYiFactory {
 class FromJsonFactory implements IXingYiFactory {
     final JsonParserAndWriter<Object> json;
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String listOfLens) {
-        return new FromJsonXingYi<>(json, listOfLens);
+        return new LensLinesXingYi<>(json, listOfLens);
     }
 }
 class XingYiCachedFactory implements IXingYiFactory {

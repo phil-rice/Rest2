@@ -5,6 +5,7 @@ import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
 import one.xingyi.core.marshelling.JsonParser;
+import one.xingyi.core.optics.lensLanguage.*;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.sdk.IXingYiServesResourceCompanion;
 import one.xingyi.core.state.EntityDomToStateMap;
@@ -43,6 +44,12 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
     private List<String> createListOfLens(ResourceDom resourceDom) {
         return List.of("public List<String> lens(){return List.of(", resourceDom.fields.withDeprecatedmapJoin(",", fd -> Strings.quote(fd.lensName)), ");}");
     }
+    private List<String> createLensDefn(ResourceDom resourceDom) {
+        return List.of(
+                "public List<LensLine> lensLines(){return List.of(",
+                Formating.indent + resourceDom.fields.withDeprecatedmapJoin(",\n"+Formating.indent+Formating.indent, fd -> "new LensLine(" + Strings.quote(fd.lensName) + ", List.of( " + fd.typeDom.lensDefn(fd.lensPath) +"))"),
+                ");}");
+    }
 
     List<String> fromJson(ResourceDom dom) {
         String className = dom.entityNames.serverEntity.className;
@@ -58,12 +65,16 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                         " implements " + implementsString,
                         List.of(resourceDom.entityNames.serverEntity.asString()),
                         IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, IResourceList.class, Lists.class,
-                        IXingYiServesResourceCompanion.class, XingYiGenerated.class, Optional.class, BookmarkCodeAndUrlPattern.class, HasBookmarkAndUrl.class),
+                        IXingYiServesResourceCompanion.class, XingYiGenerated.class,
+                        Optional.class, BookmarkCodeAndUrlPattern.class, HasBookmarkAndUrl.class,
+                        LensLine.class, StringLensDefn.class,  ViewLensDefn.class, ListLensDefn.class
+                ),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(resourceDom)),
                 Formating.indent(createCompanion(resourceDom)),
                 Formating.indent(createJavascript(resourceDom)),
                 Formating.indent(createListOfLens(resourceDom)),
+                Formating.indent(createLensDefn(resourceDom)),
                 Formating.indent(fromJson(resourceDom)),
                 Formating.indent(stateMap(resourceDom)),
                 List.of("}")

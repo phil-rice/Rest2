@@ -15,10 +15,10 @@ public interface LensValueParser extends Function<String, List<LensDefn>> {
 }
 
 class SimpleLensParser implements LensValueParser {
-    Map<String, Function<String, StringLensDefn>> primitives = Map.of(
-            "integer", name -> new StringLensDefn(name, "integer"),
-            "string", name -> new StringLensDefn(name, "string"),
-            "double", name -> new StringLensDefn(name, "double"));
+    Map<String, Function<String, LensDefn>> primitives = Map.of(
+            "integer", name -> new IntegerLensDefn(name),
+            "string", name -> new StringLensDefn(name),
+            "double", name -> new DoubleLensDefn(name));
 
     @Override
     public List<LensDefn> apply(String s) {
@@ -28,8 +28,8 @@ class SimpleLensParser implements LensValueParser {
                 throw new RuntimeException("could not find two parts in item " + item + " which is in " + s);
             String name = parts.get(0);
             String type = parts.get(1);
-            Function<String, StringLensDefn> fn = primitives.get(type);
-            if (fn == null) return new ObjectLens(name, type);
+            Function<String, LensDefn> fn = primitives.get(type);
+            if (fn == null) return new ViewLensDefn(name, type);
             return fn.apply(name);
         });
     }

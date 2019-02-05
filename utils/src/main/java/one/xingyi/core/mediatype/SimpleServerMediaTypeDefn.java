@@ -5,7 +5,9 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.DataAndDefn;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.marshelling.MakesFromJson;
+import one.xingyi.core.optics.lensLanguage.LensLine;
 import one.xingyi.core.sdk.IXingYiResource;
+import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 
 import java.util.List;
@@ -30,15 +32,15 @@ abstract class SimpleServerMediaTypeDefn<Entity extends IXingYiResource> impleme
 }
 
 
-abstract class JsonServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<Entity> {
+class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<Entity> {
     final MakesFromJson<Entity> makesFromJson;
     final JsonParserAndWriter<J> parserAndWriter;
     final JavascriptStore javascriptStore;
     final JavascriptDetailsToString javascriptDetailsToString;
 
 
-    public JsonServerMediaTypeDefn(String prefix, String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext context) {
-        super(prefix, entityName);
+    public JsonAndJavascriptServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext context) {
+        super(IMediaTypeConstants.jsonJavascriptPrefix, entityName);
         this.makesFromJson = makesFromJson;
         this.parserAndWriter = context.parserAndWriter();
         this.javascriptStore = context.javascriptStore();
@@ -54,13 +56,23 @@ abstract class JsonServerMediaTypeDefn<J, Entity extends IXingYiResource> extend
         return new DataAndDefn(data, defn);
     }
 }
-class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends JsonServerMediaTypeDefn<J, Entity> {
-    public JsonAndJavascriptServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context) {
-        super(IMediaTypeConstants.jsonJavascriptPrefix, entityName, makesFromJson, context);
+class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<Entity> {
+    final MakesFromJson<Entity> makesFromJson;
+    final JsonParserAndWriter<J> parserAndWriter;
+    private List<LensLine> lensLines;
+    public JsonAndLensDefnServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
+        super(IMediaTypeConstants.jsonDefnPrefix, entityName);
+        this.makesFromJson = makesFromJson;
+        this.parserAndWriter = context.parserAndWriter();
+        this.lensLines = lensLines;
     }
-}
-class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> extends JsonServerMediaTypeDefn<J, Entity> {
-    public JsonAndLensDefnServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context) {
-        super(IMediaTypeConstants.jsonDefnPrefix, entityName, makesFromJson, context);
+
+    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Entity entity) {
+        String json = entity.toJsonString(parserAndWriter, context);
+        String lensDefnString = Lists.mapJoin(lensLines, "\n", LensLine::asString);
+        return new DataAndDefn(json, lensDefnString);
+    }
+    @Override public Entity makeEntityFrom(String acceptHeader, String string) {
+        return makesFromJson.fromJson(parserAndWriter, parserAndWriter.parse(string));
     }
 }

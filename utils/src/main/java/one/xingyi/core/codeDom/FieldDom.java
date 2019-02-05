@@ -5,6 +5,7 @@ import lombok.ToString;
 import one.xingyi.core.annotations.Field;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
+import one.xingyi.core.optics.lensLanguage.LensLine;
 import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.Strings;
 
@@ -23,11 +24,5 @@ public class FieldDom {
     public final String javascript;
     public final boolean templated;
     public final boolean deprecated;
-//    public static FieldDom apply(IServerNames names, EntityNames entityNames, TypeDom typeDom, String fieldName, Field field) {
-//        String lensName = names.entityLensName(entityNames, fieldName, field.lensName());
-//        String lensPath = names.entityLensPath(entityNames, fieldName, field.lensPath());
-//        String defn = Strings.from(field.defn(), "function lens_" + lensName + "(){ return lens('" + lensPath + "');};");
-//        return new FieldDom(typeDom, fieldName, field.readOnly(), lensName, lensPath, defn);
-//
-//    }
+
 }

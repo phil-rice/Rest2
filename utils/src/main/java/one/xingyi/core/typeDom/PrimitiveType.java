@@ -16,6 +16,7 @@ public class PrimitiveType implements TypeDom {
     @Override public String fullTypeName() { return typeName.asString(); }
     @Override public TypeDom nested() { return this; }
     @Override public boolean primitive() { return true; }
+    @Override public String entityNameForLens() { return typeName.className; }
     @Override public String forToJson(String fieldName, boolean templated) {
         if (templated && typeName.className.equalsIgnoreCase("String"))
             return "context.template(" + fieldName + ")";
@@ -31,4 +32,5 @@ public class PrimitiveType implements TypeDom {
             return "jsonParser.asInt(j, " + Strings.quote(fieldName) + ")";
         else throw new RuntimeException("Don't know how to parse primitive field " + fieldName + " of type" + typeName.asString());
     }
+    @Override public String lensDefn(String lensPath) { return "new StringLensDefn(" + Strings.quote(lensPath) + ")"; } //TODO Split PrimitiveType
 }

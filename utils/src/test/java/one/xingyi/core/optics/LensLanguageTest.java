@@ -12,13 +12,13 @@ public class LensLanguageTest {
     LensStoreParser storeParser = LensStoreParser.simple();
 
     @Test public void testLensValueParser() {
-        assertEquals(List.of(new ObjectLens("child", "childClass"), new StringLensDefn("line1", "string")), lensParser.apply("child/childClass,line1/string"));
-        assertEquals(List.of(new ObjectLens("child", "childClass"), new StringLensDefn("line1", "integer")), lensParser.apply("child/childClass,line1/integer"));
-        assertEquals(List.of(new ObjectLens("child", "childClass"), new StringLensDefn("line1", "double")), lensParser.apply("child/childClass,line1/double"));
+        assertEquals(List.of(new ViewLensDefn("child", "childClass"), new StringLensDefn("line1")), lensParser.apply("child/childClass,line1/string"));
+        assertEquals(List.of(new ViewLensDefn("child", "childClass"), new IntegerLensDefn("line1")), lensParser.apply("child/childClass,line1/integer"));
+        assertEquals(List.of(new ViewLensDefn("child", "childClass"), new DoubleLensDefn("line1")), lensParser.apply("child/childClass,line1/double"));
     }
 
     @Test public void testLensLineParser() {
-        assertEquals(new LensLine("lens1", List.of(new ObjectLens("child", "childClass"), new StringLensDefn("line1", "string"))),
+        assertEquals(new LensLine("lens1", List.of(new ViewLensDefn("child", "childClass"), new StringLensDefn("line1"))),
                 lineParser.apply("lens1=child/childClass,line1/string"));
     }
 

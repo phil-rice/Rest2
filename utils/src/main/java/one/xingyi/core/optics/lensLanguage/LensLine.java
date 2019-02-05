@@ -6,6 +6,7 @@ import lombok.ToString;
 import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.Lens;
+import one.xingyi.core.utils.Lists;
 
 import java.util.List;
 @RequiredArgsConstructor
@@ -14,8 +15,9 @@ import java.util.List;
 public class LensLine {
     public final String lensName;
     public final List<LensDefn> defns;
-    public <J, To> Lens<J, To> asLens(JsonParserAndWriter<J> parser) {
-//        return Lens.create(getter, setter);
-        return null;
+
+    public String asString() {
+        return lensName + "=" + Lists.mapJoin(defns, ",", d -> d.asString());
     }
+
 }
