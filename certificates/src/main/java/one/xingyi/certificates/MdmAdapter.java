@@ -12,6 +12,6 @@ public class MdmAdapter extends ControllerUsingMap<Certificate> implements ICert
         super("Certificate");
         store.put("id1", prototype("id1"));
     }
-//    @Override protected Certificate prototype(String id) { return new Certificate(id); }
-    @Override protected Certificate prototype(String id) { return new Certificate(new Details(id)); }
+    @Override protected Certificate prototype(String id) { return new Certificate(id); }
+//    @Override protected Certificate prototype(String id) { return new Certificate(new Details(id)); }
 }

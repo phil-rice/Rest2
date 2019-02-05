@@ -10,10 +10,10 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 //@CreateWithoutId(url = "{host}/certificate")
 @Create
 public interface ICertificateDefn extends IXingYiResourceDefn {
-    IDetailsDefn child();
-
-    @Deprecated
-    @Field(javascript = "return compose(lens('child'), lens('powerfulId'));")
+//    IDetailsDefn child();
+//
+//    @Deprecated
+//    @Field(javascript = "return compose(lens('child'), lens('powerfulId'));")
     String id();
 
 //        @Deprecated
