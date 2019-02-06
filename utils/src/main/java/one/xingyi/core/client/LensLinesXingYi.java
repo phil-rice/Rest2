@@ -2,18 +2,15 @@ package one.xingyi.core.client;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.Lens;
-import one.xingyi.core.optics.lensLanguage.LensLine;
-import one.xingyi.core.optics.lensLanguage.LensStore;
+import one.xingyi.core.optics.lensLanguage.LensDefnStore;
 import one.xingyi.core.sdk.IXingYiClientFactory;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.IdAndValue;
-
-import java.util.List;
 @RequiredArgsConstructor
-public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
+public class LensLinesXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
     final JsonParserAndWriter<Object> json;
-    final LensStore<J> lensStore;
+    final LensDefnStore lensDefnStore;
 
 
     static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Lens<View, Object> viewToMirrorL(IXingYiClientFactory<Entity, View> maker) {
@@ -29,7 +26,7 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
 
     @Override public Object parse(String s) { return json.parse(s); }
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return viewToMirrorL(maker).andThen(lensStore.stringLens(name));
+        return viewToMirrorL(maker).andThen(lensDefnStore.stringLens(name));
     }
     @Override
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
@@ -40,7 +37,7 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
     }
     @Override
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
-       throw new RuntimeException("don't do lists yet");
+        throw new RuntimeException("don't do lists yet");
     }
     @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
         if (renderName.equalsIgnoreCase("parserAndWriter")) return json.fromJ(view.mirror());

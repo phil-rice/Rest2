@@ -17,16 +17,16 @@ public interface IXingYiFactory {
 
     static IXingYiFactory xingYi = new XingYiCachedFactory();
 
-    static IXingYiFactory fromJson(JsonParserAndWriter<Object> parser) { return new FromJsonFactory(parser);}
+//    static IXingYiFactory fromJson(JsonParserAndWriter<Object> parser) { return new FromJsonFactory(parser);}
 }
 
-@RequiredArgsConstructor
-class FromJsonFactory implements IXingYiFactory {
-    final JsonParserAndWriter<Object> json;
-    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String listOfLens) {
-        return new LensLinesXingYi<>(json, listOfLens);
-    }
-}
+//@RequiredArgsConstructor
+//class FromJsonFactory implements IXingYiFactory {
+//    final JsonParserAndWriter<Object> json;
+//    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String listOfLens) {
+//        return new LensLinesXingYi<>(json, listOfLens,);
+//    }
+//}
 class XingYiCachedFactory implements IXingYiFactory {
     ThreadLocal<SingleThreadedXingYiCachedFactory> factory = new ThreadLocal<>() {//this might not work... Want to 'not share' these. Basically should get rid of defn soon!
         @Override protected SingleThreadedXingYiCachedFactory initialValue() {

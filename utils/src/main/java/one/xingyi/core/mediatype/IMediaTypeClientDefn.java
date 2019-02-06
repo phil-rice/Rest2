@@ -1,6 +1,9 @@
 package one.xingyi.core.mediatype;
 import one.xingyi.core.client.IXingYiFactory;
 import one.xingyi.core.http.ServiceResponse;
+import one.xingyi.core.marshelling.JsonParserAndWriter;
+import one.xingyi.core.optics.lensLanguage.LensLineParser;
+import one.xingyi.core.optics.lensLanguage.LensStoreParser;
 import one.xingyi.core.sdk.IXingYiClientFactory;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiView;
@@ -18,13 +21,13 @@ public interface IMediaTypeClientDefn<ClientEntity extends IXingYiClientResource
      * @param serviceResponse*/
     CompletableFuture<ClientView> makeFrom(ServiceResponse serviceResponse);
 
-    static < ClientEntity extends IXingYiClientResource, ClientView extends IXingYiView<ClientEntity>> IMediaTypeClientDefn<ClientEntity, ClientView>
+    static <ClientEntity extends IXingYiClientResource, ClientView extends IXingYiView<ClientEntity>> IMediaTypeClientDefn<ClientEntity, ClientView>
     jsonAndJavascriptClient(String entityName, Function<String, CompletableFuture<String>> getJavascript, IXingYiFactory xingYiFactory, IXingYiClientFactory<ClientEntity, ClientView> makeEntity) {
         return new JsonAndJavascriptClientMediaTypeDefn<>(entityName, getJavascript, xingYiFactory, makeEntity);
     }
-    static <Defn, ClientEntity extends IXingYiClientResource, ClientView extends IXingYiView<ClientEntity>> IMediaTypeClientDefn<ClientEntity, ClientView>
-    jsonAndLensDefnClient(String entityName, Function<String, CompletableFuture<Defn>> getDefn, Function<Defn, ClientView> makeEntity) {
-        return new JsonAndLensDefnClientMediaTypeDefn<>(entityName, getDefn, makeEntity);
+    static <ClientEntity extends IXingYiClientResource, ClientView extends IXingYiView<ClientEntity>> IMediaTypeClientDefn<ClientEntity, ClientView>
+    jsonAndLensDefnClient(String entityName, JsonParserAndWriter<Object> json, Function<String, CompletableFuture<String>> getDefn,   IXingYiClientFactory<ClientEntity, ClientView> makeEntity) {
+        return new JsonAndLensDefnClientMediaTypeDefn<ClientEntity, ClientView>(entityName, json, getDefn, LensStoreParser.simple(), makeEntity);
     }
 
 

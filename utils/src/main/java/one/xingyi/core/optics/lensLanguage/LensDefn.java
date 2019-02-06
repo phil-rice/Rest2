@@ -1,6 +1,9 @@
 package one.xingyi.core.optics.lensLanguage;
 
-public interface LensDefn {
+import one.xingyi.core.marshelling.JsonParserAndWriter;
+import one.xingyi.core.optics.Lens;
+public interface LensDefn<T> {
     String name();
     String asString();
+    <J> Lens<J,T> asLens(JsonParserAndWriter<J> json);
 }
