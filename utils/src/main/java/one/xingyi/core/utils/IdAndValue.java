@@ -1,8 +1,10 @@
 package one.xingyi.core.utils;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
 import one.xingyi.core.marshelling.JsonWriter;
+@Getter
 @RequiredArgsConstructor
 public class IdAndValue<T> {
   public  final String id;
