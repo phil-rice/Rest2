@@ -16,6 +16,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LensDefnStore {
     public final List<LensLine> defns;
+    public Lens stringLens(String name) { return null;}
 }
 
 class LensStore {

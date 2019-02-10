@@ -44,7 +44,8 @@ public class Json implements JsonParserAndWriter<Object> {
         Setter<Object, Object> setter = (j, t) -> ((JSONObject) j).put(childname, t);
         return Lens.create(getter, setter);
     }
-    @Override public Lens<Object, String> lensToString() {
-        return Lens.create(j -> asString(j), (j, s) -> j);
-    }
+    @Override public Lens<Object, String> lensToString(String name) { return null; }
+    @Override public Lens<Object, Double> lensToDouble(String name) { return null; }
+    @Override public Lens<Object, Integer> lensToInteger(String name) { return null; }
+    @Override public <T> Lens<Object, IResourceList<T>> lensToResourceList(String name) { return null; }
 }

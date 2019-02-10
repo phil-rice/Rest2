@@ -5,6 +5,7 @@ import one.xingyi.core.server.EndpointHandler;
 import one.xingyi.core.server.HttpUtils;
 import one.xingyi.core.server.SimpleServer;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.json.Json;
 import one.xingyi.reference3.person.PersonController;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Objects;
 
 public class Reference3 {
     public static void main(String[] args) {
-        PersonServer<JsonValue> server = new PersonServer<>(EndpointConfig.defaultConfigNoParser, new PersonController());
+        PersonServer<Object> server = new PersonServer<>(EndpointConfig.defaultConfig(new Json()), new PersonController());
         new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(server.endpoint()), 9000).start();
 
 

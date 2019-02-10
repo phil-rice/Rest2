@@ -3,7 +3,7 @@ import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
-class CheapJson extends NullParser<JsonValue> implements JsonParserAndWriter<JsonValue> {
+class CheapJson implements JsonWriter<JsonValue> {
     public String jsonValueFor(Object obj) {
 //        if (obj instanceof ISimpleList) return Lists.mapJoin(((ISimpleList) obj).toList(), ",", this::jsonValueFor);
         if (obj instanceof JsonObject) return ((JsonObject) obj).string;
@@ -44,11 +44,6 @@ class CheapJson extends NullParser<JsonValue> implements JsonParserAndWriter<Jso
                 replace("\\", "\\");
 
     }
-    @Override public Lens<JsonValue, JsonValue> lensToChild(String childname) {
-        throw new RuntimeException("can't use cheap json for this");
-    }
-    @Override public Lens<JsonValue, String> lensToString() {
-        throw new RuntimeException("can't use cheap json for this");
-    }
+
 }
 

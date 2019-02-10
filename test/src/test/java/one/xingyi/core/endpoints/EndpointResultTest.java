@@ -7,6 +7,7 @@ import one.xingyi.core.marshelling.*;
 import one.xingyi.core.sdk.TestResource;
 import one.xingyi.core.utils.FunctionFixture;
 import one.xingyi.core.utils.IdAndValue;
+import one.xingyi.json.Json;
 import org.junit.Test;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class EndpointResultTest implements FunctionFixture {
 
     ServiceRequest serviceRequestNoHost = new ServiceRequest("someMethod", "/somePath", List.of(), "");
     ServiceRequest serviceRequestHost = new ServiceRequest("someMethod", "/somePath", List.of(new Header("host", "someHost")), "");
-    EndpointContext<JsonValue> context = new EndpointConfig<JsonValue>("rootJavascript", JsonWriter.cheapJson, "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple).from(List.of());
+    EndpointContext<Object> context = new EndpointConfig<>("rootJavascript", new Json(), "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple).from(List.of());
 
 
     Function<TestResource, String> stateFn = e -> "someState";

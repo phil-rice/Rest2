@@ -5,6 +5,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.JsonValue;
+import one.xingyi.json.Json;
 import one.xingyi.reference2.person.PersonController;
 import one.xingyi.reference2.person.client.view.PersonLine12View;
 import one.xingyi.reference2.person.server.companion.PersonCompanion;
@@ -20,8 +21,8 @@ import static org.junit.Assert.assertTrue;
 public class Deprecated2Tests {
 
     Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
-    static EndpointConfig<JsonValue> config = EndpointConfig.defaultConfigNoParser;
-    static EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config, new PersonController()).allEndpoints());
+    static EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json());
+    static EndPoint entityEndpoints = EndPoint.compose(new PersonServer<Object>(config, new PersonController()).allEndpoints());
     HttpServiceCompletableFuture rawService;
     HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
 

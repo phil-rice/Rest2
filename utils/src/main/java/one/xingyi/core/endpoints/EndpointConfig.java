@@ -22,7 +22,7 @@ public class EndpointConfig<J> {
 
     public EndpointConfig<J> withMoreJavascript(String javascript) {return new EndpointConfig<>(rootJavascript + "\n\n\n" + javascript, parserAndWriter, protocol, javascriptDetailsToString, mergeJavascriptAndJson);}
 
-    public static EndpointConfig<JsonValue> defaultConfigNoParser = defaultConfig(JsonWriter.cheapJson);
+//    public static EndpointConfig<JsonValue> defaultConfigNoParser = defaultConfig(JsonWriter.cheapJson);
     public static <J> EndpointConfig<J> defaultConfig(JsonParserAndWriter<J> parserAndWriter) {
         return new EndpointConfig<J>(Files.getText("header.js"), parserAndWriter, "http://", JavascriptDetailsToString.simple, IMergeJavascriptAndJson.byLinks);
     }

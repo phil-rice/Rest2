@@ -1,4 +1,6 @@
 package one.xingyi.core.endpoints;
+import one.xingyi.core.endpoints.EndpointContext;
+import one.xingyi.core.endpoints.IMergeJavascriptAndJson;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
@@ -7,6 +9,7 @@ import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.sdk.TestResource;
 import one.xingyi.core.utils.FunctionFixture;
+import one.xingyi.json.Json;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
@@ -15,9 +18,9 @@ import java.util.function.Function;
 import static org.junit.Assert.*;
 public class EndPointTest implements FunctionFixture {
 
-    EndpointContext<JsonValue> context = new EndpointContext<JsonValue>(
+    EndpointContext<Object> context = new EndpointContext<>(
             JavascriptStore.constant("someJavascript"), JavascriptDetailsToString.simple, IMergeJavascriptAndJson.simple,
-            JsonWriter.cheapJson,
+            new Json(),
             "http://");
     TestResource testEntity = new TestResource();
 

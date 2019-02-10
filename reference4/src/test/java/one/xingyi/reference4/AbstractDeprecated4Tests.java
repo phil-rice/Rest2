@@ -24,9 +24,9 @@ import static junit.framework.TestCase.assertEquals;
 abstract public class AbstractDeprecated4Tests<J> {
 
     Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
-    abstract EndpointConfig<JsonValue> config();
+    abstract EndpointConfig<J> config();
     abstract boolean supportsReadingJson();
-    EndPoint entityEndpoints = EndPoint.compose(new PersonServer<JsonValue>(config(), new PersonController()).allEndpoints());
+    EndPoint entityEndpoints = EndPoint.compose(new PersonServer<J>(config(), new PersonController()).allEndpoints());
     HttpServiceCompletableFuture rawService;
     HttpServiceCompletableFuture service() {
         if (rawService == null) {

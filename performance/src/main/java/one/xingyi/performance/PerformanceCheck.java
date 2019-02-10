@@ -3,6 +3,7 @@ import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.JavaHttpClient;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.utils.ConsumerWithException;
+import one.xingyi.json.Json;
 import one.xingyi.reference1.PersonServer;
 import one.xingyi.reference1.person.PersonController;
 import one.xingyi.reference1.person.client.view.PersonLine12View;
@@ -12,7 +13,7 @@ public class PerformanceCheck {
 
 
   public  static void main(String[] args) throws Exception {
-        PersonServer personServer = new PersonServer(EndpointConfig.defaultConfigNoParser, new PersonController());
+        PersonServer personServer = new PersonServer(EndpointConfig.defaultConfig(new Json()), new PersonController());
         personServer.simpleServer(9000).start();
         HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://localhost:9000", JavaHttpClient.client);
         PersonLine12View.create(service, "someIdToWakeTheSystemUp").get();
