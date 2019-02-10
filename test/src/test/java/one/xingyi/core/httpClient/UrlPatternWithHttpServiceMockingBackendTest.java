@@ -10,6 +10,7 @@ import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.JsonValue;
 import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.utils.Files;
+import one.xingyi.json.Json;
 import org.junit.Test;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class UrlPatternWithHttpServiceMockingBackendTest {
     static String url = protocolAndHost + bookmark;
     static ServiceRequest serviceRequest = new ServiceRequest("get", url, List.of(), "");
     static ContextForJson context = ContextForJson.forServiceRequest("http://", serviceRequest);
-    static JsonWriter<JsonValue> jsonTC = JsonWriter.cheapJson;
+    static JsonWriter<Object> jsonTC = new Json();
     static String javascript = Files.getText("header.js") + ResourceDetailsCompanion.companion.javascript;
     static String json = new ResourceDetails("http://someHost:9000/someUrlPattern{id}").toJsonString(jsonTC, context);
 
