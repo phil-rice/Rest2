@@ -14,7 +14,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import java.util.concurrent.Callable;
 
-//I tried to make the object a generic 'mirror' but the impact was enormous, and there seemed to be little win
+//I tried to make the object a generic 'parser' but the impact was enormous, and there seemed to be little win
 public interface IXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> {
     Object parse(String s);
     Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name);

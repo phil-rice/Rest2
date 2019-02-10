@@ -22,9 +22,9 @@ public interface IXingYiFactory {
 
 //@RequiredArgsConstructor
 //class FromJsonFactory implements IXingYiFactory {
-//    final JsonParserAndWriter<Object> json;
+//    final JsonParserAndWriter<Object> parser;
 //    @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String listOfLens) {
-//        return new LensLinesXingYi<>(json, listOfLens,);
+//        return new LensLinesXingYi<>(parser, listOfLens,);
 //    }
 //}
 class XingYiCachedFactory implements IXingYiFactory {
