@@ -26,8 +26,9 @@ public class MirroredSimpleListTest implements IReferenceFixture3 {
 
     @Test
     public void testWithOneAddress() {
-        assertEquals(1, view.addresses().size());
-        assertEquals("someLine1", view.addresses().get(0).line1());
+        assertEquals(2, view.addresses().size());
+        assertEquals("someLine1a", view.addresses().get(0).line1());
+        assertEquals("someLine1b", view.addresses().get(1).line1());
     }
 
     @Test public void testAddAnAddress() {
@@ -35,12 +36,13 @@ public class MirroredSimpleListTest implements IReferenceFixture3 {
         AddressLine12View line2 = prototype.withline1("someLineFor2");
         IResourceList<AddressLine12View> with2 = view.addresses().append(line2);
 
-        assertEquals(1, view.addresses().size());
-        assertEquals("someLine1", view.addresses().get(0).line1());
+        assertEquals(2, view.addresses().size());
+        assertEquals("someLine1a", view.addresses().get(0).line1());
 
-        assertEquals(2, with2.size());
-        assertEquals("someLine1", with2.get(0).line1());
-        assertEquals("someLineFor2", with2.get(1).line1());
+        assertEquals(3, with2.size());
+        assertEquals("someLine1a", with2.get(0).line1());
+        assertEquals("someLine1b", with2.get(1).line1());
+        assertEquals("someLineFor2", with2.get(2).line1());
     }
 
 

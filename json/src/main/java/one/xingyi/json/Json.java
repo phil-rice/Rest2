@@ -11,8 +11,7 @@ import one.xingyi.core.optics.Setter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 public class Json implements JsonParserAndWriter<Object> {
     public static Json simple = new Json();
     @Override public Object makeObject(Object... namesAndValues) {
@@ -38,14 +37,35 @@ public class Json implements JsonParserAndWriter<Object> {
         else return ((JSONObject) o).get(name);
     }
     @Override public List<Object> asList(Object o) { return ((JSONArray) o).toList(); }
+    @Override public IResourceList<Object> asResourceList(Object o) {
+        return new JsonResourceList1((JSONArray) o);
+    }
+
+    JSONObject copyOf(Object j) { return new JSONObject(new HashMap<>(((JSONObject) j).map)); }
 
     @Override public Lens<Object, Object> lensToChild(String childname) {
         Getter<Object, Object> getter = j -> ((JSONObject) j).get(childname);
-        Setter<Object, Object> setter = (j, t) -> ((JSONObject) j).put(childname, t);
+        Setter<Object, Object> setter = (j, t) -> copyOf(j).put(childname, t);
         return Lens.create(getter, setter);
     }
-    @Override public Lens<Object, String> lensToString(String name) { return null; }
-    @Override public Lens<Object, Double> lensToDouble(String name) { return null; }
-    @Override public Lens<Object, Integer> lensToInteger(String name) { return null; }
-    @Override public <T> Lens<Object, IResourceList<T>> lensToResourceList(String name) { return null; }
+    @Override public Lens<Object, String> lensToString(String name) {
+        Getter<Object, String> getter = j -> ((JSONObject) j).getString(name);
+        Setter<Object, String> setter = (j, t) -> copyOf(j).put(name, t);
+        return Lens.create(getter, setter);
+    }
+    @Override public Lens<Object, Double> lensToDouble(String name) {
+        Getter<Object, Double> getter = j -> ((JSONObject) j).getDouble(name);
+        Setter<Object, Double> setter = (j, t) -> copyOf(j).put(name, t);
+        return Lens.create(getter, setter);
+    }
+    @Override public Lens<Object, Integer> lensToInteger(String name) {
+        Getter<Object, Integer> getter = j -> ((JSONObject) j).getInt(name);
+        Setter<Object, Integer> setter = (j, t) -> copyOf(j).put(name, t);
+        return Lens.create(getter, setter);
+    }
+    @Override public Lens<Object, IResourceList<Object>> lensToResourceList(String name) {
+        Getter<Object, IResourceList<Object>> getter = j -> asResourceList(j, name);
+        Setter<Object, IResourceList<Object>> setter = (j, rl) -> copyOf(j).put(name, rl.toList());
+        return Lens.create(getter, setter);
+    }
 }

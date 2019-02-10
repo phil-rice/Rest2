@@ -154,7 +154,7 @@ public class JSONObject {
     /**
      * The map where the JSONObject's properties are kept.
      */
-    private final LinkedHashMap<String, Object> map;
+    public final LinkedHashMap<String, Object> map;
 
     /**
      * It is sometimes more convenient and less ambiguous to have a

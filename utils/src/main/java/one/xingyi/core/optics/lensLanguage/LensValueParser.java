@@ -29,6 +29,7 @@ class SimpleLensParser implements LensValueParser {
             String name = parts.get(0);
             String type = parts.get(1);
             Function<String, LensDefn> fn = primitives.get(type);
+            if (fn == null && type.startsWith("*")) return new ListLensDefn(name, type.substring(1));
             if (fn == null) return new ViewLensDefn(name, type);
             return fn.apply(name);
         });

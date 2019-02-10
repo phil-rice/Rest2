@@ -1,5 +1,7 @@
 package one.xingyi.core.marshelling;
 
+import one.xingyi.core.client.IResourceList;
+
 import java.util.List;
 public interface JsonParser<J> {
     static <J> JsonParser<J> nullParser() {return new NullParser<>();}
@@ -13,6 +15,8 @@ public interface JsonParser<J> {
     J child(J j, String name);
     List<J> asList(J j);
     default List<J> asList(J j, String name) {return asList(child(j, name));}
+    IResourceList<J> asResourceList(J j);
+    default IResourceList<J> asResourceList(J j, String name) {return asResourceList(child(j, name));}
 }
 class NullParser<J> implements JsonParser<J> {
     @Override public String fromJ(J j) { throw new RuntimeException("The Null Parser cannot be used");}
@@ -21,4 +25,5 @@ class NullParser<J> implements JsonParser<J> {
     @Override public int asInt(J j) { throw new RuntimeException("The Null Parser cannot be used");}
     @Override public J child(J j, String name) { throw new RuntimeException("The Null Parser cannot be used");}
     @Override public List<J> asList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
+    @Override public IResourceList<J> asResourceList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
 }

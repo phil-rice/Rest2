@@ -26,7 +26,7 @@ public class LensLinesXingYi<Entity extends IXingYiClientResource, View extends 
 
     @Override public Object parse(String s) { return json.parse(s); }
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return viewToMirrorL(maker).andThen(lensDefnStore.stringLens(name));
+        return viewToMirrorL(maker).andThen(json.lensToString(name));
     }
     @Override
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {

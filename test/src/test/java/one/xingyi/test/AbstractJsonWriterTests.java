@@ -9,7 +9,7 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 public abstract class AbstractJsonWriterTests<J>  implements IReferenceFixture3 {
 
-    String jsonString = Strings.changeQuotes("{'name':'someName','age':23,'addresses':[{'line1':'someLine1','line2':'someLine2','postcode':'somePostcode'}],'telephone':{'number':'someNumber'}}");
+    String jsonString = Strings.changeQuotes("{'name':'someName','age':23,'addresses':[{'line1':'someLine1a','line2':'someLine2a','postcode':'somePostcode1'},{'line1':'someLine1b','line2':'someLine2b','postcode':'somePostcode2'}],'telephone':{'number':'someNumber'}}");
     abstract protected JsonWriter<J> jsonWriter();
 
     @Test public void testCanMakeJson(){
