@@ -89,10 +89,12 @@ public class Lists {
             fn.apply(t).ifPresent(result::add);
         return result;
     }
-    public static <T> List<T> filter(List<T> list, Function<T, Boolean> fn) {
-        List<T> result = new ArrayList<>();
-        for (T t : list)
-            if (fn.apply(t)) result.add(t);
+    public static <T> List<T> filter(List<T> list, FunctionWithException<T, Boolean> fn) {
+            List<T> result = new ArrayList<>();
+        WrappedException.wrap(() -> {
+            for (T t : list)
+                if (fn.apply(t)) result.add(t);
+        });
         return result;
     }
     public static <T> List<T> unique(List<T> list) {

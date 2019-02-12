@@ -58,7 +58,9 @@ public class WrappedException extends RuntimeException {
             runnable.run();
         } catch (RuntimeException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Error e){
+            throw e;
+        } catch (Throwable e) {
             throw new WrappedException(e);
         }
     }

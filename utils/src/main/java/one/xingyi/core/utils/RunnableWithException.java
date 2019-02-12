@@ -1,4 +1,4 @@
 package one.xingyi.core.utils;
 public interface RunnableWithException {
-    public  void run() throws Exception;
+    public  void run() throws Throwable;
 }
