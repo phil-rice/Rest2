@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>one.xingyi</groupId>
-            <artifactId>server</artifactId>
+            <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

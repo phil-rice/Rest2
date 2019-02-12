@@ -13,12 +13,6 @@
     <dependencies>
         <dependency>
             <groupId>one.xingyi</groupId>
-            <artifactId>server</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>one.xingyi</groupId>
             <artifactId>reference3</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
@@ -30,13 +24,7 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>one.xingyi</groupId>
-            <artifactId>json</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+       </dependencies>
 
 
 </project>
