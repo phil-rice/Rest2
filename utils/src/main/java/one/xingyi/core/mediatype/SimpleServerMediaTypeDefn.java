@@ -1,21 +1,24 @@
 package one.xingyi.core.mediatype;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.DataAndDefn;
-import one.xingyi.core.marshelling.JsonParserAndWriter;
-import one.xingyi.core.marshelling.MakesFromJson;
+import one.xingyi.core.marshelling.*;
 import one.xingyi.core.optics.lensLanguage.LensLine;
 import one.xingyi.core.sdk.IXingYiResource;
+import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-abstract class SimpleServerMediaTypeDefn<Entity extends IXingYiResource> implements IXingYiServerMediaTypeDefn<Entity> {
+abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> implements IXingYiServerMediaTypeDefn<Entity> {
     final String prefix;
+    final MakesFromJson<Entity> makesFromJson;
+    final JsonParserAndWriter<J> parserAndWriter;
 
-    public SimpleServerMediaTypeDefn(String prefix, String entityName) {
+    public SimpleServerMediaTypeDefn(MakesFromJson<Entity> makesFromJson, JsonParserAndWriter<J> parserAndWriter, String prefix, String entityName) {
+        this.makesFromJson = makesFromJson;
+        this.parserAndWriter = parserAndWriter;
         this.prefix = (prefix + "." + entityName).toLowerCase();
     }
     @Override public List<String> lensNames(String acceptHeader) {
@@ -27,53 +30,51 @@ abstract class SimpleServerMediaTypeDefn<Entity extends IXingYiResource> impleme
         }
         throw new RuntimeException("Illegal access of media type. Must start with " + prefix + " but was " + lowerCaseAcceptHeader);
     }
-    @Override public boolean accept(String acceptHeader) {
-        return acceptHeader.toLowerCase().startsWith(prefix);
+    @Override public Entity makeEntityFrom(String acceptHeader, String string) { return makesFromJson.fromJson(parserAndWriter, parserAndWriter.parse(string)); }
+    @Override public boolean accept(String acceptHeader) { return acceptHeader.toLowerCase().startsWith(prefix); }
+
+    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, Entity entity) {
+        return makeDataAndDefnFor(context, entity.toJson(parserAndWriter, context));
     }
+    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, IdAndValue<Entity> idAndValue) {
+        return makeDataAndDefnFor(context, IdAndValue.toJson(idAndValue, parserAndWriter, context));
+    }
+
+    abstract DataAndDefn makeDataAndDefnFor(ContextForJson context, J json);
+
+
 }
 
 
-class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<Entity> {
-    final MakesFromJson<Entity> makesFromJson;
-    final JsonParserAndWriter<J> parserAndWriter;
+class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> {
     final JavascriptStore javascriptStore;
     final JavascriptDetailsToString javascriptDetailsToString;
 
 
     public JsonAndJavascriptServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext context) {
-        super(IMediaTypeConstants.jsonJavascriptPrefix, entityName);
-        this.makesFromJson = makesFromJson;
-        this.parserAndWriter = context.parserAndWriter();
+        super(makesFromJson, context.parserAndWriter(), IMediaTypeConstants.jsonJavascriptPrefix, entityName);
         this.javascriptStore = context.javascriptStore();
         this.javascriptDetailsToString = context.javascriptDetailsToString();
     }
-    @Override public Entity makeEntityFrom(String acceptHeader, String string) {
-        return makesFromJson.fromJson(parserAndWriter, parserAndWriter.parse(string));
-    }
-    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity o) {
-        String data = entityEnvelopeFn.apply(o.toJsonString(parserAndWriter, context));
-        String acceptHeader = context.acceptHeader();
-        String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(acceptHeader)));
+
+    DataAndDefn makeDataAndDefnFor(ContextForJson context, J json) {
+        String data = parserAndWriter.asString(json);
+        String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(context.acceptHeader())));
         return new DataAndDefn(data, defn);
     }
 }
-class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<Entity> {
-    final MakesFromJson<Entity> makesFromJson;
-    final JsonParserAndWriter<J> parserAndWriter;
-    private List<LensLine> lensLines;
+class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> {
+    final List<LensLine> lensLines;
+
     public JsonAndLensDefnServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
-        super(IMediaTypeConstants.jsonDefnPrefix, entityName);
-        this.makesFromJson = makesFromJson;
-        this.parserAndWriter = context.parserAndWriter();
+        super(makesFromJson, context.parserAndWriter(), IMediaTypeConstants.jsonDefnPrefix, entityName);
         this.lensLines = lensLines;
     }
 
-    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity entity) {
-        String json = entityEnvelopeFn.apply(entity.toJsonString(parserAndWriter, context));
+    DataAndDefn makeDataAndDefnFor(ContextForJson context, J json) {
+        String data = parserAndWriter.fromJ(json);
         String lensDefnString = Lists.mapJoin(lensLines, "\n", LensLine::asString);
-        return new DataAndDefn(json, lensDefnString);
+        return new DataAndDefn(data, lensDefnString);
     }
-    @Override public Entity makeEntityFrom(String acceptHeader, String string) {
-        return makesFromJson.fromJson(parserAndWriter, parserAndWriter.parse(string));
-    }
+
 }

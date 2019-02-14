@@ -14,14 +14,12 @@ import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
 import one.xingyi.reference3.telephone.server.companion.TelephoneNumberCompanion;
 import one.xingyi.test.IReferenceFixture3;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 
 import static org.junit.Assert.*;
 public abstract class SimpleMediaTypeDefnTest<Server extends IMediaTypeServerDefn<Person>> implements IReferenceFixture3 {
@@ -48,8 +46,8 @@ public abstract class SimpleMediaTypeDefnTest<Server extends IMediaTypeServerDef
     }
 }
 
-abstract class SimpleMediaTypeDefnClientTests<
-        Server extends SimpleServerMediaTypeDefn<Person>,
+abstract class SimpleMediaTypeDefnClientTests<J,
+        Server extends SimpleServerMediaTypeDefn<J,Person>,
         Client extends SimpleClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>> extends SimpleMediaTypeDefnTest<Server> {
 
     abstract Client clientMediaDefn();
@@ -71,7 +69,13 @@ abstract class SimpleMediaTypeDefnClientTests<
     }
 
     @Test public void testCanTurnAPersonOnTheServerIntoAView() throws ExecutionException, InterruptedException {
-        DataAndDefn dataAndDefn = serverMediaDefn().makeDataAndDefn(contextForJson, Function.identity(), p -> "", person);
+        DataAndDefn dataAndDefn = serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person);
+        PersonNameView newPerson = clientMediaDefn().makeFrom(new ServiceResponse(200, dataAndDefn.asString(), List.of())).get();
+        assertEquals(person.name(), newPerson.name());
+    }
+
+    @Test public void testCanTurnAPersonAndIdOnTheServerIntoAView() throws ExecutionException, InterruptedException {
+        DataAndDefn dataAndDefn = serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person);
         PersonNameView newPerson = clientMediaDefn().makeFrom(new ServiceResponse(200, dataAndDefn.asString(), List.of())).get();
         assertEquals(person.name(), newPerson.name());
     }

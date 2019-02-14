@@ -1,5 +1,4 @@
 package one.xingyi.core.mediatype;
-import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.marshelling.FetchJavascript;
 import one.xingyi.json.Json;
 import one.xingyi.reference3.person.client.companion.PersonNameViewCompanion;
@@ -7,13 +6,11 @@ import one.xingyi.reference3.person.client.entitydefn.IPersonNameViewClientEntit
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
-
-import java.util.function.Function;
-public class JsonAndLensMediaDefnTest extends SimpleMediaTypeDefnClientTests< //TODO Sort out this next
+public class JsonAndLensMediaDefnTest extends SimpleMediaTypeDefnClientTests<Object,
         JsonAndLensDefnServerMediaTypeDefn<Object, Person>,
         JsonAndLensDefnClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>> {
 
-    @Override protected String makeJsonFromContextAndPerson() { return serverMediaDefn().makeDataAndDefn(contextForJson, Function.identity(), p -> "", person).data; }
+    @Override protected String makeJsonFromContextAndPerson() { return serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person).data; }
 
     @Override protected one.xingyi.core.mediatype.JsonAndLensDefnServerMediaTypeDefn<Object, Person> serverMediaDefn() {
         return (JsonAndLensDefnServerMediaTypeDefn<Object, Person>) IMediaTypeServerDefn.<Object, Person>jsonAndLensDefnServer(SimpleMediaTypeDefnTest.entityName, PersonCompanion.companion, context, PersonCompanion.companion.lensLines());
