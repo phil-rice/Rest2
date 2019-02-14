@@ -21,6 +21,7 @@ public class ServiceRequest {
         return from -> ripper.apply(from.uri.getPath()).orElseThrow(() -> ifNotPresent.apply(from));
     }
     public static ServiceRequest sr(String method, String path) {return new ServiceRequest(method, path, List.of(), "");}
+    public static ServiceRequest sr(String method, String path, String acceptHeader) {return new ServiceRequest(method, path, List.of(new Header("accept", acceptHeader)), "");}
     final public String method;
     final public String originalUrl;
     final public URI uri;

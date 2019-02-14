@@ -45,7 +45,7 @@ abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> impl
 }
 
 
-class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> {
+class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> implements IXingYiServerMediaTypeDefn<Entity> {
     final JavascriptStore javascriptStore;
     final JavascriptDetailsToString javascriptDetailsToString;
 

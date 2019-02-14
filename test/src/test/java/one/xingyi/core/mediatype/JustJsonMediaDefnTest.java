@@ -11,6 +11,6 @@ public class JustJsonMediaDefnTest extends SimpleMediaTypeDefnTest<JustJsonServe
         return (JustJsonServerMediaTypeDefn<Object, Person>) IMediaTypeServerDefn.<Object, Person>justJson(SimpleMediaTypeDefnTest.entityName, PersonCompanion.companion, new Json());
     }
     @Override protected String acceptHeader() { return ""; }
-    @Override protected String makeJsonFromContextAndPerson() { return serverMediaDefn().makeStringFrom(contextForJson, Function.identity(), e -> "", person); }
+    @Override protected String makeJsonFromContextAndPerson() { return serverMediaDefn().makeDataAndDefn(contextForJson,  e -> "", person).data; }
 
 }

@@ -22,13 +22,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.*;
-public abstract class SimpleMediaTypeDefnTest<Server extends IMediaTypeServerDefn<Person>> implements IReferenceFixture3 {
+public abstract class SimpleMediaTypeDefnTest<MediaType extends IMediaTypeServerDefn<Person>> implements IReferenceFixture3 {
 
     protected static String entityName = "Person";
 
     protected EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json());
     protected EndpointContext<Object> context = config.from(List.of(PersonCompanion.companion, AddressCompanion.companion, TelephoneNumberCompanion.companion));
-    protected abstract Server serverMediaDefn();
+    protected abstract MediaType serverMediaDefn();
     protected abstract String acceptHeader();
     protected abstract String makeJsonFromContextAndPerson();
 

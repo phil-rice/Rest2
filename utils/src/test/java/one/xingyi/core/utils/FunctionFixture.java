@@ -17,4 +17,10 @@ public interface FunctionFixture {
             return CompletableFuture.completedFuture(to);
         };
     }
+    default public <From, To> Function<From, CompletableFuture<To>> kleisliError(From expected, RuntimeException exception) {
+        return from -> {
+            assertEquals(expected, from);
+            return CompletableFuture.failedFuture(exception);
+        };
+    }
 }
