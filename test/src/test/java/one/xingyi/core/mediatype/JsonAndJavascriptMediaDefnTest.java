@@ -7,6 +7,8 @@ import one.xingyi.reference3.person.client.entitydefn.IPersonNameViewClientEntit
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
+
+import java.util.function.Function;
 public class JsonAndJavascriptMediaDefnTest extends SimpleMediaTypeDefnClientTests<
         JsonAndJavascriptServerMediaTypeDefn<Object, Person>,
         JsonAndJavascriptClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>> {
@@ -15,7 +17,7 @@ public class JsonAndJavascriptMediaDefnTest extends SimpleMediaTypeDefnClientTes
     @Override protected one.xingyi.core.mediatype.JsonAndJavascriptServerMediaTypeDefn<Object, Person> serverMediaDefn() {
         return (JsonAndJavascriptServerMediaTypeDefn<Object, Person>) IMediaTypeServerDefn.<Object, Person>jsonAndJavascriptServer(SimpleMediaTypeDefnTest.entityName, PersonCompanion.companion, context);
     }
-    @Override protected String makeJsonFromContextAndPerson() { return serverMediaDefn().makeDataAndDefn(contextForJson, person).data; }
+    @Override protected String makeJsonFromContextAndPerson() { return serverMediaDefn().makeDataAndDefn(contextForJson, Function.identity(), p -> "", person).data; }
     @Override JsonAndJavascriptClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView> clientMediaDefn() {
         return (JsonAndJavascriptClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>)
                 IMediaTypeClientDefn.<IPersonNameViewClientEntity, PersonNameView>

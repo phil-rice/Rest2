@@ -11,6 +11,7 @@ import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 
 import java.util.List;
+import java.util.function.Function;
 abstract class SimpleServerMediaTypeDefn<Entity extends IXingYiResource> implements IXingYiServerMediaTypeDefn<Entity> {
     final String prefix;
 
@@ -49,8 +50,8 @@ class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> ex
     @Override public Entity makeEntityFrom(String acceptHeader, String string) {
         return makesFromJson.fromJson(parserAndWriter, parserAndWriter.parse(string));
     }
-    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Entity o) {
-        String data = o.toJsonString(parserAndWriter, context);
+    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity o) {
+        String data = entityEnvelopeFn.apply(o.toJsonString(parserAndWriter, context));
         String acceptHeader = context.acceptHeader();
         String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(acceptHeader)));
         return new DataAndDefn(data, defn);
@@ -67,8 +68,8 @@ class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> exte
         this.lensLines = lensLines;
     }
 
-    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Entity entity) {
-        String json = entity.toJsonString(parserAndWriter, context);
+    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity entity) {
+        String json = entityEnvelopeFn.apply(entity.toJsonString(parserAndWriter, context));
         String lensDefnString = Lists.mapJoin(lensLines, "\n", LensLine::asString);
         return new DataAndDefn(json, lensDefnString);
     }

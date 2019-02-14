@@ -6,10 +6,14 @@ import one.xingyi.core.optics.lensLanguage.LensLine;
 import one.xingyi.core.sdk.IXingYiResource;
 
 import java.util.List;
+import java.util.function.Function;
 public interface IMediaTypeServerDefn<Entity extends IXingYiResource> {
 
+    /** This parses the string and returns an entity. It can throw exceptions if the string is malformed */
     Entity makeEntityFrom(String acceptHeader, String string);
-    String makeStringFrom(ContextForJson context, Entity entity);
+
+    /** This turns the entity into a string suitable for a payload. The envelope function wraps the entity in other things if needed (normally just used with id/value, or Function.identity()  */
+    String makeStringFrom(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity entity);
 
 
     static <J, Entity extends IXingYiResource> IXingYiServerMediaTypeDefn<Entity> jsonAndJavascriptServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context) {
@@ -19,7 +23,7 @@ public interface IMediaTypeServerDefn<Entity extends IXingYiResource> {
         return new JustJsonServerMediaTypeDefn<>(makesFromJson, parserAndWriter);
     }
     static <J, Entity extends IXingYiResource> IXingYiServerMediaTypeDefn<Entity> jsonAndLensDefnServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
-        return new JsonAndLensDefnServerMediaTypeDefn<>(entityName, makesFromJson, context, lensLines );
+        return new JsonAndLensDefnServerMediaTypeDefn<>(entityName, makesFromJson, context, lensLines);
     }
 
 }

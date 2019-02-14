@@ -4,6 +4,7 @@ import one.xingyi.core.marshelling.DataAndDefn;
 import one.xingyi.core.sdk.IXingYiResource;
 
 import java.util.List;
+import java.util.function.Function;
 public interface IXingYiServerMediaTypeDefn<Entity extends IXingYiResource> extends IMediaTypeServerDefn<Entity> {
     /** Given an accept header, give me back the list of strings*/
     List<String> lensNames(String acceptHeader);
@@ -11,6 +12,9 @@ public interface IXingYiServerMediaTypeDefn<Entity extends IXingYiResource> exte
     /** is this accept header compatible with this media type */
     boolean accept(String acceptHeader);
 
-    DataAndDefn makeDataAndDefn(ContextForJson context, Entity entity);
-    @Override default String makeStringFrom(ContextForJson context, Entity entity) {return makeDataAndDefn(context, entity).asString();}
+    DataAndDefn makeDataAndDefn(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity entity);
+
+    @Override default String makeStringFrom(ContextForJson context, Function<String, String> entityEnvelopeFn, Function<Entity, String> stateFn, Entity entity) {
+        return makeDataAndDefn(context, entityEnvelopeFn, stateFn, entity).asString();
+    }
 }
