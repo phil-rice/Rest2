@@ -4,7 +4,7 @@ import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
-import one.xingyi.core.marshelling.DataAndDefn;
+import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
 import one.xingyi.core.utils.DigestAndString;
@@ -46,10 +46,10 @@ public class TrafficLightTest {
     void checkSr(TrafficLightServer server, int statusCode, String json, ServiceResponse serviceResponse) {
         assertEquals(statusCode, serviceResponse.statusCode);
         String body = serviceResponse.body;
-        DataAndDefn dataAndDefn = IXingYiResponseSplitter.rawSplit(serviceResponse);
+        DataToBeSentToClient dataToBeSentToClient = IXingYiResponseSplitter.rawSplit(serviceResponse);
         DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
         assertTrue(body, body.contains(digestAndString.digest+IXingYiResponseSplitter.marker));
-        assertEquals(json, dataAndDefn.data);
+        assertEquals(json, dataToBeSentToClient.data);
     }
 
     void checkSrNotFound(ServiceResponse serviceResponse) {

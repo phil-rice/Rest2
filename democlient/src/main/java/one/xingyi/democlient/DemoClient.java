@@ -8,6 +8,7 @@ public class DemoClient {
         while (true) {
             try {
                 Thread.sleep(2000);
+                IDView.edit(service, "id1", old->old.withid("newId"));
                 System.out.println(
 
                         IDView.getOptional(service, "id1", view -> view.xingYi().render("json", view) + "       ==>  " + view.id()).get());

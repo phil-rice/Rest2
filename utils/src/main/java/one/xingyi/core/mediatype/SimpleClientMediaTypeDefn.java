@@ -3,7 +3,7 @@ import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.client.IXingYiFactory;
 import one.xingyi.core.client.LensLinesXingYi;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.marshelling.DataAndDefn;
+import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.lensLanguage.LensDefnStore;
@@ -40,10 +40,10 @@ class JsonAndJavascriptClientMediaTypeDefn<ClientEntity extends IXingYiClientRes
     }
 
     @Override public CompletableFuture<ClientView> makeFrom(ServiceResponse serviceResponse) {
-        DataAndDefn dataAndDefn = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        return getJavascript.apply(dataAndDefn.defn).thenApply(javascript -> {
+        DataToBeSentToClient dataToBeSentToClient = IXingYiResponseSplitter.rawSplit(serviceResponse);
+        return getJavascript.apply(dataToBeSentToClient.defn).thenApply(javascript -> {
             IXingYi<IXingYiClientResource, IXingYiView<IXingYiClientResource>> xingYi = factory.apply(javascript);
-            return makeEntity.make(xingYi, xingYi.parse(dataAndDefn.data));
+            return makeEntity.make(xingYi, xingYi.parse(dataToBeSentToClient.data));
         });
     }
 }
@@ -65,11 +65,11 @@ class JsonAndLensDefnClientMediaTypeDefn<ClientEntity extends IXingYiClientResou
         this.makeEntity = makeEntity;
     }
     @Override public CompletableFuture<ClientView> makeFrom(ServiceResponse serviceResponse) {
-        DataAndDefn dataAndDefn = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        return getDefn.apply(dataAndDefn.defn).thenApply(
+        DataToBeSentToClient dataToBeSentToClient = IXingYiResponseSplitter.rawSplit(serviceResponse);
+        return getDefn.apply(dataToBeSentToClient.defn).thenApply(
                 defnString -> {
                     LensDefnStore lensDefnStore = makeLensStore.apply(defnString);
                     return new LensLinesXingYi<ClientEntity, ClientView>(json, lensDefnStore);
-                }).thenApply(x -> makeEntity.make(x, json.parse(dataAndDefn.data)));
+                }).thenApply(x -> makeEntity.make(x, json.parse(dataToBeSentToClient.data)));
     }
 }

@@ -5,7 +5,7 @@ import one.xingyi.core.http.Header;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.DataAndDefn;
+import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.json.Json;
 import one.xingyi.reference3.address.server.companion.AddressCompanion;
 import one.xingyi.reference3.person.client.entitydefn.IPersonNameViewClientEntity;
@@ -69,14 +69,14 @@ abstract class SimpleMediaTypeDefnClientTests<J,
     }
 
     @Test public void testCanTurnAPersonOnTheServerIntoAView() throws ExecutionException, InterruptedException {
-        DataAndDefn dataAndDefn = serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person);
-        PersonNameView newPerson = clientMediaDefn().makeFrom(new ServiceResponse(200, dataAndDefn.asString(), List.of())).get();
+        DataToBeSentToClient dataToBeSentToClient = serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person);
+        PersonNameView newPerson = clientMediaDefn().makeFrom(new ServiceResponse(200, dataToBeSentToClient.asString(), List.of())).get();
         assertEquals(person.name(), newPerson.name());
     }
 
     @Test public void testCanTurnAPersonAndIdOnTheServerIntoAView() throws ExecutionException, InterruptedException {
-        DataAndDefn dataAndDefn = serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person);
-        PersonNameView newPerson = clientMediaDefn().makeFrom(new ServiceResponse(200, dataAndDefn.asString(), List.of())).get();
+        DataToBeSentToClient dataToBeSentToClient = serverMediaDefn().makeDataAndDefn(contextForJson, p -> "", person);
+        PersonNameView newPerson = clientMediaDefn().makeFrom(new ServiceResponse(200, dataToBeSentToClient.asString(), List.of())).get();
         assertEquals(person.name(), newPerson.name());
     }
 

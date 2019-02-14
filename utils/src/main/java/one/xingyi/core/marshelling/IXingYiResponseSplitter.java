@@ -13,24 +13,24 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-public interface IXingYiResponseSplitter extends Function<ServiceResponse, CompletableFuture<DataAndDefn>> {
+public interface IXingYiResponseSplitter extends Function<ServiceResponse, CompletableFuture<DataToBeSentToClient>> {
 
     static String marker = "\n---------\n";
     static IXingYiResponseSplitter inLineOnlySplitter = new SimpleXingYiResponseSplitter();
     static IXingYiResponseSplitter splitter(Function<ServiceRequest, CompletableFuture<ServiceResponse>> service) { return new XingYiResponseSplitter(service);}
-    static DataAndDefn rawSplit(ServiceResponse serviceResponse) {
+    static DataToBeSentToClient rawSplit(ServiceResponse serviceResponse) {
         if (serviceResponse.statusCode >= 300)
             throw new UnexpectedResponse(serviceResponse);
         String body = serviceResponse.body;
         return rawSplitString(body, () -> new UnexpectedResponse("no marker found", serviceResponse));
     }
 
-    static public DataAndDefn rawSplitString(String body, Supplier<RuntimeException> exceptionSupplier) {
+    static public DataToBeSentToClient rawSplitString(String body, Supplier<RuntimeException> exceptionSupplier) {
         int index = body.indexOf(SimpleXingYiResponseSplitter.marker);
         if (index == -1) throw exceptionSupplier.get();
         String javascript = body.substring(0, index);
         String data = body.substring(index + marker.length());
-        return new DataAndDefn(data, javascript);
+        return new DataToBeSentToClient(data, javascript);
     }
 
     //TODO Work out where to put this. Probably move it into httpService.template
@@ -52,7 +52,7 @@ public interface IXingYiResponseSplitter extends Function<ServiceResponse, Compl
 }
 
 class SimpleXingYiResponseSplitter implements IXingYiResponseSplitter {
-    @Override public CompletableFuture<DataAndDefn> apply(ServiceResponse serviceResponse) {
+    @Override public CompletableFuture<DataToBeSentToClient> apply(ServiceResponse serviceResponse) {
         return CompletableFuture.completedFuture(IXingYiResponseSplitter.rawSplit(serviceResponse));
     }
 }
@@ -65,16 +65,16 @@ class XingYiResponseSplitter implements IXingYiResponseSplitter {
         this.service = service;
         this.javascriptCache = Cache.dumbCache(url -> service.apply(new ServiceRequest("get", url, List.of(), "")));
     }
-    @Override public CompletableFuture<DataAndDefn> apply(ServiceResponse serviceResponse) {
-        DataAndDefn dataAndDefnLinks = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        String urlOrJavascript = dataAndDefnLinks.defn;
+    @Override public CompletableFuture<DataToBeSentToClient> apply(ServiceResponse serviceResponse) {
+        DataToBeSentToClient dataToBeSentToClientLinks = IXingYiResponseSplitter.rawSplit(serviceResponse);
+        String urlOrJavascript = dataToBeSentToClientLinks.defn;
         if (urlOrJavascript.startsWith("http") || urlOrJavascript.startsWith("/")) {
             return javascriptCache.apply(urlOrJavascript).thenApply(sr -> {
                 checkServiceResponse(serviceResponse, urlOrJavascript, sr);
                 return sr.body;
-            }).thenApply(javascript -> new DataAndDefn(dataAndDefnLinks.data, javascript)).
+            }).thenApply(javascript -> new DataToBeSentToClient(dataToBeSentToClientLinks.data, javascript)).
                     exceptionally(WrappedException.wrapFnWithE(e -> {javascriptCache.invalidate(urlOrJavascript); throw e;}));
-        } else return CompletableFuture.completedFuture(dataAndDefnLinks);
+        } else return CompletableFuture.completedFuture(dataToBeSentToClientLinks);
 
     }
     private void checkServiceResponse(ServiceResponse serviceResponse, String url, ServiceResponse sr) {

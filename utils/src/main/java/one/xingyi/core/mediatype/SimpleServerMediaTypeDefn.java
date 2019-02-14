@@ -9,7 +9,6 @@ import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.Strings;
 
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> implements IXingYiServerMediaTypeDefn<Entity> {
     final String prefix;
@@ -33,14 +32,14 @@ abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> impl
     @Override public Entity makeEntityFrom(String acceptHeader, String string) { return makesFromJson.fromJson(parserAndWriter, parserAndWriter.parse(string)); }
     @Override public boolean accept(String acceptHeader) { return acceptHeader.toLowerCase().startsWith(prefix); }
 
-    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, Entity entity) {
+    @Override public DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, Entity entity) {
         return makeDataAndDefnFor(context, entity.toJson(parserAndWriter, context));
     }
-    @Override public DataAndDefn makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, IdAndValue<Entity> idAndValue) {
+    @Override public DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, IdAndValue<Entity> idAndValue) {
         return makeDataAndDefnFor(context, IdAndValue.toJson(idAndValue, parserAndWriter, context));
     }
 
-    abstract DataAndDefn makeDataAndDefnFor(ContextForJson context, J json);
+    abstract DataToBeSentToClient makeDataAndDefnFor(ContextForJson context, J json);
 
 
 }
@@ -57,10 +56,10 @@ class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> ex
         this.javascriptDetailsToString = context.javascriptDetailsToString();
     }
 
-    DataAndDefn makeDataAndDefnFor(ContextForJson context, J json) {
+    DataToBeSentToClient makeDataAndDefnFor(ContextForJson context, J json) {
         String data = parserAndWriter.asString(json);
         String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(context.acceptHeader())));
-        return new DataAndDefn(data, defn);
+        return new DataToBeSentToClient(data, defn);
     }
 }
 class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> {
@@ -71,10 +70,10 @@ class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource> exte
         this.lensLines = lensLines;
     }
 
-    DataAndDefn makeDataAndDefnFor(ContextForJson context, J json) {
+    DataToBeSentToClient makeDataAndDefnFor(ContextForJson context, J json) {
         String data = parserAndWriter.fromJ(json);
         String lensDefnString = Lists.mapJoin(lensLines, "\n", LensLine::asString);
-        return new DataAndDefn(data, lensDefnString);
+        return new DataToBeSentToClient(data, lensDefnString);
     }
 
 }
