@@ -13,11 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 public class LensStore<J> {
 
     private final Map<String, Lens<Object, Object>> map;
     private JsonParserAndWriter<J> json;
+
 
     public LensStore(JsonParserAndWriter<J> json, LensDefnStore store) {
         this.json = json;

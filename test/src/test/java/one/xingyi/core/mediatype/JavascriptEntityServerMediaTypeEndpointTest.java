@@ -6,9 +6,9 @@ import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
 
 import java.util.List;
-public class JavascriptEntityMediaTypeEndpointTest extends EntityMediaTypeEndpointTest<JsonAndLensDefnServerMediaTypeDefn<Object, Person>> {
+public class JavascriptEntityServerMediaTypeEndpointTest extends AbstractEntityServerMediaTypeEndpointTest<JsonAndLensDefnServerMediaTypeDefn<Object, Person>> {
 
-    @Override protected JsonAndLensDefnServerMediaTypeDefn mediaType() {
+    @Override protected JsonAndLensDefnServerMediaTypeDefn serverMediaType() {
         List<LensLine> lensLens = List.of(new LensLine("someName", List.of()));
         return new JsonAndLensDefnServerMediaTypeDefn("person", PersonCompanion.companion, EndpointConfig.defaultConfig(new Json()).from(List.of(PersonCompanion.companion)), lensLens);
     }

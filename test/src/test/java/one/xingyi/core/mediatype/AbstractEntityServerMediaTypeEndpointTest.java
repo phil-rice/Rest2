@@ -21,15 +21,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import static junit.framework.TestCase.assertEquals;
-public abstract class EntityMediaTypeEndpointTest<M extends IXingYiServerMediaTypeDefn<Person>> implements FunctionFixture, IReferenceFixture3 {
+public abstract class AbstractEntityServerMediaTypeEndpointTest<M extends IXingYiServerMediaTypeDefn<Person>> implements FunctionFixture, IReferenceFixture3 {
 
-    protected abstract M mediaType();
+    protected abstract M serverMediaType();
     private EndpointContext<Object> context = EndpointConfig.defaultConfig(new Json()).from(List.of(PersonCompanion.companion));
     private IResourceEndpointAcceptor<String> acceptor = IResourceEndpointAcceptor.apply("get", "/person/{id}", (sr, s) -> sr.path + ":" + s);
 
-    EndPoint endPoint(Function<String, CompletableFuture<Person>> fn) {return mediaType().<Object, String>entityEndpoint(context, acceptor, 202, fn, p -> "");}
+  protected  EndPoint endPoint(Function<String, CompletableFuture<Person>> fn) {return serverMediaType().<Object, String>entityEndpoint(context, acceptor, 202, fn, p -> "");}
 
-    ServiceRequest sr(String url) {return ServiceRequest.sr("get", url, "application/xingyi.json.javascript.person");}
+    protected ServiceRequest sr(String url) {return ServiceRequest.sr("get", url, "application/xingyi.json.javascript.person");}
 
     @Test public void testReturnsNoneifDoesntMatch() throws ExecutionException, InterruptedException {
         Optional<ServiceResponse> opt = endPoint(kleisli("never called", person)).apply(sr("/doesnt/match")).get();
@@ -37,7 +37,7 @@ public abstract class EntityMediaTypeEndpointTest<M extends IXingYiServerMediaTy
     }
     @Test public void testReturnsDataAndDefnifMatchs() throws ExecutionException, InterruptedException {
         ServiceRequest serviceRequest = sr( "/person/someId");
-        DataToBeSentToClient expected = mediaType().makeDataAndDefn(ContextForJson.forServiceRequest("http", serviceRequest), p -> "", person);
+        DataToBeSentToClient expected = serverMediaType().makeDataAndDefn(ContextForJson.forServiceRequest("http", serviceRequest), p -> "", person);
         ServiceResponse resp = endPoint(kleisli("/person/someId:someId", person)).apply(serviceRequest).get().get();
         assertEquals(202, resp.statusCode);
         assertEquals(expected.asString(), resp.body);
