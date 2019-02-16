@@ -46,4 +46,5 @@ public class EndpointContext<J> implements ServerMediaTypeContext<J> {
     @Override public JsonParserAndWriter<J> parserAndWriter() { return parserAndWriter; }
     @Override public JavascriptStore javascriptStore() { return javascriptStore; }
     @Override public JavascriptDetailsToString javascriptDetailsToString() { return javascriptDetailsToString; }
+    @Override public String protocol() { return protocol; }
 }

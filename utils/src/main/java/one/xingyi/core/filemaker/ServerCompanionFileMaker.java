@@ -9,6 +9,7 @@ import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
 import one.xingyi.core.marshelling.JsonParser;
+import one.xingyi.core.mediatype.IResourceEndpoints;
 import one.xingyi.core.mediatype.IXingYiServerMediaTypeDefn;
 import one.xingyi.core.mediatype.JsonAndLensDefnServerMediaTypeDefn;
 import one.xingyi.core.mediatype.ServerMediaTypeContext;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
 
     List<String> createBookmarkAndUrl(ResourceDom resourceDom) {
@@ -124,20 +126,26 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
 
     List<String> createEndpoints(ResourceDom resourceDom) {
         String className = resourceDom.entityNames.serverEntity.className;
-        String controllerName = resourceDom.entityNames.serverController.className;
-        String companionName = resourceDom.entityNames.serverCompanion.asString();
-        return Optionals.fold(resourceDom.bookmark, () -> List.of(), b -> Lists.<String>append(
-                List.of("//EntityDom: " + resourceDom.bookmark),
-                Optionals.flatMap(resourceDom.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", controllerName, b, "controller::createWithId", "controller::stateFn")),
-                Optionals.flatMap(resourceDom.actionsDom.createWithoutIdDom, dom -> createWithNoIdEndpoint("create" + className, "createEntity", controllerName, b.withUrl(dom.path), "controller::createWithoutIdRequestFrom", "controller::createWithoutId", "controller::stateFn")),
-                Optionals.flatMap(resourceDom.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, controllerName, b, "controller::put", "controller::stateFn")),
-                Optionals.flatMap(resourceDom.actionsDom.getDom, dom -> dom.mustExist ?
-                        createEndpointWithStateFn("get" + className, "getEntity", controllerName, b,
-                                "controller::get", "controller::stateFn") :
-                        createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", controllerName, b,
-                                "controller::getOptional", "controller::stateFn")),
-                Optionals.flatMap(resourceDom.actionsDom.deleteDom, dom -> deleteEndpoint("delete" + className, "deleteEntity", controllerName, b, "controller::delete")),
-                Lists.flatMap(resourceDom.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, controllerName, b.withMoreUrl(dom.path), "controller::" + dom.action, "controller::stateFn"))));
+        if (resourceDom.bookmark.isPresent()) {
+            return List.of("public <J> IResourceEndpoints<" + className + "> endpoints(ServerMediaTypeContext<J> context, Function<" + className + ", String> stateFn) {",
+                    Formating.indent + "return lensMediaDefn(context).endpoints(context.protocol(), bookmarkAndUrl(), stateFn);",
+                    "}");
+        } else return List.of();
+
+//        String controllerName = resourceDom.entityNames.serverController.className;
+//        String companionName = resourceDom.entityNames.serverCompanion.asString();
+//        return Optionals.fold(resourceDom.bookmark, () -> List.of(), b -> Lists.<String>append(
+//                List.of("//EntityDom: " + resourceDom.bookmark),
+//                Optionals.flatMap(resourceDom.actionsDom.createDom, dom -> createEndpointWithStateFn("createWithId" + className, "createEntityWithId", controllerName, b, "controller::createWithId", "controller::stateFn")),
+//                Optionals.flatMap(resourceDom.actionsDom.createWithoutIdDom, dom -> createWithNoIdEndpoint("create" + className, "createEntity", controllerName, b.withUrl(dom.path), "controller::createWithoutIdRequestFrom", "controller::createWithoutId", "controller::stateFn")),
+//                Optionals.flatMap(resourceDom.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, controllerName, b, "controller::put", "controller::stateFn")),
+//                Optionals.flatMap(resourceDom.actionsDom.getDom, dom -> dom.mustExist ?
+//                        createEndpointWithStateFn("get" + className, "getEntity", controllerName, b,
+//                                "controller::get", "controller::stateFn") :
+//                        createEndpointWithStateFn("getOptional" + className, "getOptionalEntity", controllerName, b,
+//                                "controller::getOptional", "controller::stateFn")),
+//                Optionals.flatMap(resourceDom.actionsDom.deleteDom, dom -> deleteEndpoint("delete" + className, "deleteEntity", controllerName, b, "controller::delete")),
+//                Lists.flatMap(resourceDom.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, controllerName, b.withMoreUrl(dom.path), "controller::" + dom.action, "controller::stateFn"))));
     }
 
     @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
@@ -152,7 +160,7 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                         IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, IResourceList.class, Lists.class,
                         IXingYiServesResourceCompanion.class, XingYiGenerated.class, EndPoint.class, EndpointContext.class,
                         Optional.class, BookmarkCodeAndUrlPattern.class, HasBookmarkAndUrl.class, ServerMediaTypeContext.class, JsonAndLensDefnServerMediaTypeDefn.class,
-                        LensLine.class, StringLensDefn.class, ViewLensDefn.class, ListLensDefn.class, IXingYiServerMediaTypeDefn.class
+                        LensLine.class, StringLensDefn.class, ViewLensDefn.class, ListLensDefn.class, IXingYiServerMediaTypeDefn.class, IResourceEndpoints.class, Function.class
                 ),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(resourceDom)),

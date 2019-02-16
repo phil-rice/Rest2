@@ -5,6 +5,7 @@ import one.xingyi.core.marshelling.JsonParserAndWriter;
 
 
 public interface ServerMediaTypeContext<J> {
+    String protocol();
     JsonParserAndWriter<J> parserAndWriter();
     JavascriptStore javascriptStore();
     JavascriptDetailsToString javascriptDetailsToString();
