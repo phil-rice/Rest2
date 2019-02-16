@@ -55,7 +55,6 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                     Formating.indent + "return new JsonAndLensDefnServerMediaTypeDefn<>(" + Strings.quote(entityName) + ", this, context, lensLines());",
                     " }");
         } else return List.of();
-
     }
 
     private List<String> createListOfLens(ResourceDom resourceDom) {
@@ -77,31 +76,36 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
 
 
     String bookmarkAndCode(BookmarkCodeAndUrlPattern b) {return Strings.quote(b.urlPattern) + "," + Strings.quote(b.code);}
-    List<String> createWithNoIdEndpoint(String methodName, String method, String controllerName, BookmarkCodeAndUrlPattern bookmark, String reqFn, String function, String stateFn) {
+    List<String> createWithNoIdEndpoint(String methodName, String method, String
+            controllerName, BookmarkCodeAndUrlPattern bookmark, String reqFn, String function, String stateFn) {
         return Lists.append(List.of(
                 "public <J>EndPoint " + methodName + "(EndpointContext<J> context, " + controllerName + " controller) {",
                 Formating.indent + "return EndPoint." + method + "(context, " + bookmarkAndCode(bookmark) + ", " + reqFn + "," + function + "," + stateFn + ");",
                 "}"));
     }
-    List<String> createEndpointWithStateFn(String methodName, String method, String controllerName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
+    List<String> createEndpointWithStateFn(String methodName, String method, String
+            controllerName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
         return Lists.append(List.of(
                 "public <J>EndPoint " + methodName + "(EndpointContext<J> context, " + controllerName + " controller) {",
                 Formating.indent + "return EndPoint." + method + "(context, " + bookmarkAndCode(bookmark) + ", " + function + "," + stateFn + ");",
                 "}"));
     }
-    List<String> deleteEndpoint(String methodName, String method, String controllerName, BookmarkCodeAndUrlPattern bookmark, String function) {
+    List<String> deleteEndpoint(String methodName, String method, String controllerName, BookmarkCodeAndUrlPattern
+            bookmark, String function) {
         return Lists.append(List.of(
                 "public <J>EndPoint " + methodName + "(EndpointContext<J> context, " + controllerName + " controller) {",
                 Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark.urlPattern) + ", " + function + ");",
                 "}"));
     }
-    List<String> createPutEndpoint(String methodName, String companionName, String controllerName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
+    List<String> createPutEndpoint(String methodName, String companionName, String
+            controllerName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
         return Lists.append(List.of(
                 "public <J>EndPoint " + methodName + "(EndpointContext<J> context, " + controllerName + " controller) {",
                 Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + bookmarkAndCode(bookmark) + ", " + function + "," + stateFn + ");",
                 "}"));
     }
-    List<String> createPostEndpoint(String methodName, List<String> states, String controllerName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
+    List<String> createPostEndpoint(String methodName, List<String> states, String
+            controllerName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
         return Lists.append(List.of(
                 "public <J> EndPoint " + methodName + "(EndpointContext<J> context, " + controllerName + " controller) {",
                 Formating.indent + "return EndPoint.postEntity(context, " + bookmarkAndCode(bookmark) + ", " + "List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + "," + stateFn + ");",
