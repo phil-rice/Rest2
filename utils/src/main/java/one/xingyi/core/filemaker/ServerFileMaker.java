@@ -26,7 +26,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createFields(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("public final EndpointContext<J> context;"),
-                Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
+                Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> "public final " + ed.entityNames.serverController.asString() + " " + ed.entityNames.serverController.className + ";")
         );
     }
     List<String> createConstructor(ServerDom serverDom) {

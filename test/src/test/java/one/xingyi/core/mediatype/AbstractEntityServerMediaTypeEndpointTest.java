@@ -44,4 +44,6 @@ public abstract class AbstractEntityServerMediaTypeEndpointTest<M extends IXingY
         assertEquals(200, resp.statusCode);
         assertEquals(expected.asString(), resp.body);
     }
+
+
 }

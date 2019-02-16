@@ -26,4 +26,8 @@ public abstract class AbstractEntityClientMediaTypeEndpointTest<ServerMediaType 
         assertEquals("someName", personNameView.name());
     }
 
+
+    @Test public void testGetEndpoint(){
+
+    }
 }
