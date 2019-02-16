@@ -18,9 +18,9 @@ public abstract class AbstractEntityClientMediaTypeEndpointTest<ServerMediaType 
     abstract ClientMediaType clientMediaType();
 
     @Test public void testCanTurnAResponseIntoAPersonView() throws ExecutionException, InterruptedException {
-        EndPoint endPoint = endPoint(kleisli("/person/someId:someId", person));
+        EndPoint endPoint = endpoints.get(kleisli("someId", person));
         ServiceResponse resp = endPoint.apply(sr("/person/someId")).get().get();
-        assertEquals(202, resp.statusCode); //just in case
+        assertEquals(200, resp.statusCode); //just in case
 
         PersonNameView personNameView = clientMediaType().makeFrom(resp).get();
         assertEquals("someName", personNameView.name());

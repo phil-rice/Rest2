@@ -17,7 +17,7 @@ public interface EndPointFactorys {
     static <J> EndPoint entityEndpointFromContext(EndpointContext<J> context, List<HasBookmarkAndUrl> companions) {
         EntityRegister entityRegister = EntityRegister.apply(companions);
         Function<ResourceDetails, String> noStateFn = x -> "";
-        return IResourceEndPoint.<J, ResourceDetails, ResourceDetailsRequest, Optional<ResourceDetails>>create(
+        return IResourceEndPoint.< ResourceDetails, ResourceDetailsRequest, Optional<ResourceDetails>>create(
                 new EntityEndpointAcceptor(entityRegister),
                 from -> CompletableFuture.completedFuture(entityRegister.apply(from)),
                 EndpointResult.createForOptional(context, 200, ResourceDetailsCompanion.companion.bookmarkAndUrl().code));

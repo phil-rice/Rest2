@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 @RequiredArgsConstructor
-public class IdAndEntityMediaTypeEndpoint<J, Request, Entity extends IXingYiResource> implements IMediaTypeEndpoint<J, Request, Entity> {
+public class IdAndEntityMediaTypeEndpoint< Request, Entity extends IXingYiResource> implements IMediaTypeEndpoint< Request, Entity> {
     final IResourceEndpointAcceptor<Request> acceptor;
     final Function<Request, CompletableFuture<IdAndValue<Entity>>> fn;
     final String protocol;

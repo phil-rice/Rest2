@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 
 @RequiredArgsConstructor
-public class EntityMediaTypeEndpoint<J, Request, Entity extends IXingYiResource> implements IMediaTypeEndpoint<J, Request, Entity> {
+public class EntityMediaTypeEndpoint<Request, Entity extends IXingYiResource> implements IMediaTypeEndpoint< Request, Entity> {
     final IResourceEndpointAcceptor<Request> acceptor;
     final Function<Request, CompletableFuture<Entity>> fn;
     final String protocol;

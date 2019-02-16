@@ -14,36 +14,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 public interface IMediaTypeServerDefn<Entity extends IXingYiResource> {
 
-    /** This parses the string and returns an entity. It can throw exceptions if the string is malformed */
+    /**
+     * This parses the string and returns an entity. It can throw exceptions if the string is malformed
+     */
     Entity makeEntityFrom(String acceptHeader, String string);
 
     DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, Entity entity);
     DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, IdAndValue<Entity> entity);
 
-    default <J, Request> IMediaTypeEndpoint<J, Request, Entity> entityEndpoint(
-            EndpointContext<J> context,
-            IResourceEndpointAcceptor<Request> acceptor,
-            int statusCode,
-            Function<Request, CompletableFuture<Entity>> fn,
-            Function<Entity, String> stateFn) {
-        return new EntityMediaTypeEndpoint<J, Request, Entity>(acceptor, fn, context.protocol, statusCode, this, stateFn);
-    }
- default <J, Request> IMediaTypeEndpoint<J, Request, Entity> optionalEntityEndpoint(
-            EndpointContext<J> context,
-            IResourceEndpointAcceptor<Request> acceptor,
-            int statusCode,
-            Function<Request, CompletableFuture<Optional<Entity>>> fn,
-            Function<Entity, String> stateFn) {
-        return new OptionalEntityMediaTypeEndpoint<>(acceptor, fn, context.protocol, statusCode, this, stateFn);
-    }
-    default <J, Request> IMediaTypeEndpoint<J, Request, Entity> idAndEntityEndpoint(
-            EndpointContext<J> context,
-            IResourceEndpointAcceptor<Request> acceptor,
-            int statusCode,
-            Function<Request, CompletableFuture<IdAndValue<Entity>>> fn,
-            Function<Entity, String> stateFn) {
-        return new IdAndEntityMediaTypeEndpoint<>(acceptor, fn, context.protocol, statusCode, this, stateFn);
-    }
+    default IResourceEndpoints<Entity> endpoints(String protocol, BookmarkCodeAndUrlPattern bookmarkCodeAndUrlPattern, Function<Entity, String> stateFn) { return new MediaTypeResourceEndpoints<>(protocol, this, bookmarkCodeAndUrlPattern, stateFn); }
 
     static <J, Entity extends IXingYiResource> IXingYiServerMediaTypeDefn<Entity> jsonAndJavascriptServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context) {
         return new JsonAndJavascriptServerMediaTypeDefn<>(entityName, makesFromJson, context);

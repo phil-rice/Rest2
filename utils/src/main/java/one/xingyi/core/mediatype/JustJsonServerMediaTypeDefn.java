@@ -1,5 +1,6 @@
 package one.xingyi.core.mediatype;
 import lombok.RequiredArgsConstructor;
+import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
