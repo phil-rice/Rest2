@@ -47,29 +47,3 @@ class JsonAndJavascriptClientMediaTypeDefn<ClientEntity extends IXingYiClientRes
         });
     }
 }
-class JsonAndLensDefnClientMediaTypeDefn<ClientEntity extends IXingYiClientResource, ClientView extends IXingYiView<ClientEntity>> extends SimpleClientMediaTypeDefn<ClientEntity, ClientView> {
-    private JsonParserAndWriter<Object> json;
-    private final Function<String, CompletableFuture<String>> getDefn;
-    private final Function<String, LensDefnStore> makeLensStore;
-    final IXingYiClientFactory<ClientEntity, ClientView> makeEntity;
-
-    public JsonAndLensDefnClientMediaTypeDefn(String entityName,
-                                              JsonParserAndWriter<Object> json,
-                                              Function<String, CompletableFuture<String>> getDefn,
-                                              Function<String, LensDefnStore> makeLensStore,
-                                              IXingYiClientFactory<ClientEntity, ClientView> makeEntity) {
-        super(IMediaTypeConstants.jsonDefnPrefix, entityName);
-        this.json = json;
-        this.getDefn = getDefn;
-        this.makeLensStore = makeLensStore;
-        this.makeEntity = makeEntity;
-    }
-    @Override public CompletableFuture<ClientView> makeFrom(ServiceResponse serviceResponse) {
-        DataToBeSentToClient dataToBeSentToClient = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        return getDefn.apply(dataToBeSentToClient.defn).thenApply(
-                defnString -> {
-                    LensDefnStore lensDefnStore = makeLensStore.apply(defnString);
-                    return new LensLinesXingYi<ClientEntity, ClientView>(json, lensDefnStore);
-                }).thenApply(x -> makeEntity.make(x, json.parse(dataToBeSentToClient.data)));
-    }
-}

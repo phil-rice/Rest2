@@ -8,32 +8,32 @@ import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiView;
 import one.xingyi.core.utils.IdAndValue;
 
-public class LensLinesXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
-    final JsonParserAndWriter<Object> parser;
-    final LensStore<Object> lensStore;
-    public LensLinesXingYi(JsonParserAndWriter<Object> parser, LensDefnStore lensStore) {
+public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> implements IXingYi<Entity, View> {
+    final JsonParserAndWriter<J> parser;
+    final LensStore<J> lensStore;
+    public LensLinesXingYi(JsonParserAndWriter<J> parser, LensDefnStore lensStore) {
         this.parser = parser;
         this.lensStore = lensStore.makeStore(parser);
     }
     @Override public Object parse(String s) { return parser.parse(s); }
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return viewToMirrorL(maker).andThen(lensStore.stringLens(name));
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lensStore.stringLens(name));
     }
 
     @Override
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
-        return viewToMirrorL(maker).andThen(parser.lensToChild(name)).andThen(mirrorToViewL(childMaker));
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(parser.lensToChild(name)).andThen(Lens.<J, Object>cast()).andThen(mirrorToViewL(childMaker));
     }
     @Override public IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker) {
-        return new IdAndValue<>(this.parser.asString(mirror, "id"), maker.make(this, this.parser.child(mirror, "value")));
+        return new IdAndValue<>(this.parser.asString((J) mirror, "id"), maker.make(this, this.parser.child((J) mirror, "value")));
     }
     @Override
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
         throw new RuntimeException("don't do lists yet");
     }
     @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
-        if (renderName.equalsIgnoreCase("json")) return parser.fromJ(view.mirror());
+        if (renderName.equalsIgnoreCase("json")) return parser.fromJ((J) view.mirror());
         throw new RuntimeException("Unrecognised renderName" + renderName + " only legal value is 'parserAndWriter'");
     }
 

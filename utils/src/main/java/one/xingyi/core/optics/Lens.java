@@ -6,6 +6,7 @@ import java.util.function.Function;
 public interface Lens<A, B> extends Setter<A, B>, Getter<A, B> {
     static <A, B> Lens<A, B> create(Getter<A, B> get, Setter<A, B> set) {return new LensImpl<>(get, set);}
     static <A> Lens<A, A> identity(){return create(a->a, (a,b)->b);}
+    static <A, B> Lens<A, B> cast() {return create(a -> (B) a, (a, b) -> (A) b);}
 
     A transform(A a, Function<B, B> fn);
     <C> Lens<A, C> andThen(Lens<B, C> lens);

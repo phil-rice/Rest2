@@ -5,7 +5,13 @@ import one.xingyi.core.client.IXingYi;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
 import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
+import one.xingyi.core.marshelling.FetchJavascript;
+import one.xingyi.core.marshelling.JsonParserAndWriter;
+import one.xingyi.core.mediatype.IMediaTypeClientDefn;
+import one.xingyi.core.mediatype.JsonAndLensDefnClientMediaTypeDefn;
 import one.xingyi.core.monad.MonadDefn;
+import one.xingyi.core.names.EntityNames;
+import one.xingyi.core.optics.lensLanguage.LensStoreParser;
 import one.xingyi.core.sdk.IXingYiClientViewCompanion;
 import one.xingyi.core.sdk.IXingYiRemoteClientViewCompanion;
 import one.xingyi.core.sdk.IXingYiView;
@@ -91,14 +97,22 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
                                 viewDom.viewNames.clientViewImpl.asString() +
                                 ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, IXingYiClientViewCompanion.class,
-                        IXingYiRemoteClientViewCompanion.class, IXingYi.class, BookmarkCodeAndUrlPattern.class,
-                        Function.class, IdAndValue.class),
+                        IXingYiRemoteClientViewCompanion.class, IXingYi.class, BookmarkCodeAndUrlPattern.class, FetchJavascript.class, JsonParserAndWriter.class,
+                        Function.class, IdAndValue.class, IMediaTypeClientDefn.class, JsonAndLensDefnClientMediaTypeDefn.class, LensStoreParser.class),
 
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),
                 Formating.indent(createGetRemoteAccessMethods(accessDetails, viewDom)),
                 List.of(Formating.indent + "@SuppressWarnings(\"unchecked\")@Override public " + viewDom.viewNames.clientView.asString() + " make(IXingYi xingYi, Object mirror){return new " + viewDom.viewNames.clientViewImpl.asString() + "(xingYi,mirror);} "),
+                Formating.indent(createMediaType(viewDom)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientCompanion, result));
     }
-}
+    private List<String> createMediaType(ViewDom viewDom) {
+        EntityNames entityNames = viewDom.viewNames.entityNames;
+
+        return List.of("public <J>IMediaTypeClientDefn<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + "> x(JsonParserAndWriter<J> json){",
+                Formating.indent + "return new  JsonAndLensDefnClientMediaTypeDefn<>(" +
+                        Strings.quote(entityNames.serverEntity.className) + ",json, FetchJavascript.asIs(),LensStoreParser.simple(),this);",
+                "}");
+    }}

@@ -15,7 +15,7 @@ import one.xingyi.reference3.person.server.domain.Person;
 import java.util.List;
 
 public class LensEntityServerMediaTypeEndpointTest extends AbstractEntityClientMediaTypeEndpointTest
-        <JsonAndLensDefnServerMediaTypeDefn<Object, Person>, JsonAndLensDefnClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>> {
+        <JsonAndLensDefnServerMediaTypeDefn<Object, Person>, JsonAndLensDefnClientMediaTypeDefn<Object, IPersonNameViewClientEntity, PersonNameView>> {
 
     @Override
     protected JsonAndLensDefnServerMediaTypeDefn<Object, Person> serverMediaType() {
@@ -23,7 +23,7 @@ public class LensEntityServerMediaTypeEndpointTest extends AbstractEntityClientM
     }
 
     @Override
-    JsonAndLensDefnClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView> clientMediaType() {
-        return new JsonAndLensDefnClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>("person", new Json(), FetchJavascript.asIs(), LensStoreParser.simple(), PersonNameViewCompanion.companion);
+    JsonAndLensDefnClientMediaTypeDefn<Object, IPersonNameViewClientEntity, PersonNameView> clientMediaType() {
+        return new JsonAndLensDefnClientMediaTypeDefn<Object, IPersonNameViewClientEntity, PersonNameView>("person", new Json(), FetchJavascript.asIs(), LensStoreParser.simple(), PersonNameViewCompanion.companion);
     }
 }
