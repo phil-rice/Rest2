@@ -1,4 +1,6 @@
 package one.xingyi.core.mediatype;
+
+import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.marshelling.ContextForJson;
@@ -16,11 +18,12 @@ public abstract class AbstractEntityClientMediaTypeEndpointTest<ServerMediaType 
     abstract ClientMediaType clientMediaType();
 
     @Test public void testCanTurnAResponseIntoAPersonView() throws ExecutionException, InterruptedException {
-        ServiceResponse resp = endPoint(kleisli("/person/someId:someId", person)).apply(sr("/person/someId")).get().get();
+        EndPoint endPoint = endPoint(kleisli("/person/someId:someId", person));
+        ServiceResponse resp = endPoint.apply(sr("/person/someId")).get().get();
         assertEquals(202, resp.statusCode); //just in case
 
         PersonNameView personNameView = clientMediaType().makeFrom(resp).get();
-        assertEquals("", personNameView.name());
+        assertEquals("someName", personNameView.name());
     }
 
 }
