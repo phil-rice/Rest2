@@ -1,4 +1,5 @@
 package one.xingyi.core.filemaker;
+import one.xingyi.core.annotations.Resource;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.codeDom.ResourceDom;
@@ -8,6 +9,9 @@ import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
 import one.xingyi.core.marshelling.JsonParser;
+import one.xingyi.core.mediatype.IXingYiServerMediaTypeDefn;
+import one.xingyi.core.mediatype.JsonAndLensDefnServerMediaTypeDefn;
+import one.xingyi.core.mediatype.ServerMediaTypeContext;
 import one.xingyi.core.optics.lensLanguage.*;
 import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.sdk.IXingYiServesResourceCompanion;
@@ -42,6 +46,16 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
         result.addAll(Formating.indent(resourceDom.fields.withDeprecatedmap(fd -> "+ " + Strings.quote(fd.javascript + "\\n"))));
         result.add(";");
         return result;
+    }
+
+    private List<String> createMediaDefn(ResourceDom resourceDom) {
+        if (resourceDom.bookmark.isPresent()) {
+            String entityName = resourceDom.entityNames.serverEntity.className;
+            return List.of(" public <J>IXingYiServerMediaTypeDefn<" + resourceDom.entityNames.serverEntity.className + "> lensMediaDefn(ServerMediaTypeContext<J> context) {",
+                    Formating.indent + "return new JsonAndLensDefnServerMediaTypeDefn<>(" + Strings.quote(entityName) + ", this, context, lensLines());",
+                    " }");
+        } else return List.of();
+
     }
 
     private List<String> createListOfLens(ResourceDom resourceDom) {
@@ -133,8 +147,8 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                                 "one.xingyi.core.httpClient.server.controller.IResourceDetailsController"),
                         IXingYiServerCompanion.class, JsonParser.class, Map.class, StateData.class, List.class, IResourceList.class, Lists.class,
                         IXingYiServesResourceCompanion.class, XingYiGenerated.class, EndPoint.class, EndpointContext.class,
-                        Optional.class, BookmarkCodeAndUrlPattern.class, HasBookmarkAndUrl.class,
-                        LensLine.class, StringLensDefn.class, ViewLensDefn.class, ListLensDefn.class
+                        Optional.class, BookmarkCodeAndUrlPattern.class, HasBookmarkAndUrl.class, ServerMediaTypeContext.class, JsonAndLensDefnServerMediaTypeDefn.class,
+                        LensLine.class, StringLensDefn.class, ViewLensDefn.class, ListLensDefn.class, IXingYiServerMediaTypeDefn.class
                 ),
 //                Formating.indent(allFieldsAccessors(entityDom.entityNames.serverInterface.className, entityDom.fields)),
                 Formating.indent(createBookmarkAndUrl(resourceDom)),
@@ -144,6 +158,7 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
                 Formating.indent(createCompanion(resourceDom)),
                 Formating.indent(createJavascript(resourceDom)),
                 Formating.indent(createListOfLens(resourceDom)),
+                Formating.indent(createMediaDefn(resourceDom)),
                 Formating.indent(createLensDefn(resourceDom)),
                 Formating.indent(fromJson(resourceDom)),
                 Formating.indent(stateMap(resourceDom)),
