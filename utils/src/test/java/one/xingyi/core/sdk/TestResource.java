@@ -10,6 +10,6 @@ public class TestResource implements IXingYiResource, HasJsonWithLinks<ContextFo
         return jsonWriter.makeObject("test", "parserAndWriter");
     }
     @Override public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<TestResource, String> stateFn) {
-        return jsonWriter.makeObject("some", "parserAndWriter");
+        return jsonWriter.makeObject("test", "parserAndWriter");
     }
 }

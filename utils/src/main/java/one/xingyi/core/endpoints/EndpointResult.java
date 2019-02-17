@@ -16,8 +16,8 @@ public interface EndpointResult<Result> extends BiFunction<ServiceRequest, Resul
         return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBody(sr, rootUrl, r));
     }
 
-    static <J, Entity extends HasJson<ContextForJson>> EndpointResult<IdAndValue<Entity>> createForIdAndvalue(EndpointContext<J> context, String rootUrl, int statusCode) {
-        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyForIdAndValue(sr, rootUrl, r));
+    static <J, Entity extends HasJsonWithLinks<ContextForJson, Entity>> EndpointResult<IdAndValue<Entity>> createForIdAndvalue(EndpointContext<J> context, String rootUrl, int statusCode, Function<Entity, String> stateFn) {
+        return (sr, r) -> ServiceResponse.<J>jsonString(statusCode, context.resultBodyForIdAndValue(sr, rootUrl, r, stateFn));
     }
     static <Result> EndpointResult<Result> createForNonEntity(int statusCode, Function<Result, String> jsonFn) {
         return (sr, r) -> ServiceResponse.jsonString(statusCode, jsonFn.apply(r));

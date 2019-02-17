@@ -31,7 +31,7 @@ public class EndpointResultTest implements FunctionFixture {
                 "{\"test\":\"parserAndWriter\"}", serviceResponse.body);
     }
     @Test public void testCreateForIdAndValue() {
-        ServiceResponse serviceResponse = EndpointResult.createForIdAndvalue(context, "/some/{id}", 314).apply(serviceRequestHost, new IdAndValue<>("someId", new TestResource()));
+        ServiceResponse serviceResponse = EndpointResult.<Object, TestResource>createForIdAndvalue(context, "/some/{id}", 314, e -> "").apply(serviceRequestHost, new IdAndValue<TestResource>("someId", new TestResource()));
         assertEquals(314, serviceResponse.statusCode);
         assertEquals("rootJavascript\n" +
                 "---------\n" +

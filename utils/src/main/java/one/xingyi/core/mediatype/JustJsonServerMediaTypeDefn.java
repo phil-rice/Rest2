@@ -2,16 +2,13 @@ package one.xingyi.core.mediatype;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.DataToBeSentToClient;
-import one.xingyi.core.marshelling.JsonParserAndWriter;
-import one.xingyi.core.marshelling.MakesFromJson;
+import one.xingyi.core.marshelling.*;
 import one.xingyi.core.sdk.IXingYiResource;
 import one.xingyi.core.utils.IdAndValue;
 
 import java.util.function.Function;
 @RequiredArgsConstructor
-public class JustJsonServerMediaTypeDefn<J, Entity extends IXingYiResource> implements IMediaTypeServerDefn<Entity> {
+public class JustJsonServerMediaTypeDefn<J, Entity extends IXingYiResource& HasJsonWithLinks<ContextForJson,Entity>> implements IMediaTypeServerDefn<Entity> {
     final String protocol;
     final MakesFromJson<Entity> makesFromJson;
     final JsonParserAndWriter<J> parserAndWriter;
@@ -24,6 +21,6 @@ public class JustJsonServerMediaTypeDefn<J, Entity extends IXingYiResource> impl
         return new DataToBeSentToClient(entity.toJsonString(parserAndWriter, context), "");
     }
     @Override public DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, IdAndValue<Entity> entity) {
-        return new DataToBeSentToClient(parserAndWriter.fromJ(IdAndValue.toJson(entity, parserAndWriter, context)), "");
+        return new DataToBeSentToClient(parserAndWriter.fromJ(IdAndValue.toJson(entity, parserAndWriter, context,stateFn)), "");
     }
 }

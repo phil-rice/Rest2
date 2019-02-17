@@ -11,7 +11,7 @@ import one.xingyi.core.utils.Strings;
 
 import java.util.List;
 import java.util.function.Function;
-abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> implements IXingYiServerMediaTypeDefn<Entity> {
+abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> implements IXingYiServerMediaTypeDefn<Entity> {
     final String prefix;
     final MakesFromJson<Entity> makesFromJson;
     final JsonParserAndWriter<J> parserAndWriter;
@@ -34,10 +34,10 @@ abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> impl
     @Override public boolean accept(String acceptHeader) { return acceptHeader.toLowerCase().startsWith(prefix); }
 
     @Override public DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, Entity entity) {
-        return makeDataAndDefnFor(context, entity.toJson(parserAndWriter, context));
+        return makeDataAndDefnFor(context, entity.toJsonWithLinks(parserAndWriter, context, stateFn));
     }
     @Override public DataToBeSentToClient makeDataAndDefn(ContextForJson context, Function<Entity, String> stateFn, IdAndValue<Entity> idAndValue) {
-        return makeDataAndDefnFor(context, IdAndValue.toJson(idAndValue, parserAndWriter, context));
+        return makeDataAndDefnFor(context, IdAndValue.toJson(idAndValue, parserAndWriter, context, stateFn));
     }
 
     abstract DataToBeSentToClient makeDataAndDefnFor(ContextForJson context, J json);
@@ -46,7 +46,7 @@ abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> impl
 }
 
 
-class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> implements IXingYiServerMediaTypeDefn<Entity> {
+class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> extends SimpleServerMediaTypeDefn<J, Entity> implements IXingYiServerMediaTypeDefn<Entity> {
     final JavascriptStore javascriptStore;
     final JavascriptDetailsToString javascriptDetailsToString;
     final String protocol;

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.HasJson;
+import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.marshelling.JsonWriter;
 
 import java.util.function.Function;
@@ -15,11 +16,8 @@ import java.util.function.Function;
 public class IdAndValue<T> {
     public final String id;
     public final T t;
-    static public <J, T extends HasJson<ContextForJson>> J toJson(IdAndValue<T> t, JsonWriter<J> jsonWriter, ContextForJson contextForJson) {
-        return jsonWriter.makeObject("id", t.id, "value", t.t.toJson(jsonWriter, contextForJson));
+    static public <J, T extends HasJsonWithLinks<ContextForJson,T>> J toJson(IdAndValue<T> t, JsonWriter<J> jsonWriter, ContextForJson contextForJson, Function<T, String> stateFn) {
+        return jsonWriter.makeObject("id", t.id, "value", t.t.toJsonWithLinks(jsonWriter, contextForJson,stateFn));
     }
 
-    public <J> Function<J, J> envelope(JsonWriter<J> jsonWriter) {
-        return json -> jsonWriter.makeObject("id", id, "value", json);
-    }
 }

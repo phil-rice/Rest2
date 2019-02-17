@@ -1,10 +1,7 @@
 package one.xingyi.core.mediatype;
 import one.xingyi.core.endpoints.*;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.DataToBeSentToClient;
-import one.xingyi.core.marshelling.JsonParserAndWriter;
-import one.xingyi.core.marshelling.MakesFromJson;
+import one.xingyi.core.marshelling.*;
 import one.xingyi.core.optics.lensLanguage.LensLine;
 import one.xingyi.core.sdk.IXingYiResource;
 import one.xingyi.core.utils.IdAndValue;
@@ -27,13 +24,13 @@ public interface IMediaTypeServerDefn<Entity extends IXingYiResource> {
 
     default IResourceEndpoints<Entity> endpoints(String protocol, BookmarkCodeAndUrlPattern bookmarkCodeAndUrlPattern, Function<Entity, String> stateFn) { return new MediaTypeResourceEndpoints<>(protocol, this, bookmarkCodeAndUrlPattern, stateFn); }
 
-    static <J, Entity extends IXingYiResource> IXingYiServerMediaTypeDefn<Entity> jsonAndJavascriptServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context) {
+    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> IXingYiServerMediaTypeDefn<Entity> jsonAndJavascriptServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context) {
         return new JsonAndJavascriptServerMediaTypeDefn<>(entityName, makesFromJson, context);
     }
-    static <J, Entity extends IXingYiResource> IMediaTypeServerDefn<Entity> justJson(String protocol, MakesFromJson<Entity> makesFromJson, JsonParserAndWriter<J> parserAndWriter) {
+    static <J, Entity extends IXingYiResource& HasJsonWithLinks<ContextForJson, Entity>> IMediaTypeServerDefn<Entity> justJson(String protocol, MakesFromJson<Entity> makesFromJson, JsonParserAndWriter<J> parserAndWriter) {
         return new JustJsonServerMediaTypeDefn<>(protocol, makesFromJson, parserAndWriter);
     }
-    static <J, Entity extends IXingYiResource> IXingYiServerMediaTypeDefn<Entity> jsonAndLensDefnServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
+    static <J, Entity extends IXingYiResource& HasJsonWithLinks<ContextForJson, Entity>> IXingYiServerMediaTypeDefn<Entity> jsonAndLensDefnServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
         return new JsonAndLensDefnServerMediaTypeDefn<>(entityName, makesFromJson, context, lensLines);
     }
 

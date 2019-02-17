@@ -58,7 +58,7 @@ public class ServerResourceFileMaker implements IFileMaker<ResourceDom> {
         result.add("//If you get a compilation error here is it because you have no fields defined? ");
         result.add("public <J> J toJsonWithLinks(JsonWriter<J> jsonWriter, ContextForJson context, Function<" + entityName + ", String> stateFn) {");
         result.add(Formating.indent + "return jsonWriter.makeObject(" + dom.noDeprecatedmapJoin(",",
-                fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ",\"links_\",context.links(jsonWriter, this, stateFn," + companionName + ".companion.stateMap));");
+                fd -> "\"" + fd.name + "\", " + fd.typeDom.forToJson(fd.name, fd.templated)) + ",\"_links\",context.links(jsonWriter, this, stateFn," + companionName + ".companion.stateMap));");
         result.add("}");
         return result;
     }

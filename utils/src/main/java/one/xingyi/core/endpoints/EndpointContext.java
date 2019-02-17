@@ -34,9 +34,9 @@ public class EndpointContext<J> implements ServerMediaTypeContext<J> {
         return resultBodyForJson(context.template(codeUrl), json);
     }
 
-    public <Entity extends HasJson<ContextForJson>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, String codeUrl, IdAndValue<Entity> entity) {
+    public <Entity extends HasJsonWithLinks<ContextForJson, Entity>> String resultBodyForIdAndValue(ServiceRequest serviceRequest, String codeUrl, IdAndValue<Entity> entity, Function<Entity, String> stateFn) {
         ContextForJson contextForJson = ContextForJson.forServiceRequest(protocol, serviceRequest);
-        J j = IdAndValue.toJson(entity, parserAndWriter, contextForJson);
+        J j = IdAndValue.toJson(entity, parserAndWriter, contextForJson, stateFn);
         return resultBodyForJson(contextForJson.template(codeUrl), parserAndWriter.fromJ(j));
     }
     String resultBodyForJson(String codeUrl, String json) {
