@@ -84,29 +84,35 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
                 Formating.indent + "return EndPoint." + method + "(context, " + bookmarkAndCode(bookmark) + ", " + function + ");",
                 "}"));
     }
-    List<String> deleteEndpoint(String methodName, String method, BookmarkCodeAndUrlPattern bookmark, String function) {
-        return Lists.append(List.of(
-                "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint." + method + "(context, " + Strings.quote(bookmark.urlPattern) + ", " + function + ");",
-                "}"));
+    List<String> deleteEndpoint(String entityName, String companion, String function, String stateFn) {
+        return List.of(
+                "public EndPoint delete" + entityName + "() {",
+                Formating.indent + "return " + companion + ".companion.endpoints(context, " + stateFn + ").delete(" + function + ");",
+                "}");
     }
-    List<String> createPutEndpoint(String methodName, String companionName, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
-        return Lists.append(List.of(
-                "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint.putEntity(" + companionName + ".companion, context, " + bookmarkAndCode(bookmark) + ", " + function + "," + stateFn + ");",
-                "}"));
+    //className, companionName, controllerName + "::put", controllerName + "::stateFn")
+    List<String> createPutEndpoint(String className, String companionName, String function, String stateFn) {
+        return List.of(
+                "public EndPoint put" + className + "() {",
+                Formating.indent + "return " + companionName + ".companion.endpoints(context, " + stateFn + ").put(",
+                Formating.indent + Formating.indent + "(sr, id) -> new IdAndValue<>(id, " + companionName + ".companion.fromJson(context.parserAndWriter, context.parserAndWriter.parse(sr.body))), " + function + ");",
+                "}");
+
     }
-    List<String> createPostEndpoint(String methodName, List<String> states, BookmarkCodeAndUrlPattern bookmark, String function, String stateFn) {
+
+
+    List<String> createPostEndpoint(String postName, String url, String companionName, String function, String stateFn, List<String> states) {
         return Lists.append(List.of(
-                "public EndPoint " + methodName + "() {",
-                Formating.indent + "return EndPoint.postEntity(context, " + bookmarkAndCode(bookmark) + ", " + "List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + "," + stateFn + ");",
+                "public EndPoint " + postName + "() {",
+                Formating.indent + "return " + companionName + ".companion.endpoints(context, " + stateFn + ").",
+                Formating.indent + "post(" + Strings.quote(url) + ", List.of(" + Lists.mapJoin(states, ",", Strings::quote) + ")," + function + ");",
                 "}"));
     }
     List<String> createEntityEndpoint(ServerDom serverDom) {
         return List.of(
                 "//A compilation error here might be because you haven't added a maven dependency to the 'core' jar",
                 "public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}",
-                "  public EndPoint entityCodeEndpoint(){ return  EndPoint.javascript(context, \"{host}/resource/code\");}");
+                "public EndPoint entityCodeEndpoint(){ return  EndPoint.javascript(context, \"{host}/resource/code\");}");
     }
     List<String> createCodeEndpoint(ServerDom serverDom) {
         return Lists.map(serverDom.codeDom.servedresourceDoms, rd -> "public EndPoint " + rd.entityNames.serverEntity.className +
@@ -117,26 +123,30 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
         return Lists.flatMap(serverDom.codeDom.resourceDoms, ed -> {
             String className = ed.entityNames.serverEntity.className;
             String controllerName = ed.entityNames.serverController.className;
-            String companionName = ed.entityNames.serverCompanion.asString();
+            String companionName = ed.entityNames.serverCompanion.className;
             return Optionals.fold(ed.bookmark, () -> List.of(), b -> Lists.<String>append(
                     List.of("//EntityDom: " + ed.bookmark),
                     Optionals.flatMap(ed.actionsDom.createDom, dom -> createEndpointWithStateFn(className, companionName, controllerName + "::createWithId", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createWithNoIdEndpoint(className, dom.path, companionName, controllerName + "::createWithoutIdRequestFrom",controllerName + "::createWithoutId", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint("put" + className, companionName, b, controllerName + "::put", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.createWithoutIdDom, dom -> createWithNoIdEndpoint(className, dom.path, companionName, controllerName + "::createWithoutIdRequestFrom", controllerName + "::createWithoutId", controllerName + "::stateFn")),
+                    Optionals.flatMap(ed.actionsDom.putDom, dom -> createPutEndpoint(className, companionName, controllerName + "::put", controllerName + "::stateFn")),
                     Optionals.flatMap(ed.actionsDom.getDom, dom -> dom.mustExist ?
                             getEndpointWithStateFn(className, "get", companionName, controllerName + "::get", controllerName + "::stateFn") :
                             getEndpointWithStateFn(className, "getOptional", companionName, controllerName + "::getOptional", controllerName + "::stateFn")),
-                    Optionals.flatMap(ed.actionsDom.deleteDom, dom -> deleteEndpoint("delete" + className, "deleteEntity", b, controllerName + "::delete")),
-                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className, dom.states, b.withMoreUrl(dom.path), controllerName + "::" + dom.action, controllerName + "::stateFn"))));
+                    Optionals.flatMap(ed.actionsDom.deleteDom, dom -> deleteEndpoint(className, companionName, controllerName + "::delete", controllerName + "::stateFn")),
+                    Lists.flatMap(ed.actionsDom.postDoms, dom -> createPostEndpoint(dom.action + className,
+                            b.withMoreUrl(dom.path).urlPattern, companionName, controllerName + "::" + dom.action, controllerName + "::stateFn", dom.states))));
         });
     }
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {
+        List<String> manualImports = Lists.append(
+                Lists.map(serverDom.codeDom.resourceDoms, rd -> rd.entityNames.serverCompanion.asString()),
+                List.of("one.xingyi.core.EndPointFactorys  /* A compile error here might be because you haven't included the maven dependency for 'org.xingyi.core' */"));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), false, serverDom.originalDefn, "class", serverDom.serverName, "<J> implements IXingYiServer",
-                        List.of("one.xingyi.core.EndPointFactorys  /* A compile error here might be because you haven't included the maven dependency for 'org.xingyi.core' */"),
+                        manualImports,
                         XingYiGenerated.class, EndPoint.class, List.class, Lists.class, EndpointConfig.class, EndpointContext.class, IXingYiServer.class,
                         ExecutorService.class, SimpleServer.class, Executors.class, EndpointHandler.class, IXingYiServerCompanion.class,
-                        JsonValue.class, JsonWriter.class, Files.class, HasBookmarkAndUrl.class),
+                        JsonValue.class, JsonWriter.class, Files.class, HasBookmarkAndUrl.class, IdAndValue.class),
 //                Formating.indent(generateRegister(serverDom)),
                 Formating.indent(createFields(serverDom)),
                 Formating.indent(createConstructor(serverDom)),

@@ -29,57 +29,6 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
                 sr.toString() + "\nLegal Endpoints are\n   " + Lists.mapJoin(endPoint.description(), "\n   ", Objects::toString);
     }
 
-    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>>
-    IResourceEndPoint< Entity, String, Optional<Entity>> getOptionalEntity(
-            EndpointContext<J> context,
-            String templatedPath,
-            String codePath,
-            Function<String, CompletableFuture<Optional<Entity>>> fn,
-            Function<Entity, String> stateFn) {
-        return new ResourceEndPoint<>(IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>createForOptionalWithLinks(context, 200, codePath, stateFn));
-    }
-    static <J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> IResourceEndPoint< Entity, String, Entity> getEntity(
-            EndpointContext<J> context, String templatedPath, String codePath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint<>(
-                IResourceEndpointAcceptor.<String>apply("get", templatedPath, (sr, s) -> s),
-                fn,
-                EndpointResult.<J, Entity>createWithLinks(context, 200, codePath, stateFn));
-    }
-    static <J, Entity extends IXingYiResource> IResourceEndPoint< Entity, String, Boolean> deleteEntity(
-            EndpointContext<J> context, String templatedPath, Function<String, CompletableFuture<Boolean>> fn) {
-        return new ResourceEndPoint< Entity, String, Boolean>(IResourceEndpointAcceptor.<String>apply("delete", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<Boolean>createForNonEntity(200, r -> r.toString()));
-    }
-    static <J, Entity extends IXingYiResource> IResourceEndPoint< Entity, Entity, IdAndValue<Entity>> createEntity(
-            EndpointContext<J> context, String path, String codePath, Function<ServiceRequest, Entity> reqFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> idAndValueMaker, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint< Entity, Entity, IdAndValue<Entity>>
-                (IResourceEndpointAcceptor.<Entity>create("post", path, reqFn),
-                        entity ->
-                        {
-                            return idAndValueMaker.apply(entity);
-                        },
-                        EndpointResult.<J, Entity>createForIdAndvalue(context, codePath, 201));
-    }
-    static <J, Entity extends IXingYiResource> IResourceEndPoint< Entity, String, Entity> createEntityWithId(
-            EndpointContext<J> context, String templatedPath, String codePath, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint<Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
-                x->fn.apply(x),
-                EndpointResult.<J, Entity>create(context, codePath, 201));
-    }
-    static <J, Entity extends IXingYiResource> IResourceEndPoint<Entity, String, Entity> postEntity(
-            EndpointContext<J> context, String templatedPath, String codePath, List<String> states, Function<String, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint< Entity, String, Entity>(IResourceEndpointAcceptor.<String>apply("post", templatedPath, (sr, s) -> s),
-                fn, EndpointResult.<J, Entity>create(context, codePath, 200));
-    }
-
-    static <J, Entity extends IXingYiResource> IResourceEndPoint< Entity, IdAndValue<Entity>, Entity> putEntity(
-            MakesFromJson<Entity> maker, EndpointContext<J> context, String templatedPath, String codeUrl, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn, Function<Entity, String> stateFn) {
-        return new ResourceEndPoint< Entity, IdAndValue<Entity>, Entity>(IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", templatedPath,
-                (sr, s) -> new IdAndValue<Entity>(s, maker.fromJson(context.parserAndWriter, context.parserAndWriter.parse(sr.body)))),
-                fn, EndpointResult.<J, Entity>create(context, codeUrl, 200));
-    }
-
     static Function<ServiceRequest, CompletableFuture<ServiceResponse>> toKliesli(EndPoint original) {
         return toKliesli(original, defaultNotFound(original));
     }

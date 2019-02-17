@@ -5,17 +5,20 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.sdk.IXingYiResource;
 import one.xingyi.core.utils.IdAndValue;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-public interface IResourceEndpoints<Entity extends IXingYiResource> {
 
-    EndPoint put(Function<String, CompletableFuture<IdAndValue<Entity>>> fn);
+public interface IResourceEndpoints<Entity extends IXingYiResource> {
+    EndPoint put(BiFunction<ServiceRequest, String, IdAndValue<Entity>> fromFn, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn);
     EndPoint getOptional(Function<String, CompletableFuture<Optional<Entity>>> fn);
     EndPoint get(Function<String, CompletableFuture<Entity>> fn);
     EndPoint delete(Function<String, CompletableFuture<Boolean>> fn);
     EndPoint createWithId(Function<String, CompletableFuture<Entity>> fn);
     EndPoint createWithoutId(String path, Function<ServiceRequest, Entity> fromFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> createFn);
+    EndPoint post(String path, List<String> validStates, Function<String, CompletableFuture<Entity>> postFn);
 }
 
 @RequiredArgsConstructor
@@ -25,9 +28,9 @@ class MediaTypeResourceEndpoints<Entity extends IXingYiResource> implements IRes
     final BookmarkCodeAndUrlPattern bookmarkCodeAndUrlPattern;
     final Function<Entity, String> stateFn;
 
-    @Override public EndPoint put(Function<String, CompletableFuture<IdAndValue<Entity>>> fn) {
-        return new IdAndEntityMediaTypeEndpoint<>(
-                IResourceEndpointAcceptor.<String>apply("put", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s),
+    @Override public EndPoint put(BiFunction<ServiceRequest, String, IdAndValue<Entity>> fromFn, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn) {
+        return new EntityMediaTypeEndpoint<IdAndValue<Entity>, Entity>(
+                IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", bookmarkCodeAndUrlPattern.urlPattern, fromFn),
                 fn, protocol, 200, mediaTypeServerDefn, stateFn);
     }
     @Override public EndPoint getOptional(Function<String, CompletableFuture<Optional<Entity>>> fn) {
@@ -50,5 +53,10 @@ class MediaTypeResourceEndpoints<Entity extends IXingYiResource> implements IRes
     @Override public EndPoint createWithoutId(String path, Function<ServiceRequest, Entity> fromFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> createFn) {
         return new IdAndEntityMediaTypeEndpoint<Entity, Entity>(IResourceEndpointAcceptor.<Entity>create("post", path, fromFn),
                 createFn, protocol, 201, mediaTypeServerDefn, stateFn);
+    }
+    @Override public EndPoint post(String path, List<String> validStates, Function<String, CompletableFuture<Entity>> postFn) {
+        return new EntityMediaTypeEndpoint<String, Entity>(
+                IResourceEndpointAcceptor.<String>apply("post", path, (sr, s) -> s),
+                postFn, protocol, 200, mediaTypeServerDefn, stateFn);
     }
 }
