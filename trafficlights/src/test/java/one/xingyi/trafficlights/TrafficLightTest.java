@@ -47,8 +47,8 @@ public class TrafficLightTest {
         assertEquals(statusCode, serviceResponse.statusCode);
         String body = serviceResponse.body;
         DataToBeSentToClient dataToBeSentToClient = IXingYiResponseSplitter.rawSplit(serviceResponse);
-        DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
-        assertTrue(body, body.contains(digestAndString.digest + IXingYiResponseSplitter.marker));
+//        DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
+//        assertTrue(body, body.contains(digestAndString.digest + IXingYiResponseSplitter.marker));
         assertEquals(json, dataToBeSentToClient.data);
     }
 

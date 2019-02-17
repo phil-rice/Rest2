@@ -6,6 +6,7 @@ import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.httpClient.ResourceDetailsRequest;
 import one.xingyi.core.httpClient.server.companion.ResourceDetailsCompanion;
 import one.xingyi.core.httpClient.server.domain.ResourceDetails;
+import one.xingyi.core.mediatype.IXingYiServerMediaTypeDefn;
 import one.xingyi.core.utils.Lists;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 public interface EndPointFactorys {
 
     static <J> EndPoint entityEndpointFromContext(EndpointContext<J> context, List<HasBookmarkAndUrl> companions) {
+        IXingYiServerMediaTypeDefn<ResourceDetails> mediaTypeDefn = ResourceDetailsCompanion.companion.lensMediaDefn(context);
         EntityRegister entityRegister = EntityRegister.apply(companions);
         Function<ResourceDetails, String> noStateFn = x -> "";
         return IResourceEndPoint.< ResourceDetails, ResourceDetailsRequest, Optional<ResourceDetails>>create(

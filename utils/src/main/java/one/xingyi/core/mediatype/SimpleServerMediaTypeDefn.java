@@ -1,4 +1,5 @@
 package one.xingyi.core.mediatype;
+import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.javascript.JavascriptDetailsToString;
 import one.xingyi.core.javascript.JavascriptStore;
 import one.xingyi.core.marshelling.*;
@@ -48,17 +49,22 @@ abstract class SimpleServerMediaTypeDefn<J, Entity extends IXingYiResource> impl
 class JsonAndJavascriptServerMediaTypeDefn<J, Entity extends IXingYiResource> extends SimpleServerMediaTypeDefn<J, Entity> implements IXingYiServerMediaTypeDefn<Entity> {
     final JavascriptStore javascriptStore;
     final JavascriptDetailsToString javascriptDetailsToString;
+    final String protocol;
 
 
     public JsonAndJavascriptServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext context) {
         super(makesFromJson, context.parserAndWriter(), IMediaTypeConstants.jsonJavascriptPrefix, entityName);
         this.javascriptStore = context.javascriptStore();
         this.javascriptDetailsToString = context.javascriptDetailsToString();
+        this.protocol = context.protocol();
     }
 
     DataToBeSentToClient makeDataAndDefnFor(ContextForJson context, J json) {
         String data = parserAndWriter.asString(json);
         String defn = javascriptDetailsToString.apply(javascriptStore.find(lensNames(context.acceptHeader())));
         return new DataToBeSentToClient(data, defn);
+    }
+    @Override public ContextForJson makeContextForJson(ServiceRequest serviceRequest) {
+        return ContextForJson.forServiceRequest(protocol, serviceRequest);
     }
 }

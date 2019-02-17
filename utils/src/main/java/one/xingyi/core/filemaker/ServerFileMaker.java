@@ -111,8 +111,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createEntityEndpoint(ServerDom serverDom) {
         return List.of(
                 "//A compilation error here might be because you haven't added a maven dependency to the 'core' jar",
-                "public EndPoint entityEndpoint(){ return EndPointFactorys.<J>entityEndpointFromContext(context,entityCompanions());}",
-                "public EndPoint entityCodeEndpoint(){ return  EndPoint.javascript(context, \"{host}/resource/code\");}");
+                "public EndPoint entityEndpoint(){ return new ResourceDefinitionEndPoint(context,entityCompanions());}");
     }
     List<String> createCodeEndpoint(ServerDom serverDom) {
         return Lists.map(serverDom.codeDom.servedresourceDoms, rd -> "public EndPoint " + rd.entityNames.serverEntity.className +
@@ -140,7 +139,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     @Override public Result<String, FileDefn> apply(ServerDom serverDom) {
         List<String> manualImports = Lists.append(
                 Lists.map(serverDom.codeDom.resourceDoms, rd -> rd.entityNames.serverCompanion.asString()),
-                List.of("one.xingyi.core.EndPointFactorys  /* A compile error here might be because you haven't included the maven dependency for 'org.xingyi.core' */"));
+                List.of("one.xingyi.core.ResourceDefinitionEndPoint  /* A compile error here might be because you haven't included the maven dependency for 'org.xingyi.core' */"));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), false, serverDom.originalDefn, "class", serverDom.serverName, "<J> implements IXingYiServer",
                         manualImports,
