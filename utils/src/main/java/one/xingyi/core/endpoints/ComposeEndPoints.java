@@ -32,7 +32,7 @@ class ComposeEndPoints implements EndPoint {
             System.out.println("Checking end point " + endPoint.description() + " with " + serviceRequest);
         return endPoint.apply(serviceRequest).thenCompose(op -> {
             if (op.isEmpty()) { return recurse(serviceRequest, index + 1); } else {
-                System.out.println("...... found it" + endPoint.description() + " for " + serviceRequest);
+                if (debug) System.out.println("...... found it" + endPoint.description() + " for " + serviceRequest);
                 return CompletableFuture.completedFuture(op);
             }
         });

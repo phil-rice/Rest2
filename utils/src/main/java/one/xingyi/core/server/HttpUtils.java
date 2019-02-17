@@ -7,10 +7,18 @@ import one.xingyi.core.http.ServiceResponse;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 public class HttpUtils {
 
-    public static ExecutorService makeDefaultExecutor() {return Executors.newFixedThreadPool(100);}
-
+    public static ExecutorService makeDefaultExecutor() {
+        return Executors.newFixedThreadPool(100, new ThreadFactory() {
+            public Thread newThread(Runnable r) {
+                Thread t = Executors.defaultThreadFactory().newThread(r);
+                t.setDaemon(true);
+                return t;
+            }
+        });
+    }
     public static void write(HttpExchange exchange, ServiceResponse response) throws IOException {
         for (Header h : response.headers)
             exchange.getResponseHeaders().set(h.name, h.value);
