@@ -38,8 +38,4 @@ public class MediaTypeInCompanionsTests {
         assertEquals("someName", personNameView.name());
     }
 
-    @Test public void testPutFromServer(){
-//OK this is the big test that means stuff has to work
-        fail();
-    }
-}
+ }

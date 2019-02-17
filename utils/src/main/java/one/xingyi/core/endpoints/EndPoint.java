@@ -52,7 +52,8 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
         return ServiceResponse.html(500, e.getClass().getName() + "\n" + e.getMessage());
     }
 
-    static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints);}
+    static EndPoint compose(List<EndPoint> endPoints) {return new ComposeEndPoints(endPoints, false);}
+    static EndPoint compose(List<EndPoint> endPoints, boolean debug) {return new ComposeEndPoints(endPoints, debug);}
 
     static <J> EndPoint javascript(EndpointContext<J> context, String prefix) {
         String javascript = context.javascriptDetailsToString.apply(context.javascriptStore.find(List.of()));
@@ -89,7 +90,7 @@ class PrintlnEndpoint implements EndPoint {
                         else return sr.body;
                     }
             ).orElse("??");
-            System.out.println(Strings.padRight(sr.method,5) + Strings.padRight(sr.uri.toString(), 80) + "    " + optRes.map(r -> r.statusCode).orElse(0) + " " + result);
+            System.out.println(Strings.padRight(sr.method, 5) + Strings.padRight(sr.uri.toString(), 80) + "    " + optRes.map(r -> r.statusCode).orElse(0) + " " + result);
             return optRes;
         });
     }

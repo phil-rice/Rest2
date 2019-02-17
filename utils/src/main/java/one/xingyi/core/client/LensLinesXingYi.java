@@ -18,7 +18,8 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
     @Override public Object parse(String s) { return parser.parse(s); }
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lensStore.stringLens(name));
+        Lens<J, String> lens = lensStore.stringLens(name);
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
     }
 
     @Override

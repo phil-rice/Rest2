@@ -27,8 +27,10 @@ public class ResourceDefinitionEndPoint implements EndPoint {
     }
     @Override public List<MethodAndPath> description() { return Lists.map(register.registered(), url -> new MethodAndPath("get", url)); }
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
-        return CompletableFuture.completedFuture(
-                register.apply(new ResourceDetailsRequest(serviceRequest.path)).
-                        map(rd -> new ServiceResponse(200, mediaTypeDefn.makeDataAndDefn(mediaTypeDefn.makeContextForJson(serviceRequest), s -> "", rd).asString(), List.of())));
+        if (serviceRequest.method .equalsIgnoreCase("get")) {
+            Optional<ResourceDetails> optionalResourceDetails = register.apply(new ResourceDetailsRequest(serviceRequest.path));
+            return CompletableFuture.completedFuture(
+                    optionalResourceDetails.map(rd -> new ServiceResponse(200, mediaTypeDefn.makeDataAndDefn(mediaTypeDefn.makeContextForJson(serviceRequest), s -> "", rd).asString(), List.of())));
+        } else return CompletableFuture.completedFuture(Optional.empty());
     }
 }

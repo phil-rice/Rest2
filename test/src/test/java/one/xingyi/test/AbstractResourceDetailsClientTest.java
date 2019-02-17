@@ -37,7 +37,7 @@ abstract class AbstractResourceDetailsClientTest {
 
 
     static PersonServer<Object> server = new PersonServer<>(config, new PersonController());
-    static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints());
+    static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints(),true);
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 

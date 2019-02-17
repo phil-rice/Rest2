@@ -7,7 +7,6 @@ import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
-import one.xingyi.core.utils.DigestAndString;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
@@ -33,7 +32,7 @@ public class TrafficLightTest {
     public void setup(Consumer3WithException<TrafficLightsController<Object>, one.xingyi.trafficlights.TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController(jsonParserAndWriter);
         one.xingyi.trafficlights.TrafficLightServer<Object> server = new one.xingyi.trafficlights.TrafficLightServer<>(config, controller);
-        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://somehost", jsonParserAndWriter, EndPoint.toKliesli(EndPoint.printlnLog(server.endpoint())));
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://somehost", jsonParserAndWriter, EndPoint.toKliesli(EndPoint.printlnLog(EndPoint.compose(server.allEndpoints(),true))));
         consumer.accept(controller, server, service);
     }
 
@@ -104,11 +103,15 @@ public class TrafficLightTest {
         });
     }
 
-    @Test public void testCanCreateWithoutId() throws Exception {
+    @Test public void testCanCreateWithoutIdUsingPrototype() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
             ColourView prototype = ColourView.get(service, "someId", x -> x).get();
-            assertEquals("somered", ColourView.create(service, prototype.withid("some")).thenApply(idV -> idV.id + idV.t.color()).get());
+            String color = prototype.color();
+            String id = prototype.id();
+
+            ColourView some = prototype.withid("some");
+            assertEquals("somered", ColourView.create(service, some).thenApply(idV -> idV.id + idV.t.color()).get());
             assertEquals("othergreen", ColourView.create(service, prototype.withid("other").withcolor("green")).thenApply(idV -> idV.id + idV.t.color()).get());
         });
     }
