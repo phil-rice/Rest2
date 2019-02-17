@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 public abstract class AbstractEntityServerMediaTypeEndpointTest<M extends IXingYiServerMediaTypeDefn<Person>> implements FunctionFixture, IReferenceFixture3 {
 
     protected abstract M serverMediaType();
@@ -45,5 +46,12 @@ public abstract class AbstractEntityServerMediaTypeEndpointTest<M extends IXingY
         assertEquals(expected.asString(), resp.body);
     }
 
+    @Test public void testTheJsonContainsLinks() {
+        DataToBeSentToClient dataToBeSent = serverMediaType().makeDataAndDefn(ContextForJson.forServiceRequest("http", sr("/person/someId")), p -> "", person);
+        String data = dataToBeSent.data;
+        assertTrue(data, data.contains("_links"));
+        assertTrue(data, data.contains("/person/someId"));
+
+    }
 
 }

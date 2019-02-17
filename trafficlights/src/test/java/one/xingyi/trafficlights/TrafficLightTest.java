@@ -8,6 +8,7 @@ import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
 import one.xingyi.core.utils.DigestAndString;
+import one.xingyi.core.utils.Strings;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
 import one.xingyi.trafficlights.client.view.LocationView;
@@ -69,7 +70,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpoint() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(server, 200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}",
+            checkSr(server, 200, Strings.changeQuotes("{'id':'someId','color':'red','location':'someLocation','links_':[{'_self':'/lights/someId'},{'orange':'{host}/lights/{id}/orange'}]}"),
                     server.getTrafficLights().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
