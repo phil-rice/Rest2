@@ -8,13 +8,15 @@ import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 public interface IServerNames {
     static IServerNames simple(IPackageNameStrategy packageNameStrategy, IClassNameStrategy classNameStrategy) { return new SimpleServerNames(packageNameStrategy, classNameStrategy); }
     Result<String, EntityNames> entityName(String className);
     Result<String, ViewNames> viewName(String className, String entityClassName);
     String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
-    String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
+    Result<String, List<String>> entityLensPath(EntityNames entityElementName, String fieldName, String[] annotationLensPath);
     Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl);
 }
 
@@ -34,7 +36,7 @@ class SimpleServerNames implements IServerNames {
             PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientCompanion(entityRoot));
             PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(entityRoot));
             PackageAndClassName serverController = new PackageAndClassName(packageNameStrategy.toServerController(originalPackage), classNameStrategy.toServerController(entityRoot));
-            return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, serverController,entityRoot);
+            return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, serverController, entityRoot);
         });
     }
     @Override public Result<String, ViewNames> viewName(String className, String interfaceName) {
@@ -52,9 +54,14 @@ class SimpleServerNames implements IServerNames {
     @Override public String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName) {
         return Strings.from(annotationLensName, "lens_" + entityElementName.entityNameForLens + "_" + fieldName);
     }
-    @Override public String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath) { return Strings.from(annotationLensPath, fieldName); }
-    @Override public Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl) {//TODO review this business logic
-        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), (b,u)->new BookmarkCodeAndUrlPattern(b,u, Strings.from(codeUrl).orElse("{host}"+ b+"/code")));
+    @Override public Result<String, List<String>> entityLensPath(EntityNames entityElementName, String fieldName, String[] annotationLensPath) {
+        if (annotationLensPath.length > 0)
+            return Result.succeed(Arrays.asList(annotationLensPath));
+        else return Result.succeed(List.of(fieldName));
+    }
+    @Override public Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String
+            annotationBookmark, String annotationGetUrl, String codeUrl) {//TODO review this business logic
+        return Optionals.join(Strings.from(annotationBookmark), Strings.from(annotationGetUrl), (b, u) -> new BookmarkCodeAndUrlPattern(b, u, Strings.from(codeUrl).orElse("{host}" + b + "/code")));
     }
 
 }

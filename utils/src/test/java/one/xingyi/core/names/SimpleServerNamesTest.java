@@ -46,20 +46,22 @@ public class SimpleServerNamesTest {
     }
 
     @Test public void testLensName() {
-        EntityNames entityNames = new EntityNames(new PackageAndClassName("p.ISomeDefn"), null, null,null, null, null, "someEntityForLens");
+        EntityNames entityNames = new EntityNames(new PackageAndClassName("p.ISomeDefn"), null, null, null, null, null, "someEntityForLens");
         assertEquals("lens_someEntityForLens_fieldName", serverNames.entityLensName(entityNames, "fieldName", ""));
         assertEquals("override", serverNames.entityLensName(entityNames, "fieldName", "override"));
     }
     @Test public void testLensPath() {
         EntityNames entityNames = mock(EntityNames.class);
-        assertEquals("fieldName", serverNames.entityLensPath(entityNames, "fieldName", ""));
-        assertEquals("override", serverNames.entityLensPath(entityNames, "fieldName", "override"));
+        assertEquals(Result.succeed(List.of("fieldName")), serverNames.entityLensPath(entityNames, "fieldName", new String[0]));
+        assertEquals(Result.succeed(List.of("name1")), serverNames.entityLensPath(entityNames, "fieldName", new String[]{"name1"}));
+        assertEquals(Result.succeed(List.of("child", "name1")), serverNames.entityLensPath(entityNames, "fieldName", new String[]{"child", "name1"}));
+        assertEquals(Result.succeed(List.of("child1", "child2", "name1")), serverNames.entityLensPath(entityNames, "fieldName", new String[]{"child1", "child2", "name1"}));
     }
     @Test public void testBookmark() {
         EntityNames entityNames = mock(EntityNames.class);
-        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", "",""));
-        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "just bookmark", "",""));
-        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", "justget",""));
+        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", "", ""));
+        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "just bookmark", "", ""));
+        assertEquals(Optional.empty(), serverNames.bookmarkAndUrl(entityNames, "", "justget", ""));
         assertEquals(Optional.of(new BookmarkCodeAndUrlPattern("overrideB", "overrideU", "{host}overrideB/code")),
                 serverNames.bookmarkAndUrl(entityNames, "overrideB", "overrideU", ""));
         assertEquals(Optional.of(new BookmarkCodeAndUrlPattern("overrideB", "overrideU", "overrideC")),

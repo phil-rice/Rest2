@@ -2,6 +2,7 @@ package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.Resource;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IResourceList;
+import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.ServerDom;
 import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
@@ -18,6 +19,7 @@ import one.xingyi.core.sdk.IXingYiServerCompanion;
 import one.xingyi.core.sdk.IXingYiServesResourceCompanion;
 import one.xingyi.core.state.EntityDomToStateMap;
 import one.xingyi.core.state.StateData;
+import one.xingyi.core.typeDom.TypeDom;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
 
@@ -62,10 +64,20 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
     private List<String> createListOfLens(ResourceDom resourceDom) {
         return List.of("public List<String> lens(){return List.of(", resourceDom.fields.withDeprecatedmapJoin(",", fd -> Strings.quote(fd.lensName)), ");}");
     }
+
+    //TODO Sort this out. This is a bodge
+    List<String> lensPathCode(TypeDom typeDom, List<String> path) {
+        if (path.size() == 0) throw new IllegalStateException("Path should not be of no length");
+        List<String> result = Lists.map(path, p -> "new ViewLensDefn(" + Strings.quote(p) + ",\"notYes\")");
+        result.set(result.size() - 1, typeDom.lensDefn(path.get(path.size() - 1)));
+        return result;
+    }
     private List<String> createLensDefn(ResourceDom resourceDom) {
+
         return List.of(
                 "public List<LensLine> lensLines(){return List.of(",
-                Formating.indent + resourceDom.fields.withDeprecatedmapJoin(",\n" + Formating.indent + Formating.indent, fd -> "new LensLine(" + Strings.quote(fd.lensName) + ", List.of( " + fd.typeDom.lensDefn(fd.lensPath) + "))"),
+                Formating.indent + resourceDom.fields.withDeprecatedmapJoin(",\n" + Formating.indent + Formating.indent, fd -> "new LensLine(" + Strings.quote(fd.lensName) + ", List.of( " +
+                        Lists.join(lensPathCode(fd.typeDom, fd.lensPath), ",") + "))"),
                 ");}");
     }
 

@@ -20,7 +20,7 @@ public class FieldDom {
     public final String name;
     public final boolean readOnly;
     public final String lensName;
-    public final String lensPath;
+    public final List<String> lensPath;
     public final String javascript;
     public final boolean templated;
     public final boolean deprecated;
