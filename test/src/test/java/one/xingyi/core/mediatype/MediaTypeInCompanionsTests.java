@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.fail;
 public class MediaTypeInCompanionsTests {
 
     PersonCompanion serverCompanion = PersonCompanion.companion;
@@ -37,7 +38,8 @@ public class MediaTypeInCompanionsTests {
         assertEquals("someName", personNameView.name());
     }
 
-    @Test void testPutFromServer(){
+    @Test public void testPutFromServer(){
 //OK this is the big test that means stuff has to work
+        fail();
     }
 }
