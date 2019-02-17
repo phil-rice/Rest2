@@ -24,7 +24,7 @@ public class Deprecated2Tests {
     static EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json());
     static EndPoint entityEndpoints = EndPoint.compose(new PersonServer<Object>(config, new PersonController()).allEndpoints());
     HttpServiceCompletableFuture rawService;
-    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
+    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000",config.parserAndWriter,httpClient()); return rawService; }
 
     @Test public void testJavascriptForLine1() {
         assertFalse(PersonCompanion.companion.javascript, PersonCompanion.companion.javascript().contains("return lens('line1')"));

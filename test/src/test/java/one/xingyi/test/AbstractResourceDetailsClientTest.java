@@ -42,7 +42,7 @@ abstract class AbstractResourceDetailsClientTest {
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
     HttpServiceCompletableFuture rawService;
-    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", httpClient()); return rawService; }
+    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000",config.parserAndWriter, httpClient()); return rawService; }
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {

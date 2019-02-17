@@ -12,10 +12,10 @@ import java.text.MessageFormat;
 public class PerformanceCheck {
 
 
-  public  static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         PersonServer personServer = new PersonServer(EndpointConfig.defaultConfig(new Json()), new PersonController());
         personServer.simpleServer(9000).start();
-        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://localhost:9000", JavaHttpClient.client);
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://localhost:9000", new Json(), JavaHttpClient.client);
         PersonLine12View.create(service, "someIdToWakeTheSystemUp").get();
         PersonLine12View.get(service, "someIdToWakeTheSystemUp", i -> i.line1()).get();
 

@@ -1,6 +1,8 @@
 package one.xingyi.core.client;
 import lombok.RequiredArgsConstructor;
+import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
+import one.xingyi.core.optics.lensLanguage.LensStoreParser;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiView;
 
@@ -16,6 +18,14 @@ public interface IXingYiFactory {
     };
 
     static IXingYiFactory xingYi = new XingYiCachedFactory();
+
+    static <J> IXingYiFactory lensFactory(JsonParserAndWriter<J> parserAndWriter) {
+        return new IXingYiFactory() {
+            @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> IXingYi<Entity, View> apply(String javascriptOrListOfLens) {
+                return new LensLinesXingYi<>(parserAndWriter, LensStoreParser.simple().apply(javascriptOrListOfLens));
+            }
+        };
+    }
 
 //    static IXingYiFactory fromJson(JsonParserAndWriter<Object> parser) { return new FromJsonFactory(parser);}
 }

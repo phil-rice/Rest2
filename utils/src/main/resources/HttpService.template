@@ -8,6 +8,7 @@ import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
+import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.core.sdk.IXingYiView;
@@ -22,8 +23,11 @@ import java.util.function.Function;
 //It also needs to work with the 'monaddefn'
 public interface HttpService<monad> {
 
-    static HttpService<monad> defaultService(String protocolAndHost, Function<ServiceRequest, <monad><ServiceResponse>> delegate) {
+    static HttpService<monad> javascriptService(String protocolAndHost, Function<ServiceRequest, <monad><ServiceResponse>> delegate) {
         return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.simple, IXingYiResponseSplitter.splitter(delegate));
+    }
+    static <J>HttpService<monad> lensService(String protocolAndHost, JsonParserAndWriter<J> json, Function<ServiceRequest, <monad><ServiceResponse>> delegate) {
+        return new DefaultHttpService<monad>(protocolAndHost, delegate, IXingYiFactory.lensFactory(json), IXingYiResponseSplitter.splitter(delegate));
     }
     //static HttpService<monad> defaultServiceWithSimpleJavaclient(String protocolAndHost) {return defaultService(protocolAndHost, JavaHttpClient.client); }
 

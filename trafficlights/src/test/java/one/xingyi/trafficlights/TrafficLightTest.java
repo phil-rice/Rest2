@@ -32,7 +32,7 @@ public class TrafficLightTest {
     public void setup(Consumer3WithException<TrafficLightsController<Object>, one.xingyi.trafficlights.TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController(jsonParserAndWriter);
         one.xingyi.trafficlights.TrafficLightServer<Object> server = new one.xingyi.trafficlights.TrafficLightServer<>(config, controller);
-        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.defaultService("http://somehost", EndPoint.toKliesli(EndPoint.printlnLog(server.endpoint())));
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://somehost", jsonParserAndWriter, EndPoint.toKliesli(EndPoint.printlnLog(server.endpoint())));
         consumer.accept(controller, server, service);
     }
 
@@ -48,7 +48,7 @@ public class TrafficLightTest {
         String body = serviceResponse.body;
         DataToBeSentToClient dataToBeSentToClient = IXingYiResponseSplitter.rawSplit(serviceResponse);
         DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
-        assertTrue(body, body.contains(digestAndString.digest+IXingYiResponseSplitter.marker));
+        assertTrue(body, body.contains(digestAndString.digest + IXingYiResponseSplitter.marker));
         assertEquals(json, dataToBeSentToClient.data);
     }
 
@@ -59,9 +59,9 @@ public class TrafficLightTest {
     @Test
     public void testCanGetEntity() throws Exception {
         setup((controller, server, service) -> {
-            checkSr(server,200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "/lights")).get().get());
-            checkSr(server,200, "{\"urlPattern\":\"/lights/{id}\"}", server.endpoint().apply(sr("get", "/lights")).get().get());
-            checkSr(server,200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "http://somehost/lights")).get().get());
+            checkSr(server, 200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "/lights")).get().get());
+            checkSr(server, 200, "{\"urlPattern\":\"/lights/{id}\"}", server.endpoint().apply(sr("get", "/lights")).get().get());
+            checkSr(server, 200, "{\"urlPattern\":\"/lights/{id}\"}", server.entityEndpoint().apply(sr("get", "http://somehost/lights")).get().get());
         });
     }
 
@@ -69,7 +69,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpoint() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(server,200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}",
+            checkSr(server, 200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}",
                     server.getTrafficLights().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
@@ -78,7 +78,7 @@ public class TrafficLightTest {
     public void testGetOptionalEndpointUsingAllEndpoints() throws Exception {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
-            checkSr(server,200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
+            checkSr(server, 200, "{\"id\":\"someId\",\"color\":\"red\",\"location\":\"someLocation\",\"links_\":[{\"_self\":\"/lights/someId\"},{\"orange\":\"{host}/lights/{id}/orange\"}]}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
             checkSrNotFound(server.getTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }

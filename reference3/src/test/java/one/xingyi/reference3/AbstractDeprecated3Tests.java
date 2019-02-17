@@ -34,7 +34,7 @@ abstract public class AbstractDeprecated3Tests<J> {
     HttpServiceCompletableFuture service() {
         if (rawService == null) {
             Function<ServiceRequest, CompletableFuture<ServiceResponse>> client = httpClient();
-            rawService = HttpServiceCompletableFuture.defaultService("http://localhost:9000", client);
+            rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000",config().parserAndWriter, client);
         }
         return rawService; }
 
