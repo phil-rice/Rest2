@@ -43,6 +43,26 @@ abstract public class LenStoreWithJsonTest<J> {
         assertEquals("someLine1a", store.stringLens("address_line1").get(addresses.get(0)));
         assertEquals("someLine1b", store.stringLens("address_line1").get(addresses.get(1)));
     }
+    @Test public void testCanChangeListThenString() {
+        String json = Strings.changeQuotes("{'name':'phil','age':23,'addresses':[{'line1':'someLine1a'},{'line1':'someLine1b'}]}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/*address\naddress_line1=line1/string");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        Lens<J, IResourceList<J>> listLens = store.listLens("person_address");
+        Lens<J, String> stringLens = store.stringLens("address_line1");
+        IResourceList<J> addresses = listLens.get(j);
+        IResourceList<J> newAddresses = addresses.withItem(0, stringLens.set(addresses.get(0), "newLine1"));
+
+        assertEquals("someLine1a", store.stringLens("address_line1").get(addresses.get(0)));
+        assertEquals("someLine1b", store.stringLens("address_line1").get(addresses.get(1)));
+
+        assertEquals("newLine1", store.stringLens("address_line1").get(newAddresses.get(0)));
+        assertEquals("someLine1b", store.stringLens("address_line1").get(newAddresses.get(1)));
+
+        J newJ = listLens.set(j, newAddresses);
+        assertEquals("someLine1a", stringLens.get(listLens.get(j).get(0)));
+        assertEquals("newLine1", stringLens.get(listLens.get(newJ).get(0)));
+    }
 
     @Test public void testCanAccessFirstItemInListThenString() {
         String json = Strings.changeQuotes("{'name':'phil','age':23,'addresses':[{'line1':'someLine1a'},{'line1':'someLine1b'}]}");
@@ -55,6 +75,31 @@ abstract public class LenStoreWithJsonTest<J> {
         J newJ = stringLens.set(j, "newLine1");
         assertEquals("someLine1a", stringLens.get(j));
         assertEquals("newLine1", stringLens.get(newJ));
+    }
+
+    @Test public void testCanUseIdentity() {
+        String json = Strings.changeQuotes("{'name':'phil','age':23, 'line1':'someLine1a', 'line2':'someLine2'}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_line1=<identity>,line1/String");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        Lens<J, String> stringLens = store.stringLens("person_line1");
+        assertEquals("someLine1a", stringLens.get(j));
+
+        J newJ = stringLens.set(j, "newLine1");
+        assertEquals("someLine1a", stringLens.get(j));
+        assertEquals("newLine1", stringLens.get(newJ));
+
+    }
+
+    @Test public void testCanUseItemAsList() {
+        String json = Strings.changeQuotes("{'name':'phil','age':23,'addresses':{'line1':'someLine1a'}}}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/address,<itemAsList>\naddress_line1=line1/string");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        Lens<J, IResourceList<J>> listLens = store.listLens("person_address");
+        IResourceList<J> addresses = listLens.get(j);
+        assertEquals("someLine1a", store.stringLens("address_line1").get(addresses.get(0)));
+
     }
 
 

@@ -19,7 +19,10 @@ public @interface Field {
     /**
      * The actual lens into the object. Defaults to 'fieldName'. Syntax is
      * xxx.yyy.  these are field names in the entity.
-     * special values of xxx include <firstItem> if we have a list
+     * special values of xxx include
+     * <firstItem> if we have a list</li>
+     * <identity> which is used when the field used to be in a child but is now 'here'</li>
+     * <itemAsList> which turns a single child into a list (of size 1)
      */
     String lensPath() default "";
     /**

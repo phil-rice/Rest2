@@ -21,10 +21,10 @@ public interface IPersonDefn extends IXingYiResourceDefn {
     //==========
 
     @Deprecated
-    @Field(javascript = " return compose(lens_Person_address(), lens('line1'));")
+    @Field(javascript = " return compose(lens_Person_address(), lens('line1'));", lensPath = "address/address,line1/String")
     String line1();
 
     @Deprecated
-    @Field(javascript = " return compose(lens_Person_address(), lens('line2'));")
+    @Field(javascript = " return compose(lens_Person_address(), lens('line2'));", lensPath = "address/address,line1/String")
     String line2();
 }

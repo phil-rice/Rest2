@@ -3,7 +3,7 @@ import one.xingyi.certificates.client.view.IDView;
 import one.xingyi.core.http.JavaHttpClient;
 import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.json.Json;
-public class DemoClient {
+public class CertificateDemo {
     public static void main(String[] args) {
         HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://localhost:9000", new Json(),JavaHttpClient.client);
         while (true) {
