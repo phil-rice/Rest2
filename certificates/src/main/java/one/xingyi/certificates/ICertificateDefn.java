@@ -13,7 +13,7 @@ public interface ICertificateDefn extends IXingYiResourceDefn {
 //    IDetailsDefn child();
 //
 //    @Deprecated
-//    @Field(javascript = "return compose(lens('child'), lens('powerfulId'));")
+//    @Field(lensPath = "child/detailsDefn,powerfulId/String")
     String id();
 
 //        @Deprecated
