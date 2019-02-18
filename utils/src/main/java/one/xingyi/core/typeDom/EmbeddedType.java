@@ -21,6 +21,6 @@ public class EmbeddedType implements NonPrimitiveTypeDom {
     @Override public String forFromJson(String fieldName) {
         return null; //TODO
     }
-    @Override public String lensDefn(String lensPath) { return "new EmbeddedLensDefn(" + Strings.quote(lensPath) + "," + Strings.quote(entityNameForLens()) + ")"; }
+    @Override public String lensDefn(String fieldName) { return "fieldName/embedded-" + entityNameForLens(); }
 
 }

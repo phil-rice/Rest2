@@ -16,7 +16,7 @@ public interface IServerNames {
     Result<String, EntityNames> entityName(String className);
     Result<String, ViewNames> viewName(String className, String entityClassName);
     String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
-    Result<String, List<String>> entityLensPath(EntityNames entityElementName, String fieldName, String[] annotationLensPath);
+    Result<String, String> entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
     Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl);
 }
 
@@ -54,10 +54,8 @@ class SimpleServerNames implements IServerNames {
     @Override public String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName) {
         return Strings.from(annotationLensName, "lens_" + entityElementName.entityNameForLens + "_" + fieldName);
     }
-    @Override public Result<String, List<String>> entityLensPath(EntityNames entityElementName, String fieldName, String[] annotationLensPath) {
-        if (annotationLensPath.length > 0)
-            return Result.succeed(Arrays.asList(annotationLensPath));
-        else return Result.succeed(List.of(fieldName));
+    @Override public Result<String, String> entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath) {
+        return Result.succeed(Strings.from(annotationLensPath, fieldName));
     }
     @Override public Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String
             annotationBookmark, String annotationGetUrl, String codeUrl) {//TODO review this business logic

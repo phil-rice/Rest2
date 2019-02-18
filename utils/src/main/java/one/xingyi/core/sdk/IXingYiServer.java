@@ -17,5 +17,5 @@ public interface IXingYiServer {
     default EndPoint endpoint() { return EndPoint.compose(allEndpoints());}
     default SimpleServer simpleServer(int port) {return new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(endpoint()), port);}
     default SimpleServer simpleServerWithLog(int port) {return new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(EndPoint.printlnLog(endpoint())), port);}
-    default List<LensLine> allLensLens() {return Lists.flatMap(companions(), IXingYiServerCompanion::lensLines);}
+    default List<String> allLensLens() {return Lists.flatMap(companions(), IXingYiServerCompanion::lensLines);}
 }

@@ -52,10 +52,8 @@ public class SimpleServerNamesTest {
     }
     @Test public void testLensPath() {
         EntityNames entityNames = mock(EntityNames.class);
-        assertEquals(Result.succeed(List.of("fieldName")), serverNames.entityLensPath(entityNames, "fieldName", new String[0]));
-        assertEquals(Result.succeed(List.of("name1")), serverNames.entityLensPath(entityNames, "fieldName", new String[]{"name1"}));
-        assertEquals(Result.succeed(List.of("child", "name1")), serverNames.entityLensPath(entityNames, "fieldName", new String[]{"child", "name1"}));
-        assertEquals(Result.succeed(List.of("child1", "child2", "name1")), serverNames.entityLensPath(entityNames, "fieldName", new String[]{"child1", "child2", "name1"}));
+        assertEquals(Result.succeed("fieldName"), serverNames.entityLensPath(entityNames, "fieldName", ""));
+        assertEquals(Result.succeed("name1"), serverNames.entityLensPath(entityNames, "fieldName", "name1"));
     }
     @Test public void testBookmark() {
         EntityNames entityNames = mock(EntityNames.class);

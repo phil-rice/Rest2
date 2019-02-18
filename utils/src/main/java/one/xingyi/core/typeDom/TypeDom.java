@@ -35,7 +35,7 @@ public interface TypeDom {
 
     default String forToJson(String fieldName, boolean templated) {return fieldName;}
     String forFromJson(String fieldName);
-    String lensDefn(String lensPathLastItem);
+    String lensDefn(String fieldName);
 
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName) {
         String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);

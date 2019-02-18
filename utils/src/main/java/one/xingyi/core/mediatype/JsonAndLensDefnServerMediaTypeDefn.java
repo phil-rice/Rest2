@@ -11,9 +11,9 @@ import one.xingyi.core.utils.Lists;
 import java.util.List;
 public class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResource & HasJsonWithLinks<ContextForJson, Entity>> extends SimpleServerMediaTypeDefn<J, Entity> {
     final String protocol;
-    final List<LensLine> lensLines;
+    final List<String> lensLines;
 
-    public JsonAndLensDefnServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
+    public JsonAndLensDefnServerMediaTypeDefn(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<String> lensLines) {
         super(makesFromJson, context.parserAndWriter(), IMediaTypeConstants.jsonDefnPrefix, entityName);
         this.lensLines = lensLines;
         this.protocol = context.protocol();
@@ -21,7 +21,7 @@ public class JsonAndLensDefnServerMediaTypeDefn<J, Entity extends IXingYiResourc
 
     DataToBeSentToClient makeDataAndDefnFor(ContextForJson context, J json) {
         String data = parserAndWriter.fromJ(json);
-        String lensDefnString = Lists.mapJoin(lensLines, "\n", LensLine::asString);
+        String lensDefnString = Lists.join(lensLines, "\n");
         return new DataToBeSentToClient(data, lensDefnString);
     }
 

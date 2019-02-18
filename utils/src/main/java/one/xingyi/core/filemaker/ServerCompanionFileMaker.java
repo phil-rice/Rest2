@@ -65,19 +65,20 @@ public class ServerCompanionFileMaker implements IFileMaker<ResourceDom> {
         return List.of("public List<String> lens(){return List.of(", resourceDom.fields.withDeprecatedmapJoin(",", fd -> Strings.quote(fd.lensName)), ");}");
     }
 
-    //TODO Sort this out. This is a bodge
-    List<String> lensPathCode(TypeDom typeDom, List<String> path) {
-        if (path.size() == 0) throw new IllegalStateException("Path should not be of no length");
-        List<String> result = Lists.map(path, p -> "new ViewLensDefn(" + Strings.quote(p) + ",\"notYes\")");
-        result.set(result.size() - 1, typeDom.lensDefn(path.get(path.size() - 1)));
-        return result;
-    }
+
+    //    List<String> lensPathCode(TypeDom typeDom, List<String> path) {
+//        if (path.size() == 0) throw new IllegalStateException("Path should not be of no length");
+//        List<String> result = Lists.map(path, p -> "new ViewLensDefn(" + Strings.quote(p) + ",\"notYes\")");
+//        result.set(result.size() - 1, typeDom.lensDefn(path.get(path.size() - 1)));
+//        return result;
+//    }
+
+
     private List<String> createLensDefn(ResourceDom resourceDom) {
 
         return List.of(
-                "public List<LensLine> lensLines(){return List.of(",
-                Formating.indent + resourceDom.fields.withDeprecatedmapJoin(",\n" + Formating.indent + Formating.indent, fd -> "new LensLine(" + Strings.quote(fd.lensName) + ", List.of( " +
-                        Lists.join(lensPathCode(fd.typeDom, fd.lensPath), ",") + "))"),
+                "public List<String> lensLines(){return List.of(",
+                Formating.indent + resourceDom.fields.withDeprecatedmapJoin(",\n" + Formating.indent + Formating.indent, fd -> Strings.quote(fd.lensName + "=" + fd.lensPath)),
                 ");}");
     }
 

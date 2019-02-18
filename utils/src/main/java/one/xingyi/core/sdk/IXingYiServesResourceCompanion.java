@@ -10,7 +10,7 @@ import one.xingyi.core.utils.Lists;
 import java.util.List;
 public interface IXingYiServesResourceCompanion<Defn extends IXingYiResourceDefn, T extends IXingYiResource> extends IXingYiServerCompanion<Defn, T>, HasBookmarkAndUrl, MakesFromJson<T> {
     String javascript();
-    List<LensLine> lensLines();
+    List<String> lensLines();
     default <J, Controller> List<EndPoint> allEndpoints(EndpointContext<J> context, Controller controller) {
         ReflectionOn<IXingYiServesResourceCompanion<Defn, T>> reflection = new ReflectionOn<>(this);
         return Lists.append(

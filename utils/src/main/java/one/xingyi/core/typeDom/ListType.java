@@ -23,7 +23,7 @@ public class ListType implements NonPrimitiveTypeDom {
     @Override public String forFromJson(String fieldName) {
         return "IResourceList.fromList(Lists.map(jsonParser.asList(j, " + Strings.quote(fieldName) + "), child ->" + companionName.asString() + ".companion.fromJson(jsonParser, child)))";
     }
-    @Override public String lensDefn(String lensPath) { return "new ListLensDefn(" + Strings.quote(lensPath) + "," + Strings.quote(entityNameForLens) + ")"; }
+    @Override public String lensDefn(String fieldName) { return fieldName + "/*" + entityNameForLens; }
     @Override public String forToJson(String fieldName, boolean templated) { return "jsonWriter.makeList(Lists.map(" + fieldName + ".toList(), a -> a.toJson(jsonWriter,context)))"; }
 
 

@@ -25,7 +25,7 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
     final LoggerAdapter loggerAdapter;
     final IServerNames serverNames;
     abstract String findLensName(String fieldName, String annotationField);
-    abstract Result<String, List<String>> findLensPath(String fieldName, String[] annotationField);
+    abstract Result<String, String> findLensPath(String fieldName, String annotationField);
     @Override public Result<ElementFail, FieldDom> apply(Element element) {
         String fieldType = element.asType().toString();
         String fieldName = element.getSimpleName().toString();
@@ -35,11 +35,11 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
 
 //            String defaultLensName = findLensName(fieldName, annotation.)
             String lensName = findLensName(fieldName, Optional.ofNullable(annotation).map(Field::lensName).orElse(""));
-            String[] lensPathArray = Optional.ofNullable(annotation).map(Field::lensPath).orElse(new String[0]);
-            return findLensPath(fieldName, lensPathArray).flatMap(lensPath -> {
+            String rawLensPath = Optional.ofNullable(annotation).map(Field::lensPath).orElse("");
+            return findLensPath(td.lensDefn(fieldName), rawLensPath).flatMap(lensPath -> {
 //            String lensPath = findLensPath(fieldName, Optional.ofNullable(annotation.lensPath()).orElse(""));
                 Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
-                String javascriptBody = Strings.from(Optional.ofNullable(annotation).map(Field::javascript).orElse(""), "return lens('" + lensPath + "');");
+                String javascriptBody = Strings.from(Optional.ofNullable(annotation).map(Field::javascript).orElse(""), "return lens('" + fieldName + "');");
                 String javascript = "function " + lensName + "(){" + javascriptBody + "};";
 //            loggerAdapter.info(element, fieldName + ": " + javascriptBody + "/" + defn);
                 Boolean templated = Optional.ofNullable(annotation).map(a -> a.templated()).orElse(false);
@@ -58,7 +58,7 @@ class SimpleElementToFieldDomForEntity extends AbstractElementToFieldDom {
     @Override String findLensName(String fieldName, String annotationField) {
         return serverNames.entityLensName(entityNames, fieldName, annotationField);
     }
-    @Override Result<String, List<String>> findLensPath(String fieldName, String[] annotationField) {
+    @Override Result<String, String> findLensPath(String fieldName, String annotationField) {
         return serverNames.entityLensPath(entityNames, fieldName, annotationField);
     }
 }
@@ -73,8 +73,8 @@ class SimpleElementToFieldDomForViews extends AbstractElementToFieldDom {
     @Override String findLensName(String fieldName, String annotationField) {
         return "lens for views not done yet";
     }
-    @Override Result<String, List<String>> findLensPath(String fieldName, String[] annotationField) {
-        return Result.succeed(List.of("lens path for views not done yet"));
+    @Override Result<String, String> findLensPath(String fieldName, String annotationField) {
+        return Result.succeed("lens path for views not done yet");
     }
 }
 

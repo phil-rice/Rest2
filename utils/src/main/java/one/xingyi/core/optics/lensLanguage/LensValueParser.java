@@ -23,6 +23,7 @@ class SimpleLensParser implements LensValueParser {
     @Override
     public List<LensDefn> apply(String s) {
         return Lists.map(Strings.split(s, ","), item -> {
+            if (item.equalsIgnoreCase("<firstItem>")) return new FirstItemInListDefn();
             List<String> parts = Strings.split(item, "/");
             if (parts.size() != 2)
                 throw new RuntimeException("could not find two parts in item " + item + " which is in " + s);

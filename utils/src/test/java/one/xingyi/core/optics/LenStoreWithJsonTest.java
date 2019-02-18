@@ -41,6 +41,21 @@ abstract public class LenStoreWithJsonTest<J> {
         Lens<J, IResourceList<J>> listLens = store.listLens("person_address");
         IResourceList<J> addresses = listLens.get(j);
         assertEquals("someLine1a", store.stringLens("address_line1").get(addresses.get(0)));
-        assertEquals("someLine1a", store.stringLens("address_line1").get(addresses.get(1)));
+        assertEquals("someLine1b", store.stringLens("address_line1").get(addresses.get(1)));
     }
+
+    @Test public void testCanAccessFirstItemInListThenString() {
+        String json = Strings.changeQuotes("{'name':'phil','age':23,'addresses':[{'line1':'someLine1a'},{'line1':'someLine1b'}]}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/*address,<firstItem>,line1/string\naddress_line1=line1/string");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        Lens<J, String> stringLens = store.stringLens("person_address");
+        assertEquals("someLine1a", stringLens.get(j));
+
+        J newJ = stringLens.set(j, "newLine1");
+        assertEquals("someLine1a", stringLens.get(j));
+        assertEquals("newLine1", stringLens.get(newJ));
+    }
+
+
 }

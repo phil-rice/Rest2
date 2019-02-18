@@ -30,7 +30,7 @@ public interface IMediaTypeServerDefn<Entity extends IXingYiResource> {
     static <J, Entity extends IXingYiResource& HasJsonWithLinks<ContextForJson, Entity>> IMediaTypeServerDefn<Entity> justJson(String protocol, MakesFromJson<Entity> makesFromJson, JsonParserAndWriter<J> parserAndWriter) {
         return new JustJsonServerMediaTypeDefn<>(protocol, makesFromJson, parserAndWriter);
     }
-    static <J, Entity extends IXingYiResource& HasJsonWithLinks<ContextForJson, Entity>> IXingYiServerMediaTypeDefn<Entity> jsonAndLensDefnServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<LensLine> lensLines) {
+    static <J, Entity extends IXingYiResource& HasJsonWithLinks<ContextForJson, Entity>> IXingYiServerMediaTypeDefn<Entity> jsonAndLensDefnServer(String entityName, MakesFromJson<Entity> makesFromJson, ServerMediaTypeContext<J> context, List<String> lensLines) {
         return new JsonAndLensDefnServerMediaTypeDefn<>(entityName, makesFromJson, context, lensLines);
     }
 

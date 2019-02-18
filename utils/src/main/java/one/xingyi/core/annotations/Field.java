@@ -21,7 +21,7 @@ public @interface Field {
      * xxx.yyy.  these are field names in the entity.
      * special values of xxx include <firstItem> if we have a list
      */
-    String[] lensPath() default {};
+    String lensPath() default "";
     /**
      * overrides the defn associated with this view field (the default is to call the lens
      */

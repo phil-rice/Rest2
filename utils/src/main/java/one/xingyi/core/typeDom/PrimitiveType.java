@@ -32,5 +32,7 @@ public class PrimitiveType implements TypeDom {
             return "jsonParser.asInt(j, " + Strings.quote(fieldName) + ")";
         else throw new RuntimeException("Don't know how to parse primitive field " + fieldName + " of type" + typeName.asString());
     }
-    @Override public String lensDefn(String lensPath) { return "new StringLensDefn(" + Strings.quote(lensPath) + ")"; } //TODO Split PrimitiveType
+    @Override public String lensDefn(String fieldName) { return fieldName + "/" + entityNameForLens(); }
+
+    //TODO Split PrimitiveType
 }
