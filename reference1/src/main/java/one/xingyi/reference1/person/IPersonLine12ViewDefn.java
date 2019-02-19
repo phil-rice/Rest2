@@ -5,5 +5,4 @@ import one.xingyi.core.sdk.IXingYiViewDefn;
 public interface IPersonLine12ViewDefn extends IXingYiViewDefn<IPersonDefn> {
     String line1();
     String line2();
-
 }
