@@ -8,7 +8,7 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.json.Json;
 import one.xingyi.reference3.address.server.companion.AddressCompanion;
-import one.xingyi.reference3.person.client.entitydefn.IPersonNameViewClientEntity;
+import one.xingyi.reference3.person.client.entitydefn.IPersonClientEntity;
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
@@ -47,8 +47,8 @@ public abstract class SimpleMediaTypeDefnTest<MediaType extends IMediaTypeServer
 }
 
 abstract class SimpleMediaTypeDefnClientTests<J,
-        Server extends SimpleServerMediaTypeDefn<J,Person>,
-        Client extends SimpleClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>> extends SimpleMediaTypeDefnTest<Server> {
+        Server extends SimpleServerMediaTypeDefn<J, Person>,
+        Client extends SimpleClientMediaTypeDefn<IPersonClientEntity, PersonNameView>> extends SimpleMediaTypeDefnTest<Server> {
 
     abstract Client clientMediaDefn();
     @Override protected String acceptHeader() { return clientMediaDefn().acceptHeader(Set.of()); }

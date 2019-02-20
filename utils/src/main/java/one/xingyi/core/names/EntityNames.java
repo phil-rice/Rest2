@@ -1,6 +1,5 @@
 package one.xingyi.core.names;
 import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.codeDom.PackageAndClassName;
 
@@ -11,16 +10,16 @@ public class EntityNames {
     public final PackageAndClassName serverInterface;
     public final PackageAndClassName serverEntity;
     public final PackageAndClassName serverCompanion;
-    public final PackageAndClassName clientEntity;
+    public final PackageAndClassName clientResource;
     public final PackageAndClassName serverController;
     public final String entityNameForLens;
 
-    public EntityNames(PackageAndClassName originalDefn, PackageAndClassName serverInterface, PackageAndClassName serverEntity, PackageAndClassName serverCompanion, PackageAndClassName clientEntity,PackageAndClassName serverController,  String entityNameForLens) {
+    public EntityNames(PackageAndClassName originalDefn, PackageAndClassName serverInterface, PackageAndClassName serverEntity, PackageAndClassName serverCompanion, PackageAndClassName clientResource, PackageAndClassName serverController, String entityNameForLens) {
         this.originalDefn = originalDefn;
         this.serverInterface = serverInterface;
         this.serverEntity = serverEntity;
         this.serverCompanion = serverCompanion;
-        this.clientEntity = clientEntity;
+        this.clientResource = clientResource;
         this.serverController = serverController;
         this.entityNameForLens = entityNameForLens;
     }

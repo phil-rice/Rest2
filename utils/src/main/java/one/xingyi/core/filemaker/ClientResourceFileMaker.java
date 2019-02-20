@@ -1,24 +1,24 @@
 package one.xingyi.core.filemaker;
 import one.xingyi.core.annotations.XingYiGenerated;
-import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
+import one.xingyi.core.codeDom.PackageAndClassName;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-public class ClientResourceFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
+public class ClientResourceFileMaker implements IFileMaker<ResourceDom> {
 
 
-    @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewAndEntityDom) {
-        ViewDom viewDom = viewAndEntityDom.viewDom;
+    @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
+        PackageAndClassName clientResourceName = resourceDom.entityNames.clientResource;
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), viewDom.deprecated, viewAndEntityDom.viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientEntity,
+                Formating.javaFile(getClass(), resourceDom.deprecated, clientResourceName, "interface", clientResourceName,
                         " extends IXingYiClientResource", List.of(),
                         IXingYiClientResource.class, XingYiGenerated.class),
                 List.of("}")
         ), "\n");
-        return Result.succeed(new FileDefn(viewDom.viewNames.clientEntity, result));
+        return Result.succeed(new FileDefn(clientResourceName, result));
     }
 }

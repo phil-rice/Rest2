@@ -1,11 +1,8 @@
 package one.xingyi.core.mediatype;
 
 import one.xingyi.core.endpoints.EndPoint;
-import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.DataToBeSentToClient;
-import one.xingyi.reference3.person.client.entitydefn.IPersonNameViewClientEntity;
+import one.xingyi.reference3.person.client.entitydefn.IPersonClientEntity;
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import one.xingyi.reference3.person.server.domain.Person;
 import org.junit.Test;
@@ -14,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 import static junit.framework.TestCase.assertEquals;
 
-public abstract class AbstractEntityClientMediaTypeEndpointTest<ServerMediaType extends IXingYiServerMediaTypeDefn<Person>, ClientMediaType extends SimpleClientMediaTypeDefn<IPersonNameViewClientEntity, PersonNameView>> extends AbstractEntityServerMediaTypeEndpointTest {
+public abstract class AbstractEntityClientMediaTypeEndpointTest<ServerMediaType extends IXingYiServerMediaTypeDefn<Person>, ClientMediaType extends SimpleClientMediaTypeDefn<IPersonClientEntity, PersonNameView>> extends AbstractEntityServerMediaTypeEndpointTest {
     abstract ClientMediaType clientMediaType();
 
     @Test public void testCanTurnAResponseIntoAPersonView() throws ExecutionException, InterruptedException {
@@ -27,7 +24,7 @@ public abstract class AbstractEntityClientMediaTypeEndpointTest<ServerMediaType 
     }
 
 
-    @Test public void testGetEndpoint(){
+    @Test public void testGetEndpoint() {
 
     }
 }

@@ -2,6 +2,7 @@ package one.xingyi.core.filemaker;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IXingYi;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
 import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
@@ -26,34 +27,9 @@ import java.util.function.Function;
 public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
     final MonadDefn monadDefn;
 
-    List<String> getMethod(String returnType) {
-        return List.of("public <T> " + monadDefn.simpleClassName() + "<T> get(HttpService httpService, String id, Function<" + returnType + ", T> fn){ return httpService.get(this, id, fn);}");
-    }
-    List<String> createMethod(String returnType) {
-        return List.of("public " + monadDefn.simpleClassName() + "<" + returnType + "> create(HttpService httpService, String id){ return httpService.create(this,id);}");
-    }
-    List<String> createWithoutIdMethod(String returnType) {
-        return List.of("public " + monadDefn.simpleClassName() + "<IdAndValue<" + returnType + ">> createWithoutId(HttpService httpService){ return httpService.createWithoutId(this);}");
-    }
-
-    List<String> createDeleteMethod() {
-        return List.of("public " + monadDefn.simpleClassName() + " <Boolean> delete(HttpService httpService, String id){ return httpService.delete(this,id);}");
-    }
-    List<String> createEditMethod(String returnType) {
-        return List.of("public " + monadDefn.simpleClassName() + "<" + returnType + "> edit(HttpService httpService, String id, Function<" + returnType + "," + returnType + "> fn){ return httpService.edit(this, id, fn);}");
-    }
 
     List<String> accessorMethods(ViewDom viewDom, BookmarkUrlAndActionsDom bookmarkUrlAndActionsDom) {
         return List.of();
-//        ActionsDom actionsDom = bookmarkUrlAndActionsDom.actionsDom;
-//        String viewReturnType = viewDom.viewNames.clientView.asString();
-//        return Lists.<String>append(
-//                Optionals.flatMap(actionsDom.getDom, dom -> getMethod(viewReturnType)),
-//                Optionals.flatMap(actionsDom.createDom, dom -> createMethod(viewReturnType)),
-//                Optionals.flatMap(actionsDom.createWithoutIdDom, dom -> createWithoutIdMethod(viewReturnType)),
-//                Optionals.flatMap(actionsDom.deleteDom, dom -> createDeleteMethod()),
-//                Optionals.flatMap(actionsDom.putDom, dom -> createEditMethod(viewReturnType))
-//        );
     }
 
     List<String> primitiveMethod(ViewDom viewDom) {
@@ -79,6 +55,8 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
+        if (viewDomAndItsResourceDom.entityDom.isEmpty()) return Result.failwith("could not create  view companion interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
+        ResourceDom resourceDom = viewDomAndItsResourceDom.entityDom.get();
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
         String parentInterface = Optionals.fold(accessDetails, () -> "IXingYiClientViewCompanion", b -> "IXingYiRemoteClientViewCompanion");
 
@@ -92,7 +70,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientCompanion,
                         " implements " + parentInterface + "<" +
-                                viewDom.viewNames.clientEntity.asString() + "," +
+                                resourceDom.entityNames.clientResource.asString() + "," +
                                 viewDom.viewNames.clientView.asString() + "," +
                                 viewDom.viewNames.clientViewImpl.asString() +
                                 ">", manualImports,
@@ -103,16 +81,17 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
                 List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),
                 Formating.indent(createGetRemoteAccessMethods(accessDetails, viewDom)),
                 List.of(Formating.indent + "@SuppressWarnings(\"unchecked\")@Override public " + viewDom.viewNames.clientView.asString() + " make(IXingYi xingYi, Object mirror){return new " + viewDom.viewNames.clientViewImpl.asString() + "(xingYi,mirror);} "),
-                Formating.indent(createMediaType(viewDom)),
+//                Formating.indent(createMediaType(viewDom)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientCompanion, result));
     }
-    private List<String> createMediaType(ViewDom viewDom) {
+    private List<String> createMediaType(ViewDom viewDom,ResourceDom resourceDom) {
         EntityNames entityNames = viewDom.viewNames.entityNames;
 
-        return List.of("public <J>IMediaTypeClientDefn<" + viewDom.viewNames.clientEntity.asString() + "," + viewDom.viewNames.clientView.asString() + "> x(JsonParserAndWriter<J> json){",
+        return List.of("public <J>IMediaTypeClientDefn<" + resourceDom.entityNames.clientResource.asString() + "," + viewDom.viewNames.clientView.asString() + "> x(JsonParserAndWriter<J> json){",
                 Formating.indent + "return new  JsonAndLensDefnClientMediaTypeDefn<>(" +
                         Strings.quote(entityNames.serverEntity.className) + ",json, FetchJavascript.asIs(),LensStoreParser.simple(),this);",
                 "}");
-    }}
+    }
+}

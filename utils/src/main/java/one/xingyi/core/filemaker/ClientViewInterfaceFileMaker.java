@@ -3,10 +3,7 @@ import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotationProcessors.ActionsDom;
 import one.xingyi.core.annotationProcessors.PostDom;
 import one.xingyi.core.annotations.XingYiGenerated;
-import one.xingyi.core.codeDom.FieldDom;
-import one.xingyi.core.codeDom.ViewDom;
-import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
-import one.xingyi.core.codeDom.ViewDomAndResourceDomField;
+import one.xingyi.core.codeDom.*;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.monad.MonadDefn;
@@ -77,7 +74,10 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
     }
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
+        if (viewDomAndItsResourceDom.entityDom.isEmpty()) return Result.failwith("could not create client view interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
+        ResourceDom resourceDom = viewDomAndItsResourceDom.entityDom.get();
+
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
         List<String> manualImports = Lists.append(List.of(monadDefn.fullClassName(),
                 "one.xingyi.core.httpClient.HttpService" + monadDefn.simpleClassName(),
@@ -85,7 +85,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
                 Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
         String result = Lists.join(Lists.append(
                 Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
-                        " extends IXingYiView<" + viewDom.viewNames.clientEntity.asString() + ">", manualImports,
+                        " extends IXingYiView<" + resourceDom.entityNames.clientResource.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class,
                         IdAndValue.class, Optional.class),
                 Formating.indent(getRemoteAccessors(viewDom, accessDetails)),

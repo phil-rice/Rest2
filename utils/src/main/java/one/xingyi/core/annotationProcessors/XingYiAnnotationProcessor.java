@@ -177,6 +177,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
                 new ServerResourceFileMaker(),
+                new ClientResourceFileMaker(),
                 new ServerCompanionFileMaker(),
                 new ServerControllerFileMaker(codeDom.monadDefn));
         List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.resourceDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
@@ -186,7 +187,6 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         List<IFileMaker<ViewDomAndItsResourceDom>> viewFileMakers = List.of(
                 new ViewDomDebugFileMaker(),
                 new ClientViewInterfaceFileMaker(codeDom.monadDefn),
-                new ClientResourceFileMaker(),
                 new ClientViewCompanionFileMaker(codeDom.monadDefn),
                 new ClientViewImplFileMaker()
         );

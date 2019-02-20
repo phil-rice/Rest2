@@ -19,7 +19,7 @@ public class AbstractDebugFileMaker {
                 Formating.indent(List.of(
                         "IServer:    " + names.serverInterface.asString(),
                         "ServerImpl: " + names.serverEntity.asString(),
-                        "Client:     " + names.clientEntity.asString(),
+                        "Client:     " + names.clientResource.asString(),
                         "ServComp:   " + names.serverCompanion.asString(),
                         "Lens:       " + names.entityNameForLens
                 )));
