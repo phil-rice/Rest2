@@ -47,9 +47,7 @@ CreateViewMethods {
         return List.of("public static " + monadDefn().simpleClassName() + "<IdAndValue<" + viewName + ">> create(" + "HttpService" + monadDefn().simpleClassName() + " service, " + viewName + " view){return service.createWithoutId(" + companionName + ", view);}");
     }
 
-    default List<String> getRemoteAccessors(ViewDom viewDom, Optional<BookmarkUrlAndActionsDom> bookmarkUrlAndActionsDom) {
-        String companionName = viewDom.viewNames.clientCompanion.asString() + ".companion";
-        String viewName = viewDom.viewNames.clientView.asString();
+    default List<String> getRemoteAccessors(String viewName, String companionName, Optional<BookmarkUrlAndActionsDom> bookmarkUrlAndActionsDom) {
         return Optionals.fold(bookmarkUrlAndActionsDom, () -> List.<String>of(), b -> {
             ActionsDom actionsDom = b.actionsDom;
             return Lists.<String>append(

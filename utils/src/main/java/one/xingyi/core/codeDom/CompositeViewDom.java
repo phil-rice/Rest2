@@ -11,5 +11,5 @@ public class CompositeViewDom {
     public final PackageAndClassName clientResource;
     public final PackageAndClassName clientInterface;
     public final PackageAndClassName clientImpl;
-
+    public final PackageAndClassName companion;
 }

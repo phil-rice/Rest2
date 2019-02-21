@@ -3,7 +3,12 @@ import one.xingyi.core.ISimpleMap;
 import one.xingyi.core.annotations.XingYiGenerated;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.client.IXingYi;
-import one.xingyi.core.codeDom.*;
+import one.xingyi.core.codeDom.CompositeViewDom;
+import one.xingyi.core.codeDom.FieldListDom;
+import one.xingyi.core.codeDom.ResourceDom;
+import one.xingyi.core.codeDom.ViewDom;
+import one.xingyi.core.monad.CompletableFutureDefn;
+import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.core.sdk.IXingYiClientImpl;
 import one.xingyi.core.utils.Formating;
@@ -11,7 +16,7 @@ import one.xingyi.core.utils.Lists;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
-public class CompositeViewImplMaker implements IFileMaker<CompositeViewDom> {
+public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>, CreateViewMethods {
 
 
     List<String> fields(ResourceDom resourceDom, ViewDom viewDom) {
@@ -26,18 +31,16 @@ public class CompositeViewImplMaker implements IFileMaker<CompositeViewDom> {
     @Override public Result<String, FileDefn> apply(CompositeViewDom dom) {
         List<String> manualImports = List.of();
         String result = Lists.<String>join(Lists.<String>append(
-                Formating.javaFile(getClass(), false, dom.originalDefn, "class", dom.clientImpl,
-                        " implements " + dom.clientInterface.asString(),
+                Formating.javaFile(getClass(), false, dom.originalDefn, "interface", dom.clientInterface,
+                        "",
                         manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
                         IResourceList.class, Lens.class, ISimpleMap.class),
-//                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = " + viewDom.viewNames.clientCompanion.asString() + ".companion;"),
-//                Formating.indent(fields(resourceDom, viewDom)),
-//                List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
-//                List.of(Formating.indent + "@Override public IXingYi<" + resourceDom.entityNames.clientResource.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi(){return xingYi;}"),
-//                Formating.indent(constructor(resourceDom, viewDom)),
-//                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, dom.viewDomAndResourceDomFields)),
+                Formating.indent(getRemoteAccessors(dom.clientInterface.asString(), companionName, bookmarkUrlAndActionsDom)),
                 List.of("}")
         ), "\n");
-        return Result.succeed(new FileDefn(dom.clientImpl, result));
+        return Result.succeed(new FileDefn(dom.clientInterface, result));
+    }
+    @Override public MonadDefn monadDefn() {
+        return new CompletableFutureDefn();
     }
 }

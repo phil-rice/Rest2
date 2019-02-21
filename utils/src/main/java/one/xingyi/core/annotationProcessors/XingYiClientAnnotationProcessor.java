@@ -58,18 +58,20 @@ public class XingYiClientAnnotationProcessor extends AbstractProcessor {
         try {
             List<Element> elements = new ArrayList<>(env.getElementsAnnotatedWith(CombinedView.class));
             for (Element element : elements) {
-                Result<String, String> result = classNameStrategy.toRoot(element.toString(), element.asType().toString());
+                PackageAndClassName originaldefn = new PackageAndClassName(element.asType().toString());
+                Result<String, String> result = classNameStrategy.toRoot(element.asType().toString(), originaldefn.className);
                 if (result.fails().size() > 0)
                     log.error(element, result.fails().toString());
-                PackageAndClassName originaldefn = new PackageAndClassName(element.asType().toString());
                 CompositeViewDom dom = new CompositeViewDom(
                         originaldefn,
                         new PackageAndClassName("clientResource", "clientResource"),
-                        new PackageAndClassName(packageNameStrategy.toClientViewInterface(originaldefn.packageName), classNameStrategy.toClientViewInterface(originaldefn.className)),
-                        new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toClientViewImpl(originaldefn.className))
+                        new PackageAndClassName(packageNameStrategy.toCompositeInterface(originaldefn.packageName), classNameStrategy.toCompositeInterface(originaldefn.className)),
+                        new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toCompositeImpl(originaldefn.className))
                 );
-                log.error(dom.toString());
-                for (IFileMaker<CompositeViewDom> maker : List.of(new CompositeViewImplMaker())) {
+//                log.error(dom.toString());
+                for (IFileMaker<CompositeViewDom> maker : List.of(
+                        new CompositeViewInterfaceMaker(),
+                        new CompositeViewImplMaker())) {
                     Result<String, FileDefn> makeFileResult = maker.apply(dom);
                     makeFileResult.forEach(defn -> makeClassFile(defn));
                     if (makeFileResult.fails().size() > 0)

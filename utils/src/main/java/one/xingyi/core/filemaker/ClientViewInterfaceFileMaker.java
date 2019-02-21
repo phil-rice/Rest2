@@ -29,6 +29,9 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
         if (viewDomAndItsResourceDom.entityDom.isEmpty()) return Result.failwith("could not create client view interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
         ResourceDom resourceDom = viewDomAndItsResourceDom.entityDom.get();
+        String companionName = viewDom.viewNames.clientCompanion.asString() + ".companion";
+        String viewName = viewDom.viewNames.clientView.asString();
+
 
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
         List<String> manualImports = Lists.append(List.of(monadDefn().fullClassName(),
@@ -40,7 +43,7 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
                         " extends IXingYiView<" + resourceDom.entityNames.clientResource.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class,
                         IdAndValue.class, Optional.class, Lens.class),
-                Formating.indent(getRemoteAccessors(viewDom, accessDetails)),
+                Formating.indent(getRemoteAccessors(viewName, companionName, accessDetails)),
                 List.of(),
 //                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
                 Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientCompanion, viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
