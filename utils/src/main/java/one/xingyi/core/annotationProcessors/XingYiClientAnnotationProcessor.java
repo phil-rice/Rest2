@@ -30,7 +30,6 @@ import java.util.*;
 
 @RequiredArgsConstructor
 public class XingYiClientAnnotationProcessor extends AbstractProcessor {
-    final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
 
     private Types typeUtils;
     private Elements elementUtils;
@@ -51,12 +50,28 @@ public class XingYiClientAnnotationProcessor extends AbstractProcessor {
     @Override
     //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
+        IPackageNameStrategy packageNameStrategy = IPackageNameStrategy.simple;
+        IClassNameStrategy classNameStrategy = IClassNameStrategy.simple;
+
         LoggerAdapter log = LoggerAdapter.fromMessager(messager);
-        ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Client Annotations");
         try {
-            log.info("Class: " + Class.forName(CombinedView.class.getName()));
-            log.info("Class: " + Class.forName("one.xingyi.reference1.person.IPersonLine12ViewDefn"));
+            List<Element> elements = new ArrayList<>(env.getElementsAnnotatedWith(CombinedView.class));
+            for (Element element : elements) {
+                Result<String, String> result = classNameStrategy.toRoot(element.toString(), element.asType().toString());
+                if (result.fails().size() > 0)
+                    log.error(element, result.fails().toString());
+                PackageAndClassName originaldefn = new PackageAndClassName(element.asType().toString());
+                CompositeViewDom dom = new CompositeViewDom(
+                        originaldefn,
+                        new PackageAndClassName("clientResource", "clientResource"),
+                        new PackageAndClassName(classNameStrategy.toClientViewInterface(originaldefn.packageName), classNameStrategy.toClientViewInterface(originaldefn.className)),
+                        new PackageAndClassName(classNameStrategy.toClientViewInterface(originaldefn.packageName), classNameStrategy.toClientViewInterface(originaldefn.className))
+                );
+                for (IFileMaker<CompositeViewDom> maker: List.of(new CompositeViewImplMaker())){
+
+                };
+            }
         } catch (
                 Exception e) {
             Throwable unwrapped = WrappedException.unWrap(e);

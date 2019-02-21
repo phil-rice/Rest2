@@ -9,5 +9,7 @@ public interface INameStrategy {
     String toServerImplForDomain(String entityDefn);
     String toServerInterfaceForDomain(String entityDefn);
     String toServerController(String entityDefn);
+    String toCompositeImpl(String compositeViewDefn);
+    String toCompositeInterface(String compositeViewDefn);
 
 }
