@@ -208,6 +208,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     @Override public SourceVersion getSupportedSourceVersion() { return SourceVersion.latestSupported(); }
     @Override public Set<String> getSupportedAnnotationTypes() {
-        return Set.of(Resource.class.getName(), View.class.getName(), Server.class.getName(), ValidateManyLens.class.getName());
+        return Set.of(
+                Resource.class.getName(),
+                View.class.getName(),
+                Server.class.getName(),
+                ValidateManyLens.class.getName());
     }
 }

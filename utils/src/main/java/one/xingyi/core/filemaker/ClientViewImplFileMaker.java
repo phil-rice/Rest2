@@ -18,39 +18,6 @@ import java.util.Optional;
 public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
 
 
-    List<String> viewAndEntityaccessors(PackageAndClassName clientEntity, String interfaceName, ViewDomAndResourceDomField viewDomAndResourceDomField) {
-        FieldDom viewDom = viewDomAndResourceDomField.viewDomField;
-        Optional<FieldDom> entityDom = viewDomAndResourceDomField.entityDomField;
-        List<String> result = new ArrayList<>();
-        result.add("//View" + viewDomAndResourceDomField.viewDomField);
-        result.add("//Entity" + viewDomAndResourceDomField.entityDomField);
-        String lensName = entityDom.map(fd -> fd.lensName).orElse("not defined. Is this because of incremental compilation?");
-
-        //TODO wow... really ugly
-        if (viewDom.typeDom.primitive()) {
-            result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
-                    "Lens(){ return xingYi.stringLens(companion, " + Strings.quote(lensName) + ");}");
-        } else if (viewDom.typeDom instanceof ListType) {
-            result.add("//" + viewDom.typeDom);
-            result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){return xingYi.listLens(companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
-
-        } else {
-            result.add("public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){return xingYi.objectLens(companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
-
-        }
-        result.add("public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
-        if (!viewDom.readOnly && entityDom.map(f -> !f.readOnly).orElse(true)) {
-            result.add("public " + interfaceName + " with" + viewDom.name + "(" +
-                    viewDom.typeDom.forView() + " " + viewDom.name + "){ return " + viewDom.name + "Lens().set(this," + viewDom.name + ");}");
-        }
-        return result;
-    }
-
-    List<String> allFieldAccessorsForView(PackageAndClassName clientEntity, String interfaceName, List<ViewDomAndResourceDomField> fields) {
-        return Lists.flatMap(fields, f -> viewAndEntityaccessors(clientEntity, interfaceName, f));
-    }
 
     List<String> fields(ResourceDom resourceDom, ViewDom viewDom) {
         return List.of("final IXingYi<" + resourceDom.entityNames.clientResource.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi;", "final Object mirror;");
@@ -77,7 +44,7 @@ public class ClientViewImplFileMaker implements IFileMaker<ViewDomAndItsResource
                 List.of(Formating.indent + "@Override public Object mirror(){return mirror;}"),
                 List.of(Formating.indent + "@Override public IXingYi<" + resourceDom.entityNames.clientResource.asString() + "," + viewDom.viewNames.clientView.asString() + "> xingYi(){return xingYi;}"),
                 Formating.indent(constructor(resourceDom, viewDom)),
-                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
+//                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientViewImpl, result));

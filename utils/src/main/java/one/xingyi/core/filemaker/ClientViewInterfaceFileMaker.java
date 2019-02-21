@@ -7,7 +7,9 @@ import one.xingyi.core.codeDom.*;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.monad.MonadDefn;
+import one.xingyi.core.optics.Lens;
 import one.xingyi.core.sdk.IXingYiView;
+import one.xingyi.core.typeDom.ListType;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
 
@@ -87,14 +89,48 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
                 Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "interface", viewDom.viewNames.clientView,
                         " extends IXingYiView<" + resourceDom.entityNames.clientResource.asString() + ">", manualImports,
                         IXingYiView.class, XingYiGenerated.class, Function.class, ServiceRequest.class, ServiceResponse.class,
-                        IdAndValue.class, Optional.class),
+                        IdAndValue.class, Optional.class, Lens.class),
                 Formating.indent(getRemoteAccessors(viewDom, accessDetails)),
                 List.of(),
-                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
+//                Formating.indent(allFieldsAccessors(viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
+                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientCompanion, viewDom.viewNames.clientView.className, viewDomAndItsResourceDom.viewDomAndResourceDomFields)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientView, result));
     }
 
+    List<String> viewAndEntityaccessors(PackageAndClassName companion, String interfaceName, ViewDomAndResourceDomField viewDomAndResourceDomField) {
+        FieldDom viewDom = viewDomAndResourceDomField.viewDomField;
+        Optional<FieldDom> entityDom = viewDomAndResourceDomField.entityDomField;
+        List<String> result = new ArrayList<>();
+        result.add("//View" + viewDomAndResourceDomField.viewDomField);
+        result.add("//Entity" + viewDomAndResourceDomField.entityDomField);
+        String lensName = entityDom.map(fd -> fd.lensName).orElse("not defined. Is this because of incremental compilation?");
+
+        //TODO wow... really ugly
+        if (viewDom.typeDom.primitive()) {
+            result.add("default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
+                    "Lens(){ return xingYi().stringLens("+ companion.asString()+ ".companion, " + Strings.quote(lensName) + ");}");
+        } else if (viewDom.typeDom instanceof ListType) {
+            result.add("//" + viewDom.typeDom);
+            result.add("default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
+                    viewDom.name + "Lens(){return xingYi().listLens("+ companion.asString()+ ".companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
+
+        } else {
+            result.add("default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
+                    viewDom.name + "Lens(){return xingYi().objectLens("+ companion.asString()+ ".companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
+
+        }
+        result.add("default public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
+        if (!viewDom.readOnly && entityDom.map(f -> !f.readOnly).orElse(true)) {
+            result.add("default public " + interfaceName + " with" + viewDom.name + "(" +
+                    viewDom.typeDom.forView() + " " + viewDom.name + "){ return " + viewDom.name + "Lens().set(this," + viewDom.name + ");}");
+        }
+        return result;
+    }
+
+    List<String> allFieldAccessorsForView(PackageAndClassName companion, String interfaceName, List<ViewDomAndResourceDomField> fields) {
+        return Lists.flatMap(fields, f -> viewAndEntityaccessors(companion, interfaceName, f));
+    }
 
 }
