@@ -65,12 +65,16 @@ public class XingYiClientAnnotationProcessor extends AbstractProcessor {
                 CompositeViewDom dom = new CompositeViewDom(
                         originaldefn,
                         new PackageAndClassName("clientResource", "clientResource"),
-                        new PackageAndClassName(classNameStrategy.toClientViewInterface(originaldefn.packageName), classNameStrategy.toClientViewInterface(originaldefn.className)),
-                        new PackageAndClassName(classNameStrategy.toClientViewInterface(originaldefn.packageName), classNameStrategy.toClientViewInterface(originaldefn.className))
+                        new PackageAndClassName(packageNameStrategy.toClientViewInterface(originaldefn.packageName), classNameStrategy.toClientViewInterface(originaldefn.className)),
+                        new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toClientViewImpl(originaldefn.className))
                 );
-                for (IFileMaker<CompositeViewDom> maker: List.of(new CompositeViewImplMaker())){
-
-                };
+                log.error(dom.toString());
+                for (IFileMaker<CompositeViewDom> maker : List.of(new CompositeViewImplMaker())) {
+                    Result<String, FileDefn> makeFileResult = maker.apply(dom);
+                    makeFileResult.forEach(defn -> makeClassFile(defn));
+                    if (makeFileResult.fails().size() > 0)
+                        log.error(element, makeFileResult.fails().toString());
+                } ;
             }
         } catch (
                 Exception e) {
