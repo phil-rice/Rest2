@@ -66,7 +66,8 @@ public class XingYiClientAnnotationProcessor extends AbstractProcessor {
                         originaldefn,
                         new PackageAndClassName("clientResource", "clientResource"),
                         new PackageAndClassName(packageNameStrategy.toCompositeInterface(originaldefn.packageName), classNameStrategy.toCompositeInterface(originaldefn.className)),
-                        new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toCompositeImpl(originaldefn.className))
+                        new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toCompositeImpl(originaldefn.className)),
+                        new PackageAndClassName("companionResource", "companionResouce")
                 );
 //                log.error(dom.toString());
                 for (IFileMaker<CompositeViewDom> maker : List.of(

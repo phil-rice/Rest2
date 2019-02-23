@@ -1,6 +1,6 @@
 package one.xingyi.core.httpClient;
-import one.xingyi.core.httpClient.client.companion.UrlPatternCompanion;
 import one.xingyi.core.httpClient.client.view.UrlPattern;
+import one.xingyi.core.httpClient.client.viewcompanion.UrlPatternCompanion;
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;

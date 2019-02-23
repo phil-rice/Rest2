@@ -8,8 +8,6 @@ import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 public interface IServerNames {
     static IServerNames simple(IPackageNameStrategy packageNameStrategy, IClassNameStrategy classNameStrategy) { return new SimpleServerNames(packageNameStrategy, classNameStrategy); }
@@ -33,10 +31,11 @@ class SimpleServerNames implements IServerNames {
         return classNameStrategy.toRoot("Entity", originalDefn.className).map(entityRoot -> {
             PackageAndClassName serverInterface = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerInterfaceForDomain(entityRoot));
             PackageAndClassName serverEntity = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerImplForDomain(entityRoot));
-            PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientCompanion(entityRoot));
+            PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientViewCompanion(entityRoot));
+            PackageAndClassName clientResourceCompanion = new PackageAndClassName(packageNameStrategy.toClientResourceCompanion(originalPackage), classNameStrategy.toClientResourceCompanion(entityRoot));
             PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(entityRoot));
             PackageAndClassName serverController = new PackageAndClassName(packageNameStrategy.toServerController(originalPackage), classNameStrategy.toServerController(entityRoot));
-            return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, serverController, entityRoot);
+            return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, clientResourceCompanion, serverController, entityRoot);
         });
     }
     @Override public Result<String, ViewNames> viewName(String className, String interfaceName) {
@@ -46,7 +45,7 @@ class SimpleServerNames implements IServerNames {
             PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(viewRoot));
             PackageAndClassName clientViewInterface = new PackageAndClassName(packageNameStrategy.toClientViewInterface(originalPackage), classNameStrategy.toClientViewInterface(viewRoot));
             PackageAndClassName clientViewImpl = new PackageAndClassName(packageNameStrategy.toClientViewImpl(originalPackage), classNameStrategy.toClientViewImpl(viewRoot));
-            PackageAndClassName clientCompanion = new PackageAndClassName(packageNameStrategy.toClientCompanion(originalPackage), classNameStrategy.toClientCompanion(viewRoot));
+            PackageAndClassName clientCompanion = new PackageAndClassName(packageNameStrategy.toClientViewCompanion(originalPackage), classNameStrategy.toClientViewCompanion(viewRoot));
             return entityName(interfaceName).map(en ->
                     new ViewNames(originalDefn, clientEntity, clientViewInterface, clientViewImpl, clientCompanion, en));
         });

@@ -26,6 +26,7 @@ public class SimpleServerNamesTest {
         assertEquals(new PackageAndClassName("original.package.server.companion.EntityCompanion"), actual.serverCompanion);
         assertEquals(new PackageAndClassName("original.package.server.controller.IEntityController"), actual.serverController);
         assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientResource);
+        assertEquals(new PackageAndClassName("original.package.client.resoucecompanion.EntityResourceCompanion"), actual.clientResourceCompanion);
         assertEquals("Entity", actual.entityNameForLens);
     }
 
@@ -46,7 +47,7 @@ public class SimpleServerNamesTest {
     }
 
     @Test public void testLensName() {
-        EntityNames entityNames = new EntityNames(new PackageAndClassName("p.ISomeDefn"), null, null, null, null, null, "someEntityForLens");
+        EntityNames entityNames = new EntityNames(new PackageAndClassName("p.ISomeDefn"), null, null,null, null, null, null, "someEntityForLens");
         assertEquals("lens_someEntityForLens_fieldName", serverNames.entityLensName(entityNames, "fieldName", ""));
         assertEquals("override", serverNames.entityLensName(entityNames, "fieldName", "override"));
     }

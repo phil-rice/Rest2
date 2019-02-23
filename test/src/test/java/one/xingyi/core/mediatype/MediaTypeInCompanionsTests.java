@@ -1,22 +1,16 @@
 package one.xingyi.core.mediatype;
 import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.endpoints.EndpointContext;
-import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.json.Json;
 import one.xingyi.reference3.PersonServer;
 import one.xingyi.reference3.person.PersonController;
-import one.xingyi.reference3.person.client.companion.PersonNameViewCompanion;
-import one.xingyi.reference3.person.client.view.PersonNameView;
+import one.xingyi.reference3.person.client.viewcompanion.PersonNameViewCompanion;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.fail;
 public class MediaTypeInCompanionsTests {
 
     PersonCompanion serverCompanion = PersonCompanion.companion;

@@ -35,7 +35,7 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
                         "",
                         manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
                         IResourceList.class, Lens.class, ISimpleMap.class),
-                Formating.indent(getRemoteAccessors(dom.clientInterface.asString(), companionName, bookmarkUrlAndActionsDom)),
+//                Formating.indent(getRemoteAccessors(dom.clientInterface.asString(), dom.companion, bookmarkUrlAndActionsDom)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(dom.clientInterface, result));

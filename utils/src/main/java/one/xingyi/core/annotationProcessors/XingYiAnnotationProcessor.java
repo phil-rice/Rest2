@@ -179,6 +179,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ServerResourceFileMaker(),
                 new ClientResourceFileMaker(),
                 new ServerCompanionFileMaker(),
+                new ClientResourceCompanionFileMaker(codeDom.monadDefn),
                 new ServerControllerFileMaker(codeDom.monadDefn));
         List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.resourceDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
         List<FileDefn> fromCodeDom = Result.successes(fromCodeDomResults);

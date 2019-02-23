@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsResourceDom> {
+public class ClientResourceCompanionFileMaker implements IFileMaker<ResourceDom> {
     final MonadDefn monadDefn;
 
 
@@ -53,11 +53,8 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
 
     }
 
-    @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
-        ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
-        if (viewDomAndItsResourceDom.entityDom.isEmpty()) return Result.failwith("could not create  view companion interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
-        ResourceDom resourceDom = viewDomAndItsResourceDom.entityDom.get();
-        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
+    @Override public Result<String, FileDefn> apply(ResourceDom resourceDom) {
+        Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(resourceDom);
         String parentInterface = Optionals.fold(accessDetails, () -> "IXingYiClientViewCompanion", b -> "IXingYiRemoteClientViewCompanion");
 
         List<String> manualImports = Lists.append(
@@ -65,28 +62,24 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
                         "one.xingyi.core.httpClient.HttpService" + monadDefn.simpleClassName(),
                         "one.xingyi.core.httpClient.client.view.UrlPattern",
                         "one.xingyi.core.httpClient.client.viewcompanion.UrlPatternCompanion"),
-                Lists.unique(viewDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
+                Lists.unique(resourceDom.fields.withDeprecatedmap(fd -> fd.typeDom.nested().fullTypeName())));
 //        String afterClassString = "<Entity extends IXingYiEntity, IOps extends IXingYiView<Entity>, Impl extends IXingYiClientImpl<Entity, IOps>> extends IXingYiClientMaker<Entity, IOps>"
         String result = Lists.join(Lists.append(
-                Formating.javaFile(getClass(), viewDom.deprecated, viewDom.viewNames.originalDefn, "class", viewDom.viewNames.clientCompanion,
-                        " implements " + parentInterface + "<" +
-                                resourceDom.entityNames.clientResource.asString() + "," +
-                                viewDom.viewNames.clientView.asString() + "," +
-                                viewDom.viewNames.clientViewImpl.asString() +
-                                ">", manualImports,
+                Formating.javaFile(getClass(), resourceDom.deprecated, resourceDom.entityNames.originalDefn, "class", resourceDom.entityNames.clientResourceCompanion,
+                        "", manualImports,
                         IXingYiView.class, XingYiGenerated.class, IXingYiClientViewCompanion.class,
                         IXingYiRemoteClientViewCompanion.class, IXingYi.class, BookmarkCodeAndUrlPattern.class, FetchJavascript.class, JsonParserAndWriter.class,
                         Function.class, IdAndValue.class, IMediaTypeClientDefn.class, JsonAndLensDefnClientMediaTypeDefn.class, LensStoreParser.class),
 
-                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),
-                Formating.indent(createGetRemoteAccessMethods(accessDetails, viewDom)),
-                List.of(Formating.indent + "@SuppressWarnings(\"unchecked\")@Override public " + viewDom.viewNames.clientView.asString() + " make(IXingYi xingYi, Object mirror){return new " + viewDom.viewNames.clientViewImpl.asString() + "(xingYi,mirror);} "),
+//                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),
+//                Formating.indent(createGetRemoteAccessMethods(accessDetails, viewDom)),
+//                List.of(Formating.indent + "@SuppressWarnings(\"unchecked\")@Override public " + viewDom.viewNames.clientView.asString() + " make(IXingYi xingYi, Object mirror){return new " + viewDom.viewNames.clientViewImpl.asString() + "(xingYi,mirror);} "),
 //                Formating.indent(createMediaType(viewDom)),
                 List.of("}")
         ), "\n");
-        return Result.succeed(new FileDefn(viewDom.viewNames.clientCompanion, result));
+        return Result.succeed(new FileDefn(resourceDom.entityNames.clientResourceCompanion, result));
     }
-    private List<String> createMediaType(ViewDom viewDom,ResourceDom resourceDom) {
+    private List<String> createMediaType(ViewDom viewDom, ResourceDom resourceDom) {
         EntityNames entityNames = viewDom.viewNames.entityNames;
 
         return List.of("public <J>IMediaTypeClientDefn<" + resourceDom.entityNames.clientResource.asString() + "," + viewDom.viewNames.clientView.asString() + "> x(JsonParserAndWriter<J> json){",

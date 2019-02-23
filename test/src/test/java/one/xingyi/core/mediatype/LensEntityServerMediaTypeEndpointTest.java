@@ -4,9 +4,9 @@ import one.xingyi.core.endpoints.EndpointConfig;
 import one.xingyi.core.marshelling.FetchJavascript;
 import one.xingyi.core.optics.lensLanguage.LensStoreParser;
 import one.xingyi.json.Json;
-import one.xingyi.reference3.person.client.companion.PersonNameViewCompanion;
 import one.xingyi.reference3.person.client.entitydefn.IPersonClientEntity;
 import one.xingyi.reference3.person.client.view.PersonNameView;
+import one.xingyi.reference3.person.client.viewcompanion.PersonNameViewCompanion;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import one.xingyi.reference3.person.server.domain.Person;
 

@@ -3,6 +3,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.annotationProcessors.ActionsDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.ViewDomAndItsResourceDom;
 import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 
@@ -15,5 +16,6 @@ class BookmarkUrlAndActionsDom {
     final ActionsDom actionsDom;
 
     static Optional<BookmarkUrlAndActionsDom> create(ViewDomAndItsResourceDom dom) {return dom.entityDom.flatMap(ed -> ed.bookmark.map(b -> new BookmarkUrlAndActionsDom(b, ed.actionsDom)));}
+    static Optional<BookmarkUrlAndActionsDom> create(ResourceDom dom) {return dom.bookmark.map(b -> new BookmarkUrlAndActionsDom(b, dom.actionsDom));}
 
 }

@@ -62,7 +62,7 @@ public class TypeDomTest {
         Result<String, TypeDom> actual = TypeDom.create(names, "a.b.IPersonDefn");
         assertEquals(Result.succeed(
                 new ViewType("a.b.IPersonDefn", "a.b.server.domain.IPerson",
-                        "a.b.client.view.Person", "a.b.client.companion.PersonCompanion",
+                        "a.b.client.view.Person", "a.b.client.viewcompanion.PersonCompanion",
                         "a.b.server.companion.PersonCompanion", "Person")), actual);
     }
     @Test public void testAnythingInsideBracketsDoesntWork() {
