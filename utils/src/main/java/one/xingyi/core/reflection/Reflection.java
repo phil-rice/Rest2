@@ -33,4 +33,9 @@ public class Reflection<T> {
         return result;
     }
 
+
+    public <Returns> List<Method> staticMethodsReturning(Class<Returns> returnClass) {
+        return wrapCallable(() -> Lists.filter(Arrays.asList(clazz.getMethods()), m -> returnClass.isAssignableFrom(m.getReturnType()) && java.lang.reflect.Modifier.isStatic(m.getModifiers())));
+
+    }
 }

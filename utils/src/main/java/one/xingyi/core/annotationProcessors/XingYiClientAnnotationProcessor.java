@@ -62,22 +62,21 @@ public class XingYiClientAnnotationProcessor extends AbstractProcessor {
                 Result<String, String> result = classNameStrategy.toRoot(element.asType().toString(), originaldefn.className);
                 if (result.fails().size() > 0)
                     log.error(element, result.fails().toString());
-                CompositeViewDom dom = new CompositeViewDom(
-                        originaldefn,
-                        new PackageAndClassName("clientResource", "clientResource"),
-                        new PackageAndClassName(packageNameStrategy.toCompositeInterface(originaldefn.packageName), classNameStrategy.toCompositeInterface(originaldefn.className)),
-                        new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toCompositeImpl(originaldefn.className)),
-                        new PackageAndClassName("companionResource", "companionResouce")
-                );
-//                log.error(dom.toString());
-                for (IFileMaker<CompositeViewDom> maker : List.of(
-                        new CompositeViewInterfaceMaker(),
-                        new CompositeViewImplMaker())) {
-                    Result<String, FileDefn> makeFileResult = maker.apply(dom);
-                    makeFileResult.forEach(defn -> makeClassFile(defn));
-                    if (makeFileResult.fails().size() > 0)
-                        log.error(element, makeFileResult.fails().toString());
-                } ;
+                Result<ElementFail, CompositeViewDom> resultDom = CompositeViewDom.create(log, (TypeElement) element, packageNameStrategy, classNameStrategy);
+                for (ElementFail fail : resultDom.fails())
+                    fail.logMe(log);
+//                log.error(resultDom.toString());
+                resultDom.forEach(dom -> {
+                    for (IFileMaker<CompositeViewDom> maker : List.of(
+                            new CompositeViewInterfaceMaker(),
+                            new CompositeViewImplMaker(),
+                            new CompositeViewCompanionMaker())) {
+                        Result<String, FileDefn> makeFileResult = maker.apply(dom);
+                        makeFileResult.forEach(defn -> makeClassFile(defn));
+                        if (makeFileResult.fails().size() > 0)
+                            log.error(element, makeFileResult.fails().toString());
+                    } ;
+                });
             }
         } catch (
                 Exception e) {

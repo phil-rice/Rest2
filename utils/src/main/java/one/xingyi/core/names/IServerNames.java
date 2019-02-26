@@ -32,7 +32,7 @@ class SimpleServerNames implements IServerNames {
             PackageAndClassName serverInterface = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerInterfaceForDomain(entityRoot));
             PackageAndClassName serverEntity = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerImplForDomain(entityRoot));
             PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientViewCompanion(entityRoot));
-            PackageAndClassName clientResourceCompanion = new PackageAndClassName(packageNameStrategy.toClientResourceCompanion(originalPackage), classNameStrategy.toClientResourceCompanion(entityRoot));
+            PackageAndClassName clientResourceCompanion = new PackageAndClassName(packageNameStrategy.toCompositeCompanion(originalPackage), classNameStrategy.toCompositeCompanion(entityRoot));
             PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(entityRoot));
             PackageAndClassName serverController = new PackageAndClassName(packageNameStrategy.toServerController(originalPackage), classNameStrategy.toServerController(entityRoot));
             return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, clientResourceCompanion, serverController, entityRoot);

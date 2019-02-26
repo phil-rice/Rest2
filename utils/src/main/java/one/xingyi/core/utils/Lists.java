@@ -7,7 +7,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 public class Lists {
 
-
     public static <T> Optional<T> find(List<T> list, Function<T, Boolean> fn) {
         for (T t : list)
             if (fn.apply(t)) return Optional.of(t);

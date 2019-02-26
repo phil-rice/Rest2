@@ -71,7 +71,7 @@ public class ClientResourceCompanionFileMaker implements IFileMaker<ResourceDom>
                         IXingYiRemoteClientViewCompanion.class, IXingYi.class, BookmarkCodeAndUrlPattern.class, FetchJavascript.class, JsonParserAndWriter.class,
                         Function.class, IdAndValue.class, IMediaTypeClientDefn.class, JsonAndLensDefnClientMediaTypeDefn.class, LensStoreParser.class),
 
-//                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompanion.className + "();"),
+//                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompositeCompanion.asString() + " companion = new " + viewDom.viewNames.clientCompositeCompanion.className + "();"),
 //                Formating.indent(createGetRemoteAccessMethods(accessDetails, viewDom)),
 //                List.of(Formating.indent + "@SuppressWarnings(\"unchecked\")@Override public " + viewDom.viewNames.clientView.asString() + " make(IXingYi xingYi, Object mirror){return new " + viewDom.viewNames.clientViewImpl.asString() + "(xingYi,mirror);} "),
 //                Formating.indent(createMediaType(viewDom)),

@@ -20,6 +20,6 @@ class SimpleClassSimpleNameStrategy implements IClassNameStrategy {
     @Override public String toCompositeInterface(String compositeViewDefn) { return compositeViewDefn.substring(0, compositeViewDefn.length() - 4); }
     @Override public String toClientEntityDefn(String entityDefn) { return "I" + entityDefn + "ClientEntity"; }
     @Override public String toClientViewCompanion(String entityDefn) { return entityDefn + "Companion"; }
-    @Override public String toClientResourceCompanion(String entityDefn) { return entityDefn + "ResourceCompanion"; }
+    @Override public String toCompositeCompanion(String entityDefn) { return entityDefn + "CompositeCompanion"; }
     @Override public String toServerImplForDomain(String entityDefn) { return entityDefn; }
 }

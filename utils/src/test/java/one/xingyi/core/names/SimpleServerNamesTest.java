@@ -26,7 +26,7 @@ public class SimpleServerNamesTest {
         assertEquals(new PackageAndClassName("original.package.server.companion.EntityCompanion"), actual.serverCompanion);
         assertEquals(new PackageAndClassName("original.package.server.controller.IEntityController"), actual.serverController);
         assertEquals(new PackageAndClassName("original.package.client.entitydefn.IEntityClientEntity"), actual.clientResource);
-        assertEquals(new PackageAndClassName("original.package.client.resoucecompanion.EntityResourceCompanion"), actual.clientResourceCompanion);
+        assertEquals(new PackageAndClassName("original.package.client.resourcecompanion.EntityResourceCompanion"), actual.clientResourceCompanion);
         assertEquals("Entity", actual.entityNameForLens);
     }
 
@@ -39,7 +39,7 @@ public class SimpleServerNamesTest {
         Result<String, ViewNames> actual = serverNames.viewName("original.package.IViewRootDefn", " a.b.c.IEntityDefn");
         assertEquals(new PackageAndClassName("original.package.IViewRootDefn"), actual.result().get().originalDefn);
         assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.result().get().clientView);
-//        assertEquals(new PackageAndClassName("original.package.client.companion.ViewRootCompanion"), actual.clientCompanion);
+//        assertEquals(new PackageAndClassName("original.package.client.companion.ViewRootCompanion"), actual.clientCompositeCompanion);
     }
     @Test public void testViewNameWithoutAnI() {
         assertEquals(List.of("View [class] Should start with an I", "View [class] Should end with Defn"),
