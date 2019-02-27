@@ -1,5 +1,6 @@
 package one.xingyi.core.reflection;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import one.xingyi.core.utils.Lists;
 
 import java.lang.annotation.Annotation;
@@ -37,5 +38,9 @@ public class Reflection<T> {
     public <Returns> List<Method> staticMethodsReturning(Class<Returns> returnClass) {
         return wrapCallable(() -> Lists.filter(Arrays.asList(clazz.getMethods()), m -> returnClass.isAssignableFrom(m.getReturnType()) && java.lang.reflect.Modifier.isStatic(m.getModifiers())));
 
+    }
+    @SneakyThrows
+    public List<Method> methodsReturningWithOneParam(String startsWith, Class<?> returnClass) {
+        return Lists.filter(Arrays.asList(clazz.getMethods()), m -> m.getParameterTypes().length==1 && m.getName().startsWith(startsWith) && returnClass.isAssignableFrom(m.getReturnType()));
     }
 }

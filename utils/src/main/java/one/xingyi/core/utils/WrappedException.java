@@ -9,12 +9,12 @@ public class WrappedException extends RuntimeException {
     public WrappedException(Throwable cause) {
         super(cause);
     }
-    public static <T> T wrapCallable(Callable<T> callable) {
+    public static <T> T wrapCallable(CallableWithThrowable<T> callable) {
         try {
             return callable.call();
         } catch (RuntimeException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new WrappedException(e);
         }
     }

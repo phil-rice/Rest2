@@ -16,6 +16,7 @@ import one.xingyi.reference3.PersonServer;
 import one.xingyi.reference3.person.PersonController;
 import one.xingyi.reference3.person.client.view.PersonNameView;
 import one.xingyi.reference3.person.client.viewcompanion.PersonNameViewCompanion;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -36,7 +37,8 @@ abstract class AbstractResourceDetailsClientTest {
     static EndpointConfig<Object> config = EndpointConfig.defaultConfig(json);
 
 
-    static PersonServer<Object> server = new PersonServer<>(config, new PersonController());
+    static PersonController controller = new PersonController();
+    static PersonServer<Object> server = new PersonServer<>(config, controller);
     static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints(), true);
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
@@ -44,7 +46,13 @@ abstract class AbstractResourceDetailsClientTest {
     HttpServiceCompletableFuture rawService;
     HttpServiceCompletableFuture service() {
         if (rawService == null)
-            rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000", config.parserAndWriter, httpClient()); return rawService;
+            rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000", config.parserAndWriter, httpClient());
+        return rawService;
+    }
+
+    @Before
+    public void resetData() {
+        controller.reset();
     }
 
     @Test
@@ -88,6 +96,10 @@ abstract class AbstractResourceDetailsClientTest {
     @Test public void testGetCompositePerson() throws ExecutionException, InterruptedException {
         assertEquals("someNamesomeLine1", IPersonNameLine12View.get(service(), "id1", i -> i.name() + i.line1()).get());
         assertEquals(Optional.of("someNamesomeLine1"), IPersonNameLine12View.getOptional(service(), "id1", i -> i.name() + i.line1()).get());
+    }
+    @Test public void testEditCompositePerson() throws ExecutionException, InterruptedException {
+        IPersonNameLine12View.edit(service(), "id1", i -> i.withname("newName").withline1("newLine1")).get();
+        assertEquals(Optional.of("newNamenewLine1"), IPersonNameLine12View.getOptional(service(), "id1", i -> i.name() + i.line1()).get());
     }
 
 //    @Test

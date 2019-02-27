@@ -18,6 +18,11 @@ public class PersonController extends ControllerUsingMap<Person> implements IPer
 
     public PersonController() {
         super("Person");
+        reset();
+    }
+
+    public void reset() {
+        store.clear();;
         store.put("id1", person);
     }
     @Override protected Person prototype(String id) {

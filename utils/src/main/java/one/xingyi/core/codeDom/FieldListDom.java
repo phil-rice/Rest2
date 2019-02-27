@@ -23,7 +23,7 @@ public class FieldListDom {
     public <T> List<T> noDeprecatedmap(FunctionWithException<FieldDom, T> fn) {
         return Lists.map(allNonDeprecatedFields, fn);
     }
-    public <T> List<T> noDeprecatedflatMap(Function<FieldDom, List<T>> fn) {
+    public <T> List<T> noDeprecatedflatMap(FunctionWithException<FieldDom, List<T>> fn) {
         return Lists.flatMap(allNonDeprecatedFields, fn);
     }
 
@@ -33,7 +33,7 @@ public class FieldListDom {
     public <T> List<T> withDeprecatedmap(FunctionWithException<FieldDom, T> fn) {
         return Lists.map(allFields, fn);
     }
-    public <T> List<T> withDeprecatedflatMap(Function<FieldDom, List<T>> fn) {
+    public <T> List<T> withDeprecatedflatMap(FunctionWithException<FieldDom, List<T>> fn) {
         return Lists.flatMap(allFields , fn);
     }
 }

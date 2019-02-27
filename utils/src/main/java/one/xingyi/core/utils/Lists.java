@@ -75,12 +75,14 @@ public class Lists {
                 result.add(fn.apply(t));
         return result;
     }
-    public static <T, T1> List<T1> flatMap(List<T> list, Function<T, List<T1>> fn) {
-        List<T1> result = new ArrayList<>();
-        for (T t : list)
-            for (T1 t1 : fn.apply(t))
-                result.add(t1);
-        return result;
+    public static <T, T1> List<T1> flatMap(List<T> list, FunctionWithException<T, List<T1>> fn) {
+        return WrappedException.wrapCallable(() -> {
+            List<T1> result = new ArrayList<>();
+            for (T t : list)
+                for (T1 t1 : fn.apply(t))
+                    result.add(t1);
+            return result;
+        });
     }
     public static <T, T1> List<T1> flatMapOptional(List<T> list, Function<T, Optional<T1>> fn) {
         List<T1> result = new ArrayList<>();
@@ -89,7 +91,7 @@ public class Lists {
         return result;
     }
     public static <T> List<T> filter(List<T> list, FunctionWithException<T, Boolean> fn) {
-            List<T> result = new ArrayList<>();
+        List<T> result = new ArrayList<>();
         WrappedException.wrap(() -> {
             for (T t : list)
                 if (fn.apply(t)) result.add(t);

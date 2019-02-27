@@ -50,7 +50,8 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
 //                Formating.indent(getRemoteAccessors(dom.clientInterface.asString(), dom.companion, bookmarkUrlAndActionsDom)),
                     List.of("//" + dom.clientCompositeCompanion.asString()),
                     List.of("//" + dom.views.toString()),
-                    Formating.indent(makeAccessors(dom)),
+                    Formating.indent(makeStaticMethods(dom)),
+                    Formating.indent(makeWithMethods(dom)),
                     List.of("}")
             ), "\n");
             return Result.succeed(new FileDefn(dom.clientInterface, result));
@@ -59,11 +60,24 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
         }
     }
 
-    private List<String> makeAccessors(CompositeViewDom dom) throws ClassNotFoundException {
+    private List<String> makeWithMethods(CompositeViewDom dom) {
+        return Lists.flatMap(dom.views, v -> {
+            Class<?> viewClass = Class.forName(v.view.asString());
+            List<Method> methods = new Reflection(viewClass).methodsReturningWithOneParam("with", viewClass);
+            String className = dom.clientInterface.className;
+            return Lists.flatMap(methods, m -> List.of(
+                    "default " + className + " " + m.getName() + "(" + m.getParameterTypes()[0].getName() + " x){",
+                    Formating.indent + v.view.asString() + " old = " + m.getName().substring(4) + "Lens().set(this, x);",
+                    Formating.indent + "return new " + dom.clientImpl.className + "(old.xingYi(), old.mirror());",
+                    "}"));
+        });
+    }
+
+    private List<String> makeStaticMethods(CompositeViewDom dom) throws ClassNotFoundException {
         Class<?> clazz = Class.forName(dom.views.get(0).view.asString());
         List<Method> methods = new Reflection<>(clazz).staticMethodsReturning(CompletableFuture.class);
 //        throw new RuntimeException("methods are: " + methods+ "\n" + clazz);
-        return Lists.flatMap(methods, m -> accessorFor(dom, m));
+        return Lists.flatMap(methods, m -> staticMethodFor(dom, m));
 
     }
 
@@ -76,7 +90,10 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
                     "public static <T> CompletableFuture<Optional<T>> getOptional(HttpServiceCompletableFuture service, String id, Function<" + d.clientInterface.className + ", T> fn){",
                     Formating.indent + "return service.getOptional(" + d.clientCompositeCompanion.asString() + ".companion,id,fn);",
                     "}")),
-            pf((dom, method) -> method.getName().equalsIgnoreCase("edit"), (d, m) -> List.of("//edit")),
+            pf((dom, method) -> method.getName().equalsIgnoreCase("edit"), (d, m) -> List.of(
+                    "public static CompletableFuture<" + d.clientInterface.asString() + "> edit(HttpServiceCompletableFuture service, String id, Function<" + d.clientInterface.asString() + "," + d.clientInterface.asString() + "> fn){",
+                    Formating.indent + "return service.edit(" + d.clientCompositeCompanion.asString() + ".companion,id, fn);",
+                    "}")),
             pf((dom, method) -> method.getName().equalsIgnoreCase("create") && method.getParameterTypes().length == 2 && method.getParameterTypes()[1] == String.class, (d, m) -> List.of("//create1")),
             pf((dom, method) -> method.getName().equalsIgnoreCase("create"), (d, m) -> List.of("//create2")),
             pf((dom, method) -> method.getName().equalsIgnoreCase("delete"), (d, m) -> List.of("//delete"))
@@ -89,7 +106,7 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
     //    public static CompletableFuture<Boolean> delete(HttpServiceCompletableFuture service, String id){return service.delete(one.xingyi.reference1.person.client.viewcompanion.PersonLine12ViewCompanion.companion,id);}
     //
 
-    private List<String> accessorFor(CompositeViewDom dom, Method method) {
+    private List<String> staticMethodFor(CompositeViewDom dom, Method method) {
         return pfs.orDefault(dom, method, () -> {
             throw new IllegalArgumentException("Could not work out how to process method " + method);
         });
