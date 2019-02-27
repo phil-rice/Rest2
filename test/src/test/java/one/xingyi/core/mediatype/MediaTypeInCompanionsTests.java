@@ -19,7 +19,7 @@ public class MediaTypeInCompanionsTests {
     EndpointContext<Object> context = config.from(List.of(PersonCompanion.companion));
     IXingYiServerMediaTypeDefn<Person> serverMediaTypeDefn = serverCompanion.lensMediaDefn(context);
 
-    PersonController controller = new PersonController();
+    PersonController controller = new PersonController(config.parserAndWriter);
     PersonServer<Object> server = new PersonServer<>(config, controller);
     IResourceEndpoints<Person> endpoints = serverMediaTypeDefn.endpoints("http", serverCompanion.bookmarkAndUrl(), controller::stateFn);
 

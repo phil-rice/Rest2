@@ -29,7 +29,7 @@ abstract public class AbstractDeprecated3Tests<J> {
     Function<ServiceRequest, CompletableFuture<ServiceResponse>> httpClient() { return EndPoint.toKliesli(entityEndpoints); }
     abstract EndpointConfig<J> config();
     abstract boolean supportsReadingJson();
-    EndPoint entityEndpoints = EndPoint.compose(new PersonServer<J>(config(), new PersonController()).allEndpoints());
+    EndPoint entityEndpoints = EndPoint.compose(new PersonServer<J>(config(), new PersonController(config().parserAndWriter)).allEndpoints());
     HttpServiceCompletableFuture rawService;
     HttpServiceCompletableFuture service() {
         if (rawService == null) {

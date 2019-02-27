@@ -42,11 +42,12 @@ public abstract class ControllerUsingMap<T> {
     }
     public CompletableFuture<IdAndValue<T>> createWithoutId(T t) {
         String id = store.size() + "";
-        store.put(id, prototype(id));
-        return CompletableFuture.completedFuture(new IdAndValue<>(id, prototype(id)));
+        store.put(id, t);
+        return CompletableFuture.completedFuture(new IdAndValue<>(id, t));
     }
 
-    public T createWithoutIdRequestFrom(ServiceRequest serviceRequest) { return prototype(Integer.toString(store.size())); }
+    public T createWithoutIdRequestFrom(ServiceRequest serviceRequest) {
+        return prototype(Integer.toString(store.size())); }
 
 
 }

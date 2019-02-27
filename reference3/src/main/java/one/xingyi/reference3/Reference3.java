@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Reference3 {
     public static void main(String[] args) {
-        PersonServer<Object> server = new PersonServer<>(EndpointConfig.defaultConfig(new Json()), new PersonController());
+        PersonServer<Object> server = new PersonServer<>(EndpointConfig.defaultConfig(new Json()), new PersonController(new Json()));
         new SimpleServer(HttpUtils.makeDefaultExecutor(), new EndpointHandler(server.endpoint()), 9000).start();
 
 
