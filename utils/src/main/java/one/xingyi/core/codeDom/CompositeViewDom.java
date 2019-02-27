@@ -70,7 +70,7 @@ public class CompositeViewDom {
                 clientResource,
                 new PackageAndClassName(packageNameStrategy.toCompositeInterface(originaldefn.packageName), classNameStrategy.toCompositeInterface(originaldefn.className)),
                 new PackageAndClassName(packageNameStrategy.toCompositeImpl(originaldefn.packageName), classNameStrategy.toCompositeImpl(originaldefn.className)),
-                new PackageAndClassName(packageNameStrategy.toCompositeCompanion(clientResource.packageName), classNameStrategy.toCompositeCompanion(clientResource.className))
+                new PackageAndClassName(packageNameStrategy.toCompositeCompanion(originaldefn.packageName), classNameStrategy.toCompositeCompanion(originaldefn.className))
         ));
     }
 }

@@ -5,6 +5,7 @@ import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.sdk.IXingYiClientResource;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
+import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
 import java.util.List;
@@ -17,8 +18,13 @@ public class ClientResourceFileMaker implements IFileMaker<ResourceDom> {
                 Formating.javaFile(getClass(), resourceDom.deprecated, clientResourceName, "interface", clientResourceName,
                         " extends IXingYiClientResource", List.of(),
                         IXingYiClientResource.class, XingYiGenerated.class),
+                Formating.indent(addBookmark(resourceDom)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(clientResourceName, result));
+    }
+    private List<String> addBookmark(ResourceDom resourceDom) {
+        if (resourceDom.bookmark.isEmpty()) return List.of();
+        return List.of("final String bookmark=" + Strings.quote(resourceDom.bookmark.get().bookmark)+";");
     }
 }

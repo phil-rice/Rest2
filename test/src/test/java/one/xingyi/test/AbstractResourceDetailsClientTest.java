@@ -10,6 +10,7 @@ import one.xingyi.core.httpClient.client.view.UrlPattern;
 import one.xingyi.core.httpClient.client.viewcompanion.UrlPatternCompanion;
 import one.xingyi.core.marshelling.UnexpectedResponse;
 import one.xingyi.core.utils.DigestAndString;
+import one.xingyi.democlient.client.compositeView.IPersonNameLine12View;
 import one.xingyi.json.Json;
 import one.xingyi.reference3.PersonServer;
 import one.xingyi.reference3.person.PersonController;
@@ -18,6 +19,7 @@ import one.xingyi.reference3.person.client.viewcompanion.PersonNameViewCompanion
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -35,12 +37,15 @@ abstract class AbstractResourceDetailsClientTest {
 
 
     static PersonServer<Object> server = new PersonServer<>(config, new PersonController());
-    static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints(),true);
+    static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints(), true);
 
 //    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
 
     HttpServiceCompletableFuture rawService;
-    HttpServiceCompletableFuture service() { if (rawService == null) rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000",config.parserAndWriter, httpClient()); return rawService; }
+    HttpServiceCompletableFuture service() {
+        if (rawService == null)
+            rawService = HttpServiceCompletableFuture.lensService("http://localhost:9000", config.parserAndWriter, httpClient()); return rawService;
+    }
 
     @Test
     public void testGetPrimitive() throws ExecutionException, InterruptedException {
@@ -53,7 +58,7 @@ abstract class AbstractResourceDetailsClientTest {
         DigestAndString digestAndString = server.context.javascriptStore.findDigestAndString(List.of());
         ServiceRequest sr = new ServiceRequest("get", expectedHost() + "/person/code/" + digestAndString.digest, List.of(), "");
         ServiceResponse serviceResponse = httpClient().apply(sr).get();
-        assertEquals(serviceResponse.toString(),200, serviceResponse.statusCode);
+        assertEquals(serviceResponse.toString(), 200, serviceResponse.statusCode);
         assertEquals(digestAndString.string, serviceResponse.body);
     }
 
@@ -78,7 +83,11 @@ abstract class AbstractResourceDetailsClientTest {
     @Test
     public void testGetPerson() throws ExecutionException, InterruptedException {
         assertEquals("someName", PersonNameView.get(service(), "id1", PersonNameView::name).get());
+    }
 
+    @Test public void testGetCompositePerson() throws ExecutionException, InterruptedException {
+        assertEquals("someNamesomeLine1", IPersonNameLine12View.get(service(), "id1", i -> i.name() + i.line1()).get());
+        assertEquals(Optional.of("someNamesomeLine1"), IPersonNameLine12View.getOptional(service(), "id1", i -> i.name() + i.line1()).get());
     }
 
 //    @Test

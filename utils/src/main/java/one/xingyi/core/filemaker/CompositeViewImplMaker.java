@@ -31,7 +31,7 @@ public class CompositeViewImplMaker implements IFileMaker<CompositeViewDom> {
         List<String> manualImports = List.of();
         String result = Lists.<String>join(Lists.<String>append(
                 Formating.javaFile(getClass(), false, dom.originalDefn, "class", dom.clientImpl,
-                        " implements IXingYiCompositeImpl<" + dom.clientResource.asString() + "," + dom.originalDefn.asString() + ">," + dom.clientInterface.asString(),
+                        " implements IXingYiCompositeImpl<" + dom.clientResource.asString()  + ">," + dom.clientInterface.asString(),
                         manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
                         IResourceList.class, Lens.class, ISimpleMap.class, IXingYiCompositeImpl.class),
 //                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompositeCompanion.asString() + " companion = " + viewDom.viewNames.clientCompositeCompanion.asString() + ".companion;"),

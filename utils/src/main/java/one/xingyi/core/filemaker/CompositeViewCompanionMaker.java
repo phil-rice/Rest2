@@ -19,8 +19,7 @@ public class CompositeViewCompanionMaker implements IFileMaker<CompositeViewDom>
                 Formating.javaFile(getClass(), false, dom.originalDefn, "class", dom.clientCompositeCompanion,
                         " implements IXingYiCompositeCompanion<" +
                                 dom.clientResource.asString() + "," +
-                                dom.originalDefn.asString() + "," +
-                                dom.clientImpl.asString() + ">",
+                                dom.clientInterface.asString() + ">",
                         manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class, IXingYiCompositeCompanion.class,
                         IResourceList.class, Lens.class, ISimpleMap.class),
 //                List.of(Formating.indent + "static public " + viewDom.viewNames.clientCompositeCompanion.asString() + " companion = " + viewDom.viewNames.clientCompositeCompanion.asString() + ".companion;"),
@@ -29,6 +28,7 @@ public class CompositeViewCompanionMaker implements IFileMaker<CompositeViewDom>
 //                List.of(Formating.indent + "@Override public " + xingyiDefn(dom) + " xingYi(){return xingYi;}"),
 //                Formating.indent(constructor(dom)),
 //                Formating.indent(allFieldAccessorsForView(viewDom.viewNames.clientEntity, viewDom.viewNames.clientView.className, dom.viewDomAndResourceDomFields)),
+                Formating.indent(List.of("public static " + dom.clientCompositeCompanion.className + " companion=new " + dom.clientCompositeCompanion.className + "(){};")),
                 Formating.indent(methods(dom)),
                 List.of("}")
         ), "\n");
@@ -38,7 +38,9 @@ public class CompositeViewCompanionMaker implements IFileMaker<CompositeViewDom>
         return List.of(
                 "@Override public " + dom.clientInterface.asString() + " make(IXingYi xingYi, Object mirror) { return new " +
                         dom.clientImpl.asString() + "(xingYi,mirror); }",
-                "@Override public String acceptHeader() { return \"\"; }"
+                "@Override public String acceptHeader() { return \"\"; }",
+                "@Override public String bookmark() { return " + dom.clientResource.asString() + ".bookmark; }"
+
         );
     }
 }

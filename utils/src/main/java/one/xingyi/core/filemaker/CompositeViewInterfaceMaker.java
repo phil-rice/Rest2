@@ -12,6 +12,7 @@ import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.core.reflection.Reflection;
 import one.xingyi.core.sdk.IXingYiClientImpl;
+import one.xingyi.core.sdk.IXingYiCompositeView;
 import one.xingyi.core.utils.Formating;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.PartialBiFunction;
@@ -19,6 +20,7 @@ import one.xingyi.core.validation.Result;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -42,9 +44,9 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
 
             String result = Lists.<String>join(Lists.<String>append(
                     Formating.javaFile(getClass(), false, dom.originalDefn, "interface", dom.clientInterface,
-                            "extends " + Lists.mapJoin(dom.views, ",", vc -> vc.view.asString()),
+                            "extends " + IXingYiCompositeView.class.getName() + "<" + dom.clientResource.asString() + ">," + Lists.mapJoin(dom.views, ",", vc -> vc.view.asString()),
                             manualImports, IXingYi.class, IXingYiClientImpl.class, XingYiGenerated.class,
-                            IResourceList.class, Lens.class, ISimpleMap.class, CompletableFuture.class, Function.class),
+                            IResourceList.class, Lens.class, ISimpleMap.class, CompletableFuture.class, Function.class, Optional.class),
 //                Formating.indent(getRemoteAccessors(dom.clientInterface.asString(), dom.companion, bookmarkUrlAndActionsDom)),
                     List.of("//" + dom.clientCompositeCompanion.asString()),
                     List.of("//" + dom.views.toString()),
@@ -68,13 +70,16 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
     PartialBiFunction<CompositeViewDom, Method, List<String>> pfs = chain(
             pf((dom, method) -> method.getName().equalsIgnoreCase("get"), (d, m) -> List.of(
                     "public static <T> CompletableFuture<T> get(HttpServiceCompletableFuture service, String id, Function<" + d.clientInterface.className + ", T> fn){",
-                    Formating.indent + "return service.get(one.xingyi.reference1.person.client.viewcompanion.PersonLine12ViewCompanion.companion,id,fn);",
+                    Formating.indent + "return service.get(" + d.clientCompositeCompanion.asString() + ".companion,id,fn);",
                     "}")),
-            pf((dom, method) -> method.getName().equalsIgnoreCase("getOptional"), (d, m) -> List.of("getOptional")),
-            pf((dom, method) -> method.getName().equalsIgnoreCase("edit"), (d, m) -> List.of("edit")),
-            pf((dom, method) -> method.getName().equalsIgnoreCase("create") && method.getParameterTypes().length == 2 && method.getParameterTypes()[1] == String.class, (d, m) -> List.of("create1")),
-            pf((dom, method) -> method.getName().equalsIgnoreCase("create"), (d, m) -> List.of("create2")),
-            pf((dom, method) -> method.getName().equalsIgnoreCase("delete"), (d, m) -> List.of("delete"))
+            pf((dom, method) -> method.getName().equalsIgnoreCase("getOptional"), (d, m) -> List.of(
+                    "public static <T> CompletableFuture<Optional<T>> getOptional(HttpServiceCompletableFuture service, String id, Function<" + d.clientInterface.className + ", T> fn){",
+                    Formating.indent + "return service.getOptional(" + d.clientCompositeCompanion.asString() + ".companion,id,fn);",
+                    "}")),
+            pf((dom, method) -> method.getName().equalsIgnoreCase("edit"), (d, m) -> List.of("//edit")),
+            pf((dom, method) -> method.getName().equalsIgnoreCase("create") && method.getParameterTypes().length == 2 && method.getParameterTypes()[1] == String.class, (d, m) -> List.of("//create1")),
+            pf((dom, method) -> method.getName().equalsIgnoreCase("create"), (d, m) -> List.of("//create2")),
+            pf((dom, method) -> method.getName().equalsIgnoreCase("delete"), (d, m) -> List.of("//delete"))
     );
     //  public static <T> CompletableFuture<T> get(HttpServiceCompletableFuture service, String id, Function<one.xingyi.reference1.person.client.view.PersonLine12View, T> fn){return service.get(one.xingyi.reference1.person.client.viewcompanion.PersonLine12ViewCompanion.companion,id,fn);}
     //    public static <T> CompletableFuture<Optional<T>> getOptional(HttpServiceCompletableFuture service, String id, Function<one.xingyi.reference1.person.client.view.PersonLine12View, T> fn){return service.getOptional(one.xingyi.reference1.person.client.viewcompanion.PersonLine12ViewCompanion.companion,id,fn);}
@@ -85,7 +90,9 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
     //
 
     private List<String> accessorFor(CompositeViewDom dom, Method method) {
-        return pfs.orDefault(dom, method, () -> {throw new IllegalArgumentException("Could not work out how to process method " + method);});
+        return pfs.orDefault(dom, method, () -> {
+            throw new IllegalArgumentException("Could not work out how to process method " + method);
+        });
     }
     @Override public MonadDefn monadDefn() {
         return new CompletableFutureDefn();
