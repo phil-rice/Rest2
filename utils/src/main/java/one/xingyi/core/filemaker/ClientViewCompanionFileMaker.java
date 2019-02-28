@@ -48,14 +48,15 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
                 Lists.append(accessorMethods(viewDom, b),
                         primitiveMethod(viewDom),
                         getUrlPatternMethod(viewDom),
-                        List.of("@Override public String bookmark(){return " + Strings.quote(b.bookmarkCodeAndUrlPattern.bookmark) + ";}",
+                        List.of("@Override public String bookmark(){return " + viewDom.viewNames.entityNames.clientResource.asString() + ".bookmark;}",
                                 "@Override public String acceptHeader(){return " + Strings.quote("not implemented yet") + ";}")));
 
     }
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
-        if (viewDomAndItsResourceDom.entityDom.isEmpty()) return Result.failwith("could not create  view companion interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
+        if (viewDomAndItsResourceDom.entityDom.isEmpty())
+            return Result.failwith("could not create  view companion interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
         ResourceDom resourceDom = viewDomAndItsResourceDom.entityDom.get();
         Optional<BookmarkUrlAndActionsDom> accessDetails = BookmarkUrlAndActionsDom.create(viewDomAndItsResourceDom);
         String parentInterface = Optionals.fold(accessDetails, () -> "IXingYiClientViewCompanion", b -> "IXingYiRemoteClientViewCompanion");
@@ -86,7 +87,7 @@ public class ClientViewCompanionFileMaker implements IFileMaker<ViewDomAndItsRes
         ), "\n");
         return Result.succeed(new FileDefn(viewDom.viewNames.clientCompanion, result));
     }
-    private List<String> createMediaType(ViewDom viewDom,ResourceDom resourceDom) {
+    private List<String> createMediaType(ViewDom viewDom, ResourceDom resourceDom) {
         EntityNames entityNames = viewDom.viewNames.entityNames;
 
         return List.of("public <J>IMediaTypeClientDefn<" + resourceDom.entityNames.clientResource.asString() + "," + viewDom.viewNames.clientView.asString() + "> x(JsonParserAndWriter<J> json){",
