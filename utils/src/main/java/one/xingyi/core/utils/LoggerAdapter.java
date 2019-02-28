@@ -1,4 +1,6 @@
 package one.xingyi.core.utils;
+import one.xingyi.core.annotationProcessors.ElementFail;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
@@ -7,6 +9,7 @@ public interface LoggerAdapter {
     void info(Element element, String message);
     void warning(Element element, String message);
     void error(Element element, String message);
+    default void error(ElementFail fail){ Optionals.doit(fail.optElement, ()-> error(fail.message), e-> error(e, fail.message)); }
     void error(String message);
     LoggerAdapter withElement(Element element);
     static LoggerAdapter fromMessager(Messager messager, Element element) {

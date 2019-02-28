@@ -44,8 +44,6 @@ abstract class AbstractResourceDetailsClientTest {
     static PersonServer<Object> server = new PersonServer<>(config, controller);
     static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints(), true);
 
-//    static EndPoint entityEndpoints = PersonServer.entityEndpoints(config);
-
     HttpServiceCompletableFuture rawService;
     HttpServiceCompletableFuture service() {
         if (rawService == null)
@@ -137,32 +135,4 @@ abstract class AbstractResourceDetailsClientTest {
         assertEquals("newNamenewLine1newLine2", idAndView.t.name() + idAndView.t.line1() + idAndView.t.line2());
     }
 
-//    @Test
-//    public void testGetAddress() throws ExecutionException, InterruptedException {
-//        assertEquals(Optional.of(address), addressStore.read("add1").get());
-//        assertEquals("{'line1':'someLine1','line2':'someLine2'}".replace('\'', '"'),
-//                IXingYiResponseSplitter.inLineOnlySplitter.apply(entityEndpoints.apply(new ServiceRequest("get", "/address/add1", Arrays.asList(), "")).get().get()).data);
-//
-//        assertEquals("someLine1", client.get(IAddressLine12.class, "add1", IAddressLine12::line1).get());
-//    }
-//
-//    static final String name = EntityClientImpl.class.getName();
-//
-//    @Test
-//    public void testWithMultipleInterfaces() throws ExecutionException, InterruptedException {
-//        assertEquals("serverName/one.xi", client.primitive(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
-//        assertEquals("serverName/one.xi", client.get(ITestMultiple.class, "id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
-//    }
-//    @Test
-//    public void testWithMultipleInterfaces2() throws ExecutionException, InterruptedException {
-////    Thread.sleep(100000);
-//        assertEquals("serverName/one.xi", client.primitive(ITestMultiple.class, "http://localhost:9000/person/id1", e -> e.name() + "/" + e.address().toString().substring(0, 6)).get());
-//        //solution to this is to have a @XingYiMulti annotation and apply instance which can delegate. Actually pretty straightforwards...
-//    }
-//
-//    @Test
-//    public void testCanGetDependent() throws ExecutionException, InterruptedException {
-//        assertEquals("someLine1", client.get(IPersonAddress.class, "id1", p -> p.address().line1()).get());
-//        assertEquals("someLine1", client.get(ITestMultiple.class, "id1", p -> p.address().line1()).get());
-//    }
 }

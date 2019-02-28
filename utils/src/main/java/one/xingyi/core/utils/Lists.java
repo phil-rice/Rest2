@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 public class Lists {
 
+    public static<T> void foreach(List<T> list, Consumer<T> consumer){
+        for (T t: list)consumer.accept(t);
+    }
     public static <T> Optional<T> find(List<T> list, Function<T, Boolean> fn) {
         for (T t : list)
             if (fn.apply(t)) return Optional.of(t);

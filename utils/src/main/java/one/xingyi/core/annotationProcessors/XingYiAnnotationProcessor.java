@@ -5,15 +5,16 @@ import one.xingyi.core.annotations.*;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.filemaker.*;
 import one.xingyi.core.monad.CompletableFutureDefn;
-import one.xingyi.core.monad.EpicMonadDefn;
 import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.names.*;
+import one.xingyi.core.sdk.IXingYiResource;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -24,9 +25,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Function;
 
 import lombok.val;
 import one.xingyi.core.validation.ResultAndFailures;
+import one.xingyi.core.validation.Valid;
 
 @RequiredArgsConstructor
 public class XingYiAnnotationProcessor extends AbstractProcessor {
@@ -48,6 +51,30 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     static <T extends Element> Comparator<T> comparator() {return (a, b) -> a.asType().toString().compareTo(b.asType().toString());}
 
+    Valid<String, Element> checkRootUrlStartsWithHost = Valid.check(e -> {
+        String rootUrl = e.getAnnotation(Resource.class).rootUrl();
+        return rootUrl.length() > 0 && rootUrl.startsWith("{host}");
+    }, e -> "Root Url needs to start with {host}");
+
+    Valid<ElementFail, TypeElement> check(Function<TypeElement, Boolean> checkFn, Function<TypeElement, String> message) {return Valid.<String, ElementFail, TypeElement>check(checkFn, message, (e, s) -> new ElementFail(s, e));}
+
+    Valid<ElementFail, TypeElement> checkElementIsAnInterface = check(e -> e.getKind() == ElementKind.INTERFACE, e -> "Must be an interface");
+    Valid<ElementFail, TypeElement> checkNameStartsWithI = check(e -> e.getSimpleName().toString().startsWith("I"), e -> "Name must start with an I");
+    Valid<ElementFail, TypeElement> checkNameEndsWithDefn = check(e -> e.getSimpleName().toString().endsWith("Defn"), e -> "Name must end with Defn");
+    Valid<ElementFail, TypeElement> checkImplements(String className) {return check(e -> Lists.find(e.getInterfaces(), i -> i.toString().startsWith(className)).isPresent(), e -> "Must extend " + className);}
+    Valid<ElementFail, Element> initialTypeElementChecks = Valid.compose(e -> (TypeElement) e,
+            checkElementIsAnInterface, checkNameStartsWithI, checkNameEndsWithDefn, checkImplements(IXingYiResource.class.getName()));
+
+
+    private List<Result<ElementFail, ResourceDom>> makeResourceDomResults(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle) {
+        List<Element> elements = Sets.sortedList((Set<Element>) env.getElementsAnnotatedWith(Resource.class), comparator());
+        List<ElementFail> elementFails = Valid.checkAll(elements, initialTypeElementChecks);
+        Lists.foreach(elementFails, log::error);
+        return Lists.map(elements,
+                e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
+    }
+
+
     @Override
     //TODO Refactor
     public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) {
@@ -56,20 +83,9 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
         try {
-            Set<? extends Element> elements = env.getElementsAnnotatedWith(Resource.class);
-            List<? extends Element> badlyConfigured = Lists.filter(new ArrayList<>(elements), e -> {
-                String rootUrl = e.getAnnotation(Resource.class).rootUrl();
-                return rootUrl.length() > 0 && !rootUrl.startsWith("{host}");
-            });
-            for (Element bad : badlyConfigured)
-                log.error(bad, "Root Url Needs to start with {host}");
+            List<Result<ElementFail, ResourceDom>> resourceDomsResults = makeResourceDomResults(env, log, bundle);
 
-//            log.info("Found these entities: " + elements);
-            List<Result<ElementFail, ResourceDom>> entityDomResults = Lists.map(
-                    Sets.sortedList(elements, comparator()),
-                    e -> bundle.elementToEntityNames().apply(e).flatMap(entityNames -> bundle.elementToEntityDom(entityNames).apply((TypeElement) e)));
-
-            List<ResourceDom> resourceDoms = Result.successes(entityDomResults);
+            List<ResourceDom> resourceDoms = Result.successes(resourceDomsResults);
 //            log.info("Made entityDoms: " + resourceDoms);
 
 
@@ -111,7 +127,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 //                log.info("   ... finished "+fileDefn.packageAndClassName.className);
             }
             log.info("got to end of creation");
-            for (ElementFail fail : Lists.append(Result.failures(entityDomResults), Result.failures(viewDomResults), Result.failures(serverDomResults)))
+            for (ElementFail fail : Lists.append(Result.failures(resourceDomsResults), Result.failures(viewDomResults), Result.failures(serverDomResults)))
                 Optionals.doit(fail.optElement, () -> log.error(fail.message + "no element"), e -> log.error(e, fail.message + " element " + e));
             Set<? extends Element> validate = env.getElementsAnnotatedWith(ValidateManyLens.class);
             for (Element v : validate) {
