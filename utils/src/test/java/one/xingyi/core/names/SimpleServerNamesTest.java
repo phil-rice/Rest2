@@ -19,7 +19,7 @@ public class SimpleServerNamesTest {
 
 
     @Test public void testEntityNameWhenClassStartsWithIAndEndInDefn() {
-        EntityNames actual = serverNames.entityName("original.package.IEntityDefn").result().get();
+        EntityNames actual = serverNames.entityName("original.package.IEntityDefn");
         assertEquals(new PackageAndClassName("original.package.IEntityDefn"), actual.originalDefn);
         assertEquals(new PackageAndClassName("original.package.server.domain.IEntity"), actual.serverInterface);
         assertEquals(new PackageAndClassName("original.package.server.domain.Entity"), actual.serverEntity);
@@ -30,24 +30,16 @@ public class SimpleServerNamesTest {
         assertEquals("Entity", actual.entityNameForLens);
     }
 
-    @Test public void testEntityNameWhenRootDoesntStartWithI() {
-        assertEquals(List.of("Entity [EntityDefn] Should start with an I"), serverNames.entityName("original.package.EntityDefn").fails());
-    }
-
 
     @Test public void testViewName() {
-        Result<String, ViewNames> actual = serverNames.viewName("original.package.IViewRootDefn", " a.b.c.IEntityDefn");
-        assertEquals(new PackageAndClassName("original.package.IViewRootDefn"), actual.result().get().originalDefn);
-        assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.result().get().clientView);
+        ViewNames actual = serverNames.viewName("original.package.IViewRootDefn", " a.b.c.IEntityDefn");
+        assertEquals(new PackageAndClassName("original.package.IViewRootDefn"), actual.originalDefn);
+        assertEquals(new PackageAndClassName("original.package.client.view.ViewRoot"), actual.clientView);
 //        assertEquals(new PackageAndClassName("original.package.client.companion.ViewRootCompanion"), actual.clientCompositeCompanion);
-    }
-    @Test public void testViewNameWithoutAnI() {
-        assertEquals(List.of("View [class] Should start with an I", "View [class] Should end with Defn"),
-                serverNames.viewName("original.package.class", "EntityClassName").fails());
     }
 
     @Test public void testLensName() {
-        EntityNames entityNames = new EntityNames(new PackageAndClassName("p.ISomeDefn"), null, null,null, null, null, null, "someEntityForLens");
+        EntityNames entityNames = new EntityNames(new PackageAndClassName("p.ISomeDefn"), null, null, null, null, null, null, "someEntityForLens");
         assertEquals("lens_someEntityForLens_fieldName", serverNames.entityLensName(entityNames, "fieldName", ""));
         assertEquals("override", serverNames.entityLensName(entityNames, "fieldName", "override"));
     }

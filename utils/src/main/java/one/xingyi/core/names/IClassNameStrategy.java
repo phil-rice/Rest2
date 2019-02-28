@@ -1,16 +1,14 @@
 package one.xingyi.core.names;
-import one.xingyi.core.codeDom.Validators;
 import one.xingyi.core.utils.Strings;
-import one.xingyi.core.validation.Result;
 public interface IClassNameStrategy extends INameStrategy {
-    Result<String, String> toRoot(String entityType, String classSimpleName);
+    String toRoot(String entityType);
 
     IClassNameStrategy simple = new SimpleClassSimpleNameStrategy();
 }
 
 class SimpleClassSimpleNameStrategy implements IClassNameStrategy {
 
-    @Override public Result<String, String> toRoot(String type, String className) { return Validators.removeIAndDefn(type, className); }
+    @Override public String toRoot(String type) { return Strings.extractFromOptionalEnvelope("I", "Defn", type);}
     @Override public String toServerCompanion(String entityDefn) { return entityDefn + "Companion"; }
     @Override public String toClientViewInterface(String entityDefn) { return entityDefn; }
     @Override public String toClientViewImpl(String entityDefn) { return entityDefn + "Impl"; }

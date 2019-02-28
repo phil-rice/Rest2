@@ -11,8 +11,8 @@ import one.xingyi.core.validation.Result;
 import java.util.Optional;
 public interface IServerNames {
     static IServerNames simple(IPackageNameStrategy packageNameStrategy, IClassNameStrategy classNameStrategy) { return new SimpleServerNames(packageNameStrategy, classNameStrategy); }
-    Result<String, EntityNames> entityName(String className);
-    Result<String, ViewNames> viewName(String className, String entityClassName);
+    EntityNames entityName(String className);
+    ViewNames viewName(String className, String entityClassName);
     String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
     Result<String, String> entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
     Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark, String annotationGetUrl, String codeUrl);
@@ -25,30 +25,29 @@ class SimpleServerNames implements IServerNames {
     final IPackageNameStrategy packageNameStrategy;
     final IClassNameStrategy classNameStrategy;
 
-    @Override public Result<String, EntityNames> entityName(String className) {
+    @Override public EntityNames entityName(String className) {
         PackageAndClassName originalDefn = new PackageAndClassName(className);
         String originalPackage = originalDefn.packageName;
-        return classNameStrategy.toRoot("Entity", originalDefn.className).map(entityRoot -> {
-            PackageAndClassName serverInterface = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerInterfaceForDomain(entityRoot));
-            PackageAndClassName serverEntity = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerImplForDomain(entityRoot));
-            PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientViewCompanion(entityRoot));
-            PackageAndClassName clientResourceCompanion = new PackageAndClassName(packageNameStrategy.toCompositeCompanion(originalPackage), classNameStrategy.toCompositeCompanion(entityRoot));
-            PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(entityRoot));
-            PackageAndClassName serverController = new PackageAndClassName(packageNameStrategy.toServerController(originalPackage), classNameStrategy.toServerController(entityRoot));
-            return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, clientResourceCompanion, serverController, entityRoot);
-        });
+
+        String entityRoot = classNameStrategy.toRoot(originalDefn.className);
+        PackageAndClassName serverInterface = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerInterfaceForDomain(entityRoot));
+        PackageAndClassName serverEntity = new PackageAndClassName(packageNameStrategy.toServerImplForDomain(originalPackage), classNameStrategy.toServerImplForDomain(entityRoot));
+        PackageAndClassName serverCompanion = new PackageAndClassName(packageNameStrategy.toServerCompanion(originalPackage), classNameStrategy.toClientViewCompanion(entityRoot));
+        PackageAndClassName clientResourceCompanion = new PackageAndClassName(packageNameStrategy.toCompositeCompanion(originalPackage), classNameStrategy.toCompositeCompanion(entityRoot));
+        PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(entityRoot));
+        PackageAndClassName serverController = new PackageAndClassName(packageNameStrategy.toServerController(originalPackage), classNameStrategy.toServerController(entityRoot));
+        return new EntityNames(originalDefn, serverInterface, serverEntity, serverCompanion, clientEntity, clientResourceCompanion, serverController, entityRoot);
     }
-    @Override public Result<String, ViewNames> viewName(String className, String interfaceName) {
+    @Override public ViewNames viewName(String className, String interfaceName) {
         PackageAndClassName originalDefn = new PackageAndClassName(className);
         String originalPackage = originalDefn.packageName;
-        return classNameStrategy.toRoot("View", originalDefn.className).flatMap(viewRoot -> {
-            PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(viewRoot));
-            PackageAndClassName clientViewInterface = new PackageAndClassName(packageNameStrategy.toClientViewInterface(originalPackage), classNameStrategy.toClientViewInterface(viewRoot));
-            PackageAndClassName clientViewImpl = new PackageAndClassName(packageNameStrategy.toClientViewImpl(originalPackage), classNameStrategy.toClientViewImpl(viewRoot));
-            PackageAndClassName clientCompanion = new PackageAndClassName(packageNameStrategy.toClientViewCompanion(originalPackage), classNameStrategy.toClientViewCompanion(viewRoot));
-            return entityName(interfaceName).map(en ->
-                    new ViewNames(originalDefn, clientEntity, clientViewInterface, clientViewImpl, clientCompanion, en));
-        });
+        String viewRoot = classNameStrategy.toRoot(originalDefn.className);
+        PackageAndClassName clientEntity = new PackageAndClassName(packageNameStrategy.toClientEntityDefn(originalPackage), classNameStrategy.toClientEntityDefn(viewRoot));
+        PackageAndClassName clientViewInterface = new PackageAndClassName(packageNameStrategy.toClientViewInterface(originalPackage), classNameStrategy.toClientViewInterface(viewRoot));
+        PackageAndClassName clientViewImpl = new PackageAndClassName(packageNameStrategy.toClientViewImpl(originalPackage), classNameStrategy.toClientViewImpl(viewRoot));
+        PackageAndClassName clientCompanion = new PackageAndClassName(packageNameStrategy.toClientViewCompanion(originalPackage), classNameStrategy.toClientViewCompanion(viewRoot));
+        EntityNames en = entityName(interfaceName);
+        return new ViewNames(originalDefn, clientEntity, clientViewInterface, clientViewImpl, clientCompanion, en);
     }
     @Override public String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName) {
         return Strings.from(annotationLensName, "lens_" + entityElementName.entityNameForLens + "_" + fieldName);

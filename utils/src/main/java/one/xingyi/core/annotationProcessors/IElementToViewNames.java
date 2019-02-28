@@ -24,6 +24,6 @@ class SimpleElementToViewNames implements IElementToViewNames {
         return Result.failwith("could not find interface for " + viewElement.asType() + " that was IXingYiViewDefn<> in " + viewElement.getInterfaces());
     }
     @Override public Result<ElementFail, ViewNames> apply(TypeElement element) {
-        return ElementFail.lift(element, findEntityName(element).flatMap(en -> serverNames.viewName(element.asType().toString(), en)));
+        return ElementFail.lift(element, findEntityName(element).map(en -> serverNames.viewName(element.asType().toString(), en)));
     }
 }

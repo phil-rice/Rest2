@@ -1,18 +1,13 @@
 package one.xingyi.core.annotationProcessors;
 
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.codeDom.*;
 import one.xingyi.core.filemaker.*;
-import one.xingyi.core.monad.CompletableFutureDefn;
-import one.xingyi.core.monad.MonadDefn;
 import one.xingyi.core.names.IClassNameStrategy;
 import one.xingyi.core.names.IPackageNameStrategy;
-import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.utils.*;
 import one.xingyi.core.validation.Result;
-import one.xingyi.core.validation.ResultAndFailures;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -20,11 +15,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -58,10 +49,6 @@ public class XingYiClientAnnotationProcessor extends AbstractProcessor {
         try {
             List<Element> elements = new ArrayList<>(env.getElementsAnnotatedWith(CombinedView.class));
             for (Element element : elements) {
-                PackageAndClassName originaldefn = new PackageAndClassName(element.asType().toString());
-                Result<String, String> result = classNameStrategy.toRoot(element.asType().toString(), originaldefn.className);
-                if (result.fails().size() > 0)
-                    log.error(element, result.fails().toString());
                 Result<ElementFail, CompositeViewDom> resultDom = CompositeViewDom.create(log, (TypeElement) element, packageNameStrategy, classNameStrategy);
                 for (ElementFail fail : resultDom.fails())
                     fail.logMe(log);

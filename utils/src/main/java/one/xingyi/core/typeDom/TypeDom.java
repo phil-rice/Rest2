@@ -2,7 +2,9 @@ package one.xingyi.core.typeDom;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.embedded.Embedded;
+import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
+import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
@@ -45,19 +47,19 @@ public interface TypeDom {
         if (primitives().contains(packageAndClassName))
             return Result.succeed(new PrimitiveType(packageAndClassName));
         if (fullTypeName.startsWith(listClassName)) {
-            return create(names, Strings.extractFromOptionalEnvelope(listClassName + "<", ">", fullTypeName)).flatMap(nested ->
-                    names.entityName(nested.fullTypeName()).map(entityNames ->
-                            new ListType(fullTypeName, nested, entityNames.serverCompanion, entityNames.entityNameForLens)));
+            return create(names, Strings.extractFromOptionalEnvelope(listClassName + "<", ">", fullTypeName)).flatMap(nested -> {
+                EntityNames entityNames = names.entityName(nested.fullTypeName());
+                return Result.succeed(new ListType(fullTypeName, nested, entityNames.serverCompanion, entityNames.entityNameForLens));
+            });
         }
         if (fullTypeName.startsWith(embeddedClassName))
             return create(names, Strings.extractFromOptionalEnvelope(embeddedClassName + "<", ">", fullTypeName)).map(nested -> new EmbeddedType(fullTypeName, nested));
         if (fullTypeName.indexOf("<") == -1) {
-            return names.entityName(fullTypeName).flatMap(tr -> {
-                String serviceInterface = tr.serverInterface.asString();
-                String serviceClass = tr.originalDefn.asString();
-                return names.viewName(fullTypeName, serviceClass).map(
-                        vn -> new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(), vn.clientCompanion.asString(), tr.serverCompanion.asString(), tr.entityNameForLens));
-            });
+            EntityNames tr = names.entityName(fullTypeName);
+            String serviceInterface = tr.serverInterface.asString();
+            String serviceClass = tr.originalDefn.asString();
+            ViewNames vn = names.viewName(fullTypeName, serviceClass);
+            return Result.succeed(new ViewType(fullTypeName, serviceInterface, vn.clientView.asString(), vn.clientCompanion.asString(), tr.serverCompanion.asString(), tr.entityNameForLens));
         }
         return Result.failwith("Could not work out what type " + rawTypeName + " was");
     }
