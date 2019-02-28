@@ -5,7 +5,7 @@ import one.xingyi.reference1.person.client.view.PersonLine12View;
 import one.xingyi.reference1.person.client.viewcompanion.PersonLine12ViewCompanion;
 
 public class PersonLine1Test extends AbstractPersonTest<PersonLine12View> {
-    @Override IXingYiRemoteAccessDetails<IPersonClientEntity, PersonLine12View> accessDetails() { return PersonLine12ViewCompanion.companion; }
-    @Override String getItem(PersonLine12View view) { return view.line1(); }
-    @Override PersonLine12View withItem(PersonLine12View view, String item) { return view.withline1(item); }
+    @Override protected IXingYiRemoteAccessDetails<IPersonClientEntity, PersonLine12View> accessDetails() { return PersonLine12ViewCompanion.companion; }
+    @Override protected String getItem(PersonLine12View view) { return view.line1(); }
+    @Override protected PersonLine12View withItem(PersonLine12View view, String item) { return view.withline1(item); }
 }

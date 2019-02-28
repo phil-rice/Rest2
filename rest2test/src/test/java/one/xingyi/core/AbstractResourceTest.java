@@ -17,14 +17,14 @@ import java.util.function.Function;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 public abstract class AbstractResourceTest<Resource extends IXingYiResource, ClientResource extends IXingYiClientResource, View extends IXingYiView<ClientResource>, Server extends IXingYiServer> {
-    EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json());
+    protected EndpointConfig<Object> config = EndpointConfig.defaultConfig(new Json());
 
     protected String id() {return "someId";}
     protected String newId() {return "someNewId";}
-    abstract Server server();
-    abstract IXingYiRemoteAccessDetails<ClientResource, View> accessDetails();
-    abstract String getItem(View view);
-    abstract View withItem(View view, String item);
+    abstract protected Server server();
+    abstract protected IXingYiRemoteAccessDetails<ClientResource, View> accessDetails();
+    abstract protected String getItem(View view);
+    abstract protected View withItem(View view, String item);
 
     protected String startItem() {return "startItem";}
     protected String secondItem() {return "secondItem";}
