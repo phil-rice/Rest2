@@ -10,6 +10,7 @@ import one.xingyi.reference1.telephone.ITelephoneNumberDefn;
 @Put
 @CreateWithoutId(url = "{host}/person")
 @Create
+@Prototype("prototype")
 public interface IPersonDefn extends IXingYiResourceDefn {
     String name();
     Integer age();

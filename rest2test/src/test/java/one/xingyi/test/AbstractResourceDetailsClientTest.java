@@ -42,7 +42,7 @@ abstract class AbstractResourceDetailsClientTest {
 
     static PersonController controller = new PersonController(config.parserAndWriter);
     static PersonServer<Object> server = new PersonServer<>(config, controller);
-    static EndPoint entityEndpoints = EndPoint.compose(server.allEndpoints(), true);
+    static EndPoint entityEndpoints = EndPoint.printlnLog(EndPoint.compose(server.allEndpoints(), true));
 
     HttpServiceCompletableFuture rawService;
     HttpServiceCompletableFuture service() {
@@ -106,8 +106,17 @@ abstract class AbstractResourceDetailsClientTest {
         IdAndValue<PersonLine12View> idAndView = PersonLine12View.create(service(), newView).get();
         assertEquals("2", idAndView.id);
         assertEquals("newLine1newLine2", idAndView.t.line1() + idAndView.t.line2());
-
     }
+
+    @Test public void testEditPerson() throws ExecutionException, InterruptedException {
+        PersonLine12View.edit(service(), "id1", i -> i.withline1("newLine1").withline2("newLine2")).get();
+        assertEquals(Optional.of("someNamenewLine1newLine2"), IPersonNameLine12View.getOptional(service(), "id1", i -> i.name() + i.line1() + i.line2()).get());
+    }
+    @Test public void testPrototypePerson() throws ExecutionException, InterruptedException {
+        PersonLine12View.prototype(service(), "id2", i -> i.withline1("newLine1").withline2("newLine2")).get();
+        assertEquals(Optional.of("prototypenewLine1newLine2"), IPersonNameLine12View.getOptional(service(), "id2", i -> i.name() + i.line1() + i.line2()).get());
+    }
+
 
     @Test public void testGetCompositePerson() throws ExecutionException, InterruptedException {
         assertEquals("someNamesomeLine1", IPersonNameLine12View.get(service(), "id1", i -> i.name() + i.line1()).get());
@@ -120,6 +129,10 @@ abstract class AbstractResourceDetailsClientTest {
     @Test public void testDeleteCompositePerson() throws ExecutionException, InterruptedException {
         IPersonNameLine12View.delete(service(), "id1").get();
         assertEquals(Optional.empty(), IPersonNameLine12View.getOptional(service(), "id1", i -> i.name() + i.line1()).get());
+    }
+    @Test public void testPrototypeCompositePerson() throws ExecutionException, InterruptedException {
+        IPersonNameLine12View.prototype(service(), "id2", i -> i.withname("newName").withline1("newLine1").withline2("newLine2")).get();
+        assertEquals(Optional.of("newNamenewLine1newLine2"), IPersonNameLine12View.getOptional(service(), "id2", i -> i.name() + i.line1() + i.line2()).get());
     }
 
     @Test public void testCreateWithIdWithComposite() throws ExecutionException, InterruptedException {

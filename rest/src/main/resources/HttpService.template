@@ -60,6 +60,7 @@ public interface HttpService<monad> {
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><IdAndValue<View>> createWithoutId(IXingYiRemoteAccessDetails<Entity, View> clientMaker, View view);
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><Boolean> delete(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id);
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><View> edit(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String id, Function<View, View> fn);
+    <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><View> prototype(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String prototypeId, String id, Function<View, View> fn);
     //    <Entity extends IXingYiClientEntity, View extends IXingYiView<Entity>> <monad><View> post(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String urlPattern, String id);
     <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Result> process(
             IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn);
@@ -147,6 +148,20 @@ class DefaultHttpService<monad> implements HttpService<monad> {
             });
         });
     }
+@Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> <monad><View> prototype(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String prototypeId, String id, Function<View, View> fn) {
+        return getUrlPattern(clientMaker.bookmark()).<flatMap>(urlPattern -> {
+            String prototypeUrl = urlPattern.replace("{id}", prototypeId);
+            String finalUrl = urlPattern.replace("{id}", id);
+            <monad><View> original = primitive(clientMaker, "get", prototypeUrl, fn);
+            return original.<flatMap>(o -> {
+                @SuppressWarnings("unchecked")
+                String json = o.xingYi().render("json", o);
+                ServiceRequest serviceRequest = new ServiceRequest("put", finalUrl.startsWith("/") ? protocolAndHost + finalUrl : finalUrl, List.of(), json);
+                return service.apply(serviceRequest).<flatMap>(makeEntity(clientMaker, serviceRequest));
+            });
+        });
+    }
+
 
     @Override public <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>, Result> <monad><Result> process(IXingYiRemoteAccessDetails<Entity, View> clientMaker, String action, String id, StateFn<View, Result> stateFn) {
         throw new RuntimeException("not implemented yet");

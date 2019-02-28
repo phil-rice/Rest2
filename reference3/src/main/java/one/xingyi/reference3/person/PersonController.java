@@ -33,6 +33,7 @@ public class PersonController <J>extends ControllerUsingMap<Person> implements I
     public void reset() {
         store.clear(); ;
         store.put("id1", person);
+        this.store.put("prototype", prototype("prototype"));
     }
     @Override protected Person prototype(String id) {
         return new Person(id, 0, IResourceList.create(new Address("", "", "")), new TelephoneNumber(""));

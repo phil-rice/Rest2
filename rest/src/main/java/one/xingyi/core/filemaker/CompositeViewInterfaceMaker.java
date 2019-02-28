@@ -95,6 +95,10 @@ public class CompositeViewInterfaceMaker implements IFileMaker<CompositeViewDom>
                     "public static CompletableFuture<" + d.clientInterface.asString() + "> edit(HttpServiceCompletableFuture service, String id, Function<" + d.clientInterface.asString() + "," + d.clientInterface.asString() + "> fn){",
                     Formating.indent + "return service.edit(" + d.clientCompositeCompanion.asString() + ".companion,id, fn);",
                     "}")),
+            pf((dom, method) -> method.getName().equalsIgnoreCase("prototype"), (d, m) -> List.of(
+                    "public static CompletableFuture<" + d.clientInterface.asString() + "> prototype(HttpServiceCompletableFuture service, String id, Function<" + d.clientInterface.asString() + "," + d.clientInterface.asString() + "> fn){",
+                    Formating.indent + "return service.prototype(" + d.clientCompositeCompanion.asString() + ".companion," + d.clientResource.asString()+".prototypeId,id, fn);",
+                    "}")),
             pf((dom, method) -> method.getName().equalsIgnoreCase("create") && method.getParameterTypes().length == 2 && method.getParameterTypes()[1] == String.class, (d, m) -> List.of(
                     "public static CompletableFuture<" + d.clientInterface.asString() + "> create(HttpServiceCompletableFuture service, String id){",
                     Formating.indent + "return service.create(" + d.clientCompositeCompanion.asString() + ".companion,id);",

@@ -19,12 +19,17 @@ public class ClientResourceFileMaker implements IFileMaker<ResourceDom> {
                         " extends IXingYiClientResource", List.of(),
                         IXingYiClientResource.class, XingYiGenerated.class),
                 Formating.indent(addBookmark(resourceDom)),
+                Formating.indent(addPrototypeId(resourceDom)),
                 List.of("}")
         ), "\n");
         return Result.succeed(new FileDefn(clientResourceName, result));
     }
     private List<String> addBookmark(ResourceDom resourceDom) {
         if (resourceDom.bookmark.isEmpty()) return List.of();
-        return List.of("final String bookmark=" + Strings.quote(resourceDom.bookmark.get().bookmark)+";");
+        return List.of("final String bookmark=" + Strings.quote(resourceDom.bookmark.get().bookmark) + ";");
+    }
+    private List<String> addPrototypeId(ResourceDom resourceDom) {
+        if (resourceDom.actionsDom.prototypeDom.isEmpty()) return List.of();
+        return List.of("final String prototypeId=" + Strings.quote(resourceDom.actionsDom.prototypeDom.get().prototypeId) + ";");
     }
 }

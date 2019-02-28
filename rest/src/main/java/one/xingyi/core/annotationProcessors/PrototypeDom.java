@@ -7,4 +7,5 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class PrototypeDom {
+ public  final String prototypeId;
 }
