@@ -101,16 +101,15 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         try {
             CodeDom codeDom = new CodeDom(monadDefn, makeResourceDomResults(env, log, bundle), makeViewDoms(env, log, bundle));
             log.info("Made codeDom: " + codeDom);
-
-            List<FileDefn> codeContent = makeContent(log, codeDom);
             List<ServerDom> serverDoms = log.logFailuresAndReturnSuccesses(Lists.map(Sets.toList(env.getElementsAnnotatedWith(Server.class)), e1 -> ServerDom.create(names, e1, codeDom)));
+
+            List<FileDefn> codeContent = log.logFailuresAndReturnStringSuccesses(makeContent(log, codeDom));
             List<FileDefn> systemContent = log.logFailuresAndReturnStringSuccesses(Lists.map(serverDoms, sd -> makeServer(sd)));
 
             makeHttpService("one.xingyi.core.httpClient", monadDefn).forEach(x -> {
-                try { makeClassFile(x);} catch (Exception e) {}  //TODO WHy do we have this
+                try { makeClassFile(x);} catch (Exception e) {}
             });
             Lists.foreach(Lists.append(systemContent, codeContent), this::makeClassFile);
-            log.info("got to end of creation");
             validateLens(env, log, codeDom);
         } catch (
                 Exception e) {
@@ -120,11 +119,9 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         return false;
     }
 
-    Result<String, FileDefn> makeHttpService(String packageName, MonadDefn monadDefn) {
-        return new HttpServiceFileMaker(packageName).apply(monadDefn);
-    }
+    Result<String, FileDefn> makeHttpService(String packageName, MonadDefn monadDefn) { return new HttpServiceFileMaker(packageName).apply(monadDefn); }
 
-    List<FileDefn> makeContent(LoggerAdapter log, CodeDom codeDom) {
+    List<Result<String, FileDefn>> makeContent(LoggerAdapter log, CodeDom codeDom) {
         List<IFileMaker<ResourceDom>> entityFileMakes = Arrays.asList(
                 new CodeDomDebugFileMaker(),
                 new ServerInterfaceFileMaker(),
@@ -133,11 +130,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ServerCompanionFileMaker(),
                 new ClientResourceCompanionFileMaker(codeDom.monadDefn),
                 new ServerControllerFileMaker(codeDom.monadDefn));
-        List<Result<String, FileDefn>> fromCodeDomResults = Lists.flatMap(codeDom.resourceDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)));
-        List<FileDefn> fromCodeDom = Result.successes(fromCodeDomResults);
-        List<String> fromCodeDomIssues = Result.failures(fromCodeDomResults);
 
-        log.info("The viewDoms are " + codeDom.viewsAndDoms.size());
         List<IFileMaker<ViewDomAndItsResourceDom>> viewFileMakers = List.of(
                 new ViewDomDebugFileMaker(),
                 new ClientViewInterfaceFileMaker(codeDom.monadDefn),
@@ -145,16 +138,12 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
                 new ClientViewImplFileMaker()
         );
 
-        List<Result<String, FileDefn>> fromViewDomResults = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f -> f.apply(viewDom)));
-        log.info("The viewDoms results " + fromViewDomResults);
+        List<Result<String, FileDefn>> fromResources = Lists.flatMap(codeDom.resourceDoms, resourceDom -> Lists.map(entityFileMakes, f1 -> f1.apply(resourceDom)));
+        List<Result<String, FileDefn>> fromViews = Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f11 -> f11.apply(viewDom)));
 
-        List<String> fromViewDomIssues = Result.failures(fromViewDomResults);
-        List<FileDefn> fromViewDom = Result.successes(fromViewDomResults);
-
-
-        List<String> issues = Lists.append(fromCodeDomIssues, fromViewDomIssues);
-        Lists.foreach(issues, log::error);
-        return Lists.<FileDefn>append(fromCodeDom, fromViewDom);
+//        Lists.foreach(Lists.append(Result.failures(Lists.flatMap(codeDom.resourceDoms, entityDom -> Lists.map(entityFileMakes, f -> f.apply(entityDom)))),
+//                Result.failures(Lists.flatMap(codeDom.viewsAndDoms, viewDom -> Lists.map(viewFileMakers, f1 -> f1.apply(viewDom))))), log::error);
+        return Lists.append(fromResources, fromViews);
     }
 
     void makeClassFile(FileDefn fileDefn) {
