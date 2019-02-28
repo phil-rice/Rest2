@@ -30,8 +30,6 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.function.Function;
 
-import lombok.val;
-import one.xingyi.core.validation.ResultAndFailures;
 import one.xingyi.core.validation.Valid;
 
 @RequiredArgsConstructor
@@ -54,10 +52,9 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
 
     static <T extends Element> Comparator<T> comparator() {return (a, b) -> a.asType().toString().compareTo(b.asType().toString());}
 
-    Valid<String, Element> checkRootUrlStartsWithHost = Valid.check(e -> {
-        String rootUrl = e.getAnnotation(Resource.class).rootUrl();
-        return rootUrl.length() > 0 && rootUrl.startsWith("{host}");
-    }, e -> "Root Url needs to start with {host}");
+    boolean emptyOr(String s, Function<String, Boolean> fn) {return s.isEmpty() || fn.apply(s);}
+    Valid<ElementFail, TypeElement> checkRootUrlStartsWithHost = check(e -> emptyOr(e.getAnnotation(Resource.class).rootUrl(), url -> url.startsWith("{host}")), e -> "Root Url needs to start with {host}");
+    Valid<ElementFail, TypeElement> checkRootUrlHasId = check(e -> emptyOr(e.getAnnotation(Resource.class).rootUrl(), url -> url.contains("{id}")), e -> "Root Url needs to contain {id}");
 
     Valid<ElementFail, TypeElement> check(Function<TypeElement, Boolean> checkFn, Function<TypeElement, String> message) {return Valid.<String, ElementFail, TypeElement>check(checkFn, message, (e, s) -> new ElementFail(s, e));}
 
@@ -65,24 +62,28 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     Valid<ElementFail, TypeElement> checkNameStartsWithI = check(e -> e.getSimpleName().toString().startsWith("I"), e -> "Name must start with an I");
     Valid<ElementFail, TypeElement> checkNameEndsWithDefn = check(e -> e.getSimpleName().toString().endsWith("Defn"), e -> "Name must end with Defn");
     Valid<ElementFail, TypeElement> checkImplements(String className) {return check(e -> Lists.find(e.getInterfaces(), i -> i.toString().startsWith(className)).isPresent(), e -> "Must extend " + className);}
-    Valid<ElementFail, Element> initialTypeElementChecks(Class<?> obligatoryInterface) {
-        return Valid.compose(e -> (TypeElement) e,
-                checkElementIsAnInterface, checkNameStartsWithI, checkNameEndsWithDefn, checkImplements(obligatoryInterface.getName()));
+    Valid<ElementFail, TypeElement> initialTypeElementChecks(Class<?> obligatoryInterface) {
+        return Valid.compose(checkElementIsAnInterface, checkNameStartsWithI, checkNameEndsWithDefn, checkImplements(obligatoryInterface.getName()));
     }
 
-    private List<Element> getCheckedElements(Class<? extends Annotation> annotation, Class<?> obligatoryInterface, RoundEnvironment env, LoggerAdapter log) {
-        List<Element> elements = Sets.sortedList((Set<Element>) env.getElementsAnnotatedWith(annotation), comparator());
-        List<ElementFail> elementFails = Valid.checkAll(elements, initialTypeElementChecks(obligatoryInterface));
+    Valid<ElementFail, TypeElement> initialResourceElementChecks = Valid.compose(initialTypeElementChecks(IXingYiResourceDefn.class), checkRootUrlStartsWithHost, checkRootUrlHasId);
+    Valid<ElementFail, TypeElement> initialViewElementChecks = initialTypeElementChecks(IXingYiViewDefn.class);
+
+
+    private List<TypeElement> getCheckedElements(Class<? extends Annotation> annotation, RoundEnvironment env, LoggerAdapter log, Valid<ElementFail, TypeElement> valid) {
+        List<TypeElement> elements = Sets.sortedList((Set<TypeElement>) env.getElementsAnnotatedWith(annotation), comparator());
+        List<ElementFail> elementFails = Valid.checkAll(elements, valid);
         Lists.foreach(elementFails, log::error);
         return elements;
     }
 
     private List<ResourceDom> makeResourceDomResults(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle) {
-        List<Element> elements = getCheckedElements(Resource.class, IXingYiResourceDefn.class, env, log);
+        List<TypeElement> elements = getCheckedElements(Resource.class, env, log, initialResourceElementChecks);
         return log.logFailuresAndReturnSuccesses(Lists.map(elements, e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply((TypeElement) e)));
     }
+
     private List<ViewDom> makeViewDoms(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle) {
-        List<Element> viewElements = getCheckedElements(View.class, IXingYiViewDefn.class, env, log);
+        List<TypeElement> viewElements = getCheckedElements(View.class, env, log, initialViewElementChecks);
         return log.logFailuresAndReturnSuccesses(Lists.map(viewElements,
                 v -> bundle.elementToViewNames().apply((TypeElement) v).flatMap(vn -> bundle.elementToViewDom(vn).apply((TypeElement) v))));
     }

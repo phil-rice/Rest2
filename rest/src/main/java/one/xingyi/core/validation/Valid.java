@@ -12,12 +12,8 @@ public interface Valid<Fail, T> extends Function<T, List<Fail>> {
     static <Fail, Fail1, T> Valid<Fail1, T> check(Function<T, Boolean> isOk, Function<T, Fail> message, BiFunction<T, Fail, Fail1> failFn) { return t -> isOk.apply(t) ? List.of() : List.of(failFn.apply(t, message.apply(t))); }
 
 
-    static <Fail, T, T1> Valid<Fail, T> compose(Function<T, T1> fn, Valid<Fail, T1>... valids) {
-        return (T t) -> {
-            T1 t1 = fn.apply(t);
-            List<Fail> fails = Lists.<Valid<Fail, T1>, Fail>flatMap(Arrays.asList(valids), v -> v.apply(t1));
-            return fails;
-        };
+    static <Fail, T> Valid<Fail, T> compose(Valid<Fail, T>... valids) {
+        return (T t) -> Lists.flatMap(Arrays.asList(valids), v -> v.apply(t));
     }
     static <Fail, T> List<Fail> checkAll(List<T> ts, Valid<Fail, T> valid) { return Lists.flatMap(ts, s -> valid.apply(s)); }
 }
