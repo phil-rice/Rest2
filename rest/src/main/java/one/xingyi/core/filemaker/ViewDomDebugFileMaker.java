@@ -43,6 +43,7 @@ public class ViewDomDebugFileMaker extends AbstractDebugFileMaker implements IFi
                 viewDebugInfo(viewDom),
                 List.of(""),
                 Optionals.fold(viewDomAndItsResourceDom.entityDom, () -> List.<String>of("Entity Dom not found"), ed -> entityDebugInfo(ed)),
+                viewDomAndItsResourceDom.entityDom.map(ed -> actionsDomInfo(ed.actionsDom)).orElse(List.of()),
                 List.of("*/}"));
         return Result.succeed(new FileDefn(packageAndClassName, Lists.join(result, "\n")));
     }

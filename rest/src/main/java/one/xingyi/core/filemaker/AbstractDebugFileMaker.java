@@ -52,12 +52,14 @@ public class AbstractDebugFileMaker {
     }
     List<String> actionsDomInfo(ActionsDom actionsDom) {
         return List.of(
-                "Get         " + actionsDom.getDom,
-                "Put         " + actionsDom.putDom,
-                "Create      " + actionsDom.createDom,
-                "CreateNoId  " + actionsDom.createWithoutIdDom,
-                "Delete      " + actionsDom.deleteDom,
-                "Posts:      " + actionsDom.postDoms
+                "Get            " + actionsDom.getDom,
+                "Put            " + actionsDom.putDom,
+                "Create         " + actionsDom.createDom,
+                "CreateNoId     " + actionsDom.createWithoutIdDom,
+                "Delete         " + actionsDom.deleteDom,
+                "prototype:     " + actionsDom.prototypeDom,
+                "prototypeNoId: " + actionsDom.prototypeNoIdDom,
+                "Posts:         " + actionsDom.postDoms
         );
     }
 }

@@ -37,6 +37,11 @@ CreateViewMethods {
                 " > edit(HttpService" + monadDefn().simpleClassName() + " service, String id, Function<" + viewName + "," + viewName +
                 "> fn){return service.edit(" + companionName + ",id, fn);}");
     }
+    default List<String> prototypeNoIdMethod(String viewName, String companionName, String prototypeId) {
+        return List.of("public static " + monadDefn().simpleClassName() + "<IdAndValue<" + viewName +
+                ">> prototypeNoId(HttpService" + monadDefn().simpleClassName() + " service,  Function<" + viewName + "," + viewName +
+                "> fn){return service.prototypeNoId(" + companionName + "," + Strings.quote(prototypeId) + ",fn);}");
+    }
     default List<String> prototypeMethod(String viewName, String companionName, String prototypeId) {
         return List.of("public static " + monadDefn().simpleClassName() + "<" + viewName +
                 " > prototype(HttpService" + monadDefn().simpleClassName() + " service, String id, Function<" + viewName + "," + viewName +
@@ -61,7 +66,9 @@ CreateViewMethods {
                     Optionals.flatMap(actionsDom.createDom, dom -> createMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.createWithoutIdDom, dom -> createWithoutIdMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.deleteDom, dom -> deleteMethod(companionName)),
-                    Optionals.flatMap(actionsDom.prototypeDom, dom -> prototypeMethod(viewName, companionName, dom.prototypeId)));
+                    Optionals.flatMap(actionsDom.prototypeDom, dom -> prototypeMethod(viewName, companionName, dom.prototypeId)),
+                    Optionals.flatMap(actionsDom.prototypeNoIdDom, dom -> prototypeNoIdMethod(viewName, companionName, dom.prototypeId))
+            );
 //                    Lists.flatMap(actionsDom.postDoms, postDom -> postMethod(postDom, viewName, companionName)));
         });
     }

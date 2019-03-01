@@ -7,6 +7,7 @@ import one.xingyi.core.httpClient.HttpServiceCompletableFuture;
 import one.xingyi.core.marshelling.DataToBeSentToClient;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
 import one.xingyi.core.utils.Consumer3WithException;
+import one.xingyi.core.utils.IdAndValue;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.json.Json;
 import one.xingyi.trafficlights.client.view.ColourView;
@@ -32,7 +33,7 @@ public class TrafficLightTest {
     public void setup(Consumer3WithException<TrafficLightsController<Object>, one.xingyi.trafficlights.TrafficLightServer<Object>, HttpServiceCompletableFuture> consumer) throws Exception {
         TrafficLightsController controller = new TrafficLightsController(jsonParserAndWriter);
         one.xingyi.trafficlights.TrafficLightServer<Object> server = new one.xingyi.trafficlights.TrafficLightServer<>(config, controller);
-        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://somehost", jsonParserAndWriter, EndPoint.toKliesli(EndPoint.printlnLog(EndPoint.compose(server.allEndpoints(),true))));
+        HttpServiceCompletableFuture service = HttpServiceCompletableFuture.lensService("http://somehost", jsonParserAndWriter, EndPoint.toKliesli(EndPoint.printlnLog(EndPoint.compose(server.allEndpoints(), true))));
         consumer.accept(controller, server, service);
     }
 
@@ -107,12 +108,11 @@ public class TrafficLightTest {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
             ColourView prototype = ColourView.get(service, "someId", x -> x).get();
-            String color = prototype.color();
-            String id = prototype.id();
+
 
             ColourView some = prototype.withid("some");
-            assertEquals("somered", ColourView.create(service, some).thenApply(idV -> idV.id + idV.t.color()).get());
-            assertEquals("othergreen", ColourView.create(service, prototype.withid("other").withcolor("green")).thenApply(idV -> idV.id + idV.t.color()).get());
+            assertEquals("id2red", ColourView.create(service, some).thenApply(idV -> idV.id + idV.t.color()).get());
+            assertEquals("id3green", ColourView.create(service, prototype.withid("other").withcolor("green")).thenApply(idV -> idV.id + idV.t.color()).get());
         });
     }
 
@@ -136,8 +136,6 @@ public class TrafficLightTest {
 
     @Test public void testCanEdit() throws Exception {
         setup((controller, server, service) -> {
-
-
             populate(controller, "someId", "red", "someLocation");
             assertEquals("newLocation", LocationView.edit(service, "someId", loc -> loc.withlocation("newLocation")).get().location());
             TrafficLights lights = controller.store.get("someId");
@@ -160,6 +158,16 @@ public class TrafficLightTest {
 //    }
 
             fail();
+        });
+    }
+
+    @Test public void testPrototypeNoId() throws Exception {
+        setup((controller, server, service) -> {
+            populate(controller, "prototype", "red", "someLocation");
+            IdAndValue<LocationView> locationAndId = LocationView.prototypeNoId(service, view -> view.withlocation("newLocation")).get();
+            assertEquals("newLocation",locationAndId.t.location());
+            assertEquals("id2",locationAndId.id);
+
         });
     }
 

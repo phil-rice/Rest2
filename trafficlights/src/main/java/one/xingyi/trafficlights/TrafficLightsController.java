@@ -20,19 +20,21 @@ public class TrafficLightsController<J> extends ControllerUsingMap<TrafficLights
     }
     CompletableFuture<TrafficLights> map(String id, Function<TrafficLights, TrafficLights> fn) {
         TrafficLights t = store.get(id);
-        if (t == null) throw new RuntimeException("Tried to access id: " + id + " which doesn't exist. Legal values are: " + store);
+        if (t == null)
+            throw new RuntimeException("Tried to access id: " + id + " which doesn't exist. Legal values are: " + store);
         TrafficLights newLight = fn.apply(t);
         store.put(id, newLight);
-        System.out.println("created new traffic light " + id + "->" + newLight + "    "+ store);
+        System.out.println("created new traffic light " + id + "->" + newLight + "    " + store);
         return CompletableFuture.completedFuture(newLight);
     }
     @Override public TrafficLights createWithoutIdRequestFrom(ServiceRequest serviceRequest) {
-
         return TrafficLightsCompanion.companion.fromJson(parser, parser.parse(serviceRequest.body));
     }
-    @Override public CompletableFuture<IdAndValue<TrafficLights>> createWithoutId(TrafficLights trafficLights) {
-        store.put(trafficLights.id(), trafficLights);
-        return CompletableFuture.completedFuture(new IdAndValue<TrafficLights>(trafficLights.id(), trafficLights));
+    @Override public CompletableFuture<IdAndValue<TrafficLights>> createWithoutId(TrafficLights rawLights) {
+        String id = "id" + store.size();
+        TrafficLights trafficLights = rawLights.withid(id);
+        store.put(id, trafficLights);
+        return CompletableFuture.completedFuture(new IdAndValue<TrafficLights>(id, trafficLights));
     }
     @Override public String stateFn(TrafficLights trafficLights) { return trafficLights.color(); }
 

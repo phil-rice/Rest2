@@ -9,6 +9,7 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 @Put
 @CreateWithoutId(url = "{host}/lights")
 @Create
+@PrototypeNoId(prototypeId = "prototype",url="{host}/lights")
 public interface ITrafficLightsDefn extends IXingYiResourceDefn {
 //    @Field(readOnly = true)
     String id();

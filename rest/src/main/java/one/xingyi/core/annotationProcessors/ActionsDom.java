@@ -15,5 +15,6 @@ public class ActionsDom {
     public final Optional<CreateDom> createDom;
     public final Optional<CreateWithoutIdDom> createWithoutIdDom;
     public final Optional<PrototypeDom> prototypeDom;
+    public final Optional<PrototypeNoIdDom> prototypeNoIdDom;
     public final List<PostDom> postDoms;
 }
