@@ -11,6 +11,6 @@ public class TrafficLightClient {
     public static void main(String[] args)  throws Exception {
         Function<ServiceRequest, CompletableFuture<ServiceResponse>> clientService = JavaHttpClient.client;
         HttpServiceCompletableFuture service = HttpServiceCompletableFuture.javascriptService("http://localhost:9000", clientService);
-        System.out.println(ColourView.get(service, "1", ColourView::color).get());
+        System.out.println(ColourView.getOptional(service, "1", ColourView::color).get());
     }
 }

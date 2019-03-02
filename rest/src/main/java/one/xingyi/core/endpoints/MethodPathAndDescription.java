@@ -5,7 +5,8 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class MethodAndPath {
+public class MethodPathAndDescription {
     final String method;
     final String path;
+    final String description;
 }

@@ -42,5 +42,5 @@ class ComposeEndPoints implements EndPoint {
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return recurse(serviceRequest, 0);
     }
-    @Override public List<MethodAndPath> description() { return Lists.flatMap(endpoints, EndPoint::description); }
+    @Override public List<MethodPathAndDescription> description() { return Lists.flatMap(endpoints, EndPoint::description); }
 }

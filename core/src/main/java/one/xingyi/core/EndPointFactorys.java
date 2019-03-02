@@ -36,8 +36,8 @@ class EntityEndpointAcceptor implements IResourceEndpointAcceptor<ResourceDetail
         this.entityRegister = entityRegister;
         this.registered = entityRegister.registered();
     }
-    @Override public List<MethodAndPath> description() {
-        return Lists.map(registered, r -> new MethodAndPath("get", r));
+    @Override public List<MethodPathAndDescription> description() {
+        return Lists.map(registered, r -> new MethodPathAndDescription("get", r, EntityEndpointAcceptor.class.getSimpleName()));
     }
     @Override public Optional<ResourceDetailsRequest> apply(ServiceRequest serviceRequest) {
         if (serviceRequest.method.equalsIgnoreCase("get") && serviceRequest.urlSegments().size() == 2) {

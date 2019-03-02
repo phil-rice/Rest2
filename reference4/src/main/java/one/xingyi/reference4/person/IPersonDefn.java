@@ -8,7 +8,8 @@ import one.xingyi.reference4.address.IAddressLine12ViewDefn;
 import one.xingyi.reference4.telephone.ITelephoneNumberDefn;
 
 @Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
-@Get(mustExist = false)
+@OptionalGet
+@Get
 @Delete
 @Put
 @CreateWithoutId(url = "{host}/person")

@@ -1,18 +1,12 @@
 package one.xingyi.core.endpoints;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
-import one.xingyi.core.utils.Optionals;
-import one.xingyi.core.utils.Strings;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Optional<From>>, MethodAndPathDescription {
 
-    List<MethodAndPath> description();
+    List<MethodPathAndDescription> description();
 //    static <From> EndpointAcceptor1<From> justOneThing(String method, Function<String, From> fn) { return new JustOneThing<>(method, fn); }
 //    static <From> EndpointAcceptor1<From> nameThenId(String method, String name, Function<String, From> fn) { return new NameThenid<>(method, name, fn); }
 //    static <From> EndpointAcceptor1<From> bookmarkAcceptor(String method, String bookmakr, BiFunction<ServiceRequest, String, From> fn) { return new BookmarkAcceptor<>(method, bookmakr, fn); }
@@ -28,8 +22,8 @@ public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Option
 //    @Override public Optional<From> apply(ServiceRequest sr) {
 //        return Optionals.from(sr.segmentsCount() == 2 && method.equalsIgnoreCase(sr.method), () -> fn.apply(sr.lastSegment()));
 //    }
-//    @Override public List<MethodAndPath> description() {
-//        return List.of(new MethodAndPath(method, "/{anyonesegment}"));
+//    @Override public List<MethodPathAndDescription> description() {
+//        return List.of(new MethodPathAndDescription(method, "/{anyonesegment}"));
 //    }
 //}
 //@RequiredArgsConstructor
@@ -42,8 +36,8 @@ public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Option
 //    @Override public Optional<From> apply(ServiceRequest sr) {
 //        return Optionals.from(sr.segmentsCount() == 3 && name.equalsIgnoreCase(sr.urlSegments().get(1)) && method.equalsIgnoreCase(sr.method), () -> fn.apply(sr.lastSegment()));
 //    }
-//    @Override public List<MethodAndPath> description() {
-//        return List.of(new MethodAndPath(method, "/" + name + "/{id}"));
+//    @Override public List<MethodPathAndDescription> description() {
+//        return List.of(new MethodPathAndDescription(method, "/" + name + "/{id}"));
 //    }
 //}
 //
@@ -67,7 +61,7 @@ public interface EndpointAcceptor1<From> extends Function<ServiceRequest, Option
 //        String url = serviceRequest.uri.getPath();
 //        return ripper.apply(serviceRequest.uri.getPath()).map(id -> fn.apply(serviceRequest, id));
 //    }
-//    @Override public List<MethodAndPath> description() {
-//        return List.of(new MethodAndPath(method, bookmark));
+//    @Override public List<MethodPathAndDescription> description() {
+//        return List.of(new MethodPathAndDescription(method, bookmark));
 //    }
 //}

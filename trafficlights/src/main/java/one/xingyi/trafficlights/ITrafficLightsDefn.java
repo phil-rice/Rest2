@@ -5,7 +5,8 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 
 @Resource(bookmark = "/lights", rootUrl = "{host}/lights/{id}")
 @Delete
-@Get(mustExist = false)
+@Get
+@OptionalGet
 @Put
 @CreateWithoutId(url = "{host}/lights")
 @Create

@@ -28,9 +28,10 @@ CreateViewMethods {
     }
 
     default List<String> getMethod(String viewName, String companionName) {
-        return List.of(
-                "public static <T> " + monadDefn().simpleClassName() + "<T> get(HttpService" + monadDefn().simpleClassName() + " service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}",
-                "public static <T> " + monadDefn().simpleClassName() + "<Optional<T>> getOptional(HttpService" + monadDefn().simpleClassName() + " service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
+        return List.of("public static <T> " + monadDefn().simpleClassName() + "<T> get(HttpService" + monadDefn().simpleClassName() + " service, String id, Function<" + viewName + ", T> fn){return service.get(" + companionName + ",id,fn);}");
+    }
+    default List<String> optionalGetMethod(String viewName, String companionName) {
+        return List.of("public static <T> " + monadDefn().simpleClassName() + "<Optional<T>> getOptional(HttpService" + monadDefn().simpleClassName() + " service, String id, Function<" + viewName + ", T> fn){return service.getOptional(" + companionName + ",id,fn);}");
     }
     default List<String> editMethod(String viewName, String companionName) {
         return List.of("public static " + monadDefn().simpleClassName() + "<" + viewName +
@@ -62,6 +63,7 @@ CreateViewMethods {
             ActionsDom actionsDom = b.actionsDom;
             return Lists.<String>append(
                     Optionals.flatMap(actionsDom.getDom, dom -> getMethod(viewName, companionName)),
+                    Optionals.flatMap(actionsDom.optionalGetDom, dom -> optionalGetMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.putDom, dom -> editMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.createDom, dom -> createMethod(viewName, companionName)),
                     Optionals.flatMap(actionsDom.createWithoutIdDom, dom -> createWithoutIdMethod(viewName, companionName)),

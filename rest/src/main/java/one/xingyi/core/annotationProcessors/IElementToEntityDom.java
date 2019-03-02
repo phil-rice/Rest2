@@ -27,7 +27,8 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
         Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, bookmark, url, annotation.codeUrl());
         List<PostDom> pathDoms = Lists.collect(element.getEnclosedElements(), e -> e.getAnnotation(Post.class) != null, e -> PostDom.create(e.getSimpleName().toString(), e.getAnnotation(Post.class), url));
         ActionsDom actionsDom = new ActionsDom(//TODO Move into own mini interface
-                Optional.ofNullable(element.getAnnotation(Get.class)).map(get -> new GetDom(get.mustExist())),
+                Optional.ofNullable(element.getAnnotation(Get.class)).map(get -> new GetDom()),
+                Optional.ofNullable(element.getAnnotation(OptionalGet.class)).map(get -> new OptionalGetDom()),
                 Optional.ofNullable(element.getAnnotation(Put.class)).map(put -> new PutDom()),
                 Optional.ofNullable(element.getAnnotation(Delete.class)).map(delete -> new DeleteDom()),
                 Optional.ofNullable(element.getAnnotation(Create.class)).map(crate -> new CreateDom()),

@@ -3,7 +3,7 @@ import lombok.RequiredArgsConstructor;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointContext;
 import one.xingyi.core.endpoints.HasBookmarkAndUrl;
-import one.xingyi.core.endpoints.MethodAndPath;
+import one.xingyi.core.endpoints.MethodPathAndDescription;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
 import one.xingyi.core.httpClient.ResourceDetailsRequest;
@@ -25,7 +25,7 @@ public class ResourceDefinitionEndPoint implements EndPoint {
         this.register = EntityRegister.apply(companions);
         this.mediaTypeDefn = ResourceDetailsCompanion.companion.lensMediaDefn(context);
     }
-    @Override public List<MethodAndPath> description() { return Lists.map(register.registered(), url -> new MethodAndPath("get", url)); }
+    @Override public List<MethodPathAndDescription> description() { return Lists.map(register.registered(), url -> new MethodPathAndDescription("get", url,ResourceDefinitionEndPoint.class.getSimpleName())); }
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         if (serviceRequest.method .equalsIgnoreCase("get")) {
             Optional<ResourceDetails> optionalResourceDetails = register.apply(new ResourceDetailsRequest(serviceRequest.path));

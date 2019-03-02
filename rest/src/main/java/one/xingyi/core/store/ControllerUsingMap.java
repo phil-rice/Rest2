@@ -30,7 +30,9 @@ public abstract class ControllerUsingMap<T> {
     public CompletableFuture<T> put(IdAndValue<T> idAndEntity) {
         return wrap(idAndEntity.id, () -> store.put(idAndEntity.id, idAndEntity.t));
     }
-    public CompletableFuture<Optional<T>> getOptional(String id) { return CompletableFuture.completedFuture(Optional.ofNullable(store.get(id))); }
+    public CompletableFuture<T> get(String id) { return CompletableFuture.completedFuture(store.get(id)); }
+    public CompletableFuture<Optional<T>> getOptional(String id) {
+        return CompletableFuture.completedFuture(Optional.ofNullable(store.get(id))); }
     public CompletableFuture<Boolean> delete(String id) {
         store.remove(id);
         return CompletableFuture.completedFuture(true);
@@ -38,7 +40,8 @@ public abstract class ControllerUsingMap<T> {
     public CompletableFuture<T> createWithId(String id) {
         return wrap(id, () -> {
             T prototype = prototype(id);
-            store.put(id, prototype); });
+            store.put(id, prototype);
+        });
     }
     public CompletableFuture<IdAndValue<T>> createWithoutId(T t) {
         String id = store.size() + "";
@@ -47,7 +50,8 @@ public abstract class ControllerUsingMap<T> {
     }
 
     public T createWithoutIdRequestFrom(ServiceRequest serviceRequest) {
-        return prototype(Integer.toString(store.size())); }
+        return prototype(Integer.toString(store.size()));
+    }
 
 
 }

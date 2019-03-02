@@ -27,5 +27,5 @@ class ResourceEndPoint< Entity extends IXingYiResource, Request, Result> impleme
                 apply(serviceRequest);
     }
 
-    @Override public List<MethodAndPath> description() { return acceptor.description(); }
+    @Override public List<MethodPathAndDescription> description() { return acceptor.description(); }
 }

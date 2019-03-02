@@ -24,6 +24,14 @@ public class Optionals {
         });
         return result;
     }
+    public static <T, T1> List<T1> flatMapif(Optional<T> optT, boolean b, Function<T, List<T1>> fn) {
+        List<T1> result = new ArrayList<>();
+        if (b) optT.ifPresent(t -> {
+            for (T1 t1 : fn.apply(t))
+                result.add(t1);
+        });
+        return result;
+    }
 
     public static <T, T1> T1 fold(Optional<T> opt, Supplier<T1> notIn, Function<T, T1> in) {
         if (opt.isEmpty()) return notIn.get();

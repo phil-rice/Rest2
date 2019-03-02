@@ -1,6 +1,5 @@
 package one.xingyi.core.endpoints;
 
-import lombok.RequiredArgsConstructor;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.utils.Optionals;
 import one.xingyi.core.utils.Strings;
@@ -12,16 +11,16 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface IResourceEndpointAcceptor<From> extends Function<ServiceRequest, Optional<From>>, MethodAndPathDescription {
-    static <From> IResourceEndpointAcceptor<From> apply(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
+    static <From> IResourceEndpointAcceptor<From> apply(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn, String description) {
 //        Function<String, Optional<String>> ripper = Strings.ripIdFromPath(templatedPath.replace("{host}", ""));
-        return new ResourceWithFromEndpointAcceptor<>(method, templatedPath, fromFn);
+        return new ResourceWithFromEndpointAcceptor<>(method, templatedPath, fromFn, description);
     }
 
-    static IResourceEndpointAcceptor<SuccessfulMatch> apply(String method, String templatedPath) {
-        return new ResourceEndpointNoFromAcceptor(method, templatedPath);
+    static IResourceEndpointAcceptor<SuccessfulMatch> apply(String method, String templatedPath, String description) {
+        return new ResourceEndpointNoFromAcceptor(method, templatedPath, description);
     }
-    static <Req> IResourceEndpointAcceptor<Req> create(String method, String path, Function<ServiceRequest, Req> reqFn) {
-        return new ResourceEndpointFnFromAcceptor(method, path, reqFn);
+    static <Req> IResourceEndpointAcceptor<Req> create(String method, String path, Function<ServiceRequest, Req> reqFn, String description) {
+        return new ResourceEndpointFnFromAcceptor(method, path, reqFn, description);
     }
 
     String method();
@@ -37,12 +36,14 @@ class ResourceEndpointFnFromAcceptor<From> implements IResourceEndpointAcceptor<
     final String method;
     final String path;
     final Function<ServiceRequest, From> reqFn;
-     final String templatedPath;
-    public ResourceEndpointFnFromAcceptor(String method, String templatedPath, Function<ServiceRequest, From> reqFn) {
+    final String description;
+    final String templatedPath;
+    public ResourceEndpointFnFromAcceptor(String method, String templatedPath, Function<ServiceRequest, From> reqFn, String description) {
         this.method = method;
         this.templatedPath = templatedPath;
         this.path = templatedPath.replace("{host}", "");
         this.reqFn = reqFn;
+        this.description = description;
     }
     @Override public String method() { return method; }
     @Override public String templatedPath() { return templatedPath; }
@@ -52,7 +53,7 @@ class ResourceEndpointFnFromAcceptor<From> implements IResourceEndpointAcceptor<
         else
             return Optional.empty();
     }
-    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, templatedPath)); }
+    @Override public List<MethodPathAndDescription> description() { return List.of(new MethodPathAndDescription(method, templatedPath, description)); }
 }
 
 class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAcceptor<From> {
@@ -61,12 +62,14 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
     final String templatedPath;
     final Function<String, Optional<String>> ripper;
     final BiFunction<ServiceRequest, String, From> fromFn;
+    private String description;
 
-    public ResourceWithFromEndpointAcceptor(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn) {
+    public ResourceWithFromEndpointAcceptor(String method, String templatedPath, BiFunction<ServiceRequest, String, From> fromFn, String description) {
         this.method = method;
         this.templatedPath = templatedPath;
         this.ripper = Strings.ripIdFromPath(templatedPath.replace("{host}", ""));
         this.fromFn = fromFn;
+        this.description = description;
     }
     @Override public String method() { return method; }
     @Override public String templatedPath() { return templatedPath; }
@@ -74,19 +77,21 @@ class ResourceWithFromEndpointAcceptor<From> implements IResourceEndpointAccepto
         if (!serviceRequest.method.equalsIgnoreCase(method)) return Optional.empty();
         return ripper.apply(serviceRequest.uri.getPath()).map(id -> fromFn.apply(serviceRequest, id));
     }
-    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, templatedPath)); }
+    @Override public List<MethodPathAndDescription> description() { return List.of(new MethodPathAndDescription(method, templatedPath, description)); }
 }
 
 class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<SuccessfulMatch> {
 
     final String method;
     final String path;
+    private String description;
     private final String originalPath;
 
-    public ResourceEndpointNoFromAcceptor(String method, String path) {
+    public ResourceEndpointNoFromAcceptor(String method, String path, String description) {
         this.method = method;
         this.originalPath = path;
         this.path = path.replace("{host}", "");
+        this.description = description;
     }
     @Override public String method() { return method; }
     @Override public String templatedPath() { return path; }
@@ -95,6 +100,6 @@ class ResourceEndpointNoFromAcceptor implements IResourceEndpointAcceptor<Succes
         if (!serviceRequest.uri.getPath().equalsIgnoreCase(path)) return Optional.empty();
         return SuccessfulMatch.optMatch;
     }
-    @Override public List<MethodAndPath> description() { return List.of(new MethodAndPath(method, originalPath)); }
+    @Override public List<MethodPathAndDescription> description() { return List.of(new MethodPathAndDescription(method, originalPath, description)); }
 }
 

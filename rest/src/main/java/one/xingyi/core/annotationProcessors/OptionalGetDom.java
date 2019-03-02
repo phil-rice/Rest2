@@ -5,5 +5,5 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class GetDom {
+public class OptionalGetDom {
 }

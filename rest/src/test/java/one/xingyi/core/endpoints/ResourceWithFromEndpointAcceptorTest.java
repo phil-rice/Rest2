@@ -9,7 +9,7 @@ import static one.xingyi.core.http.ServiceRequest.sr;
 import static org.junit.Assert.*;
 public class ResourceWithFromEndpointAcceptorTest implements FunctionFixture {
 
-    ResourceWithFromEndpointAcceptor<String> acceptor = new ResourceWithFromEndpointAcceptor<>("someMethod", "/somePath/{id}", (sr, s) -> sr.uri + ":" + s);
+    ResourceWithFromEndpointAcceptor<String> acceptor = new ResourceWithFromEndpointAcceptor<>("someMethod", "/somePath/{id}", (sr, s) -> sr.uri + ":" + s,"test");
 
     @Test
     public void testAccessors() {

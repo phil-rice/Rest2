@@ -71,8 +71,8 @@ public class TrafficLightTest {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
             checkSr(server, 200, "{'id':'someId','color':'red','location':'someLocation','_links':[{'_self':'/lights/someId'},{'orange':'{host}/lights/{id}/orange'}]}",
-                    server.getTrafficLights().apply(sr("get", "/lights/someId")).get().get());
-            checkSrNotFound(server.getTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
+                    server.getOptionalTrafficLights().apply(sr("get", "/lights/someId")).get().get());
+            checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }
     @Test
@@ -80,7 +80,7 @@ public class TrafficLightTest {
         setup((controller, server, service) -> {
             populate(controller, "someId", "red", "someLocation");
             checkSr(server, 200, "{'id':'someId','color':'red','location':'someLocation','_links':[{'_self':'/lights/someId'},{'orange':'{host}/lights/{id}/orange'}]}", server.endpoint().apply(sr("get", "/lights/someId")).get().get());
-            checkSrNotFound(server.getTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
+            checkSrNotFound(server.getOptionalTrafficLights().apply(sr("get", "/lights/someNotInId")).get().get());
         });
     }
     @Test

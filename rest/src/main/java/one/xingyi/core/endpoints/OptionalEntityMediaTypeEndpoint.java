@@ -20,7 +20,7 @@ public class OptionalEntityMediaTypeEndpoint< Request, Entity extends IXingYiRes
     final IMediaTypeServerDefn<Entity> mediaType;
     final Function<Entity, String> stateFn;
 
-    @Override public List<MethodAndPath> description() { return acceptor.description(); }
+    @Override public List<MethodPathAndDescription> description() { return acceptor.description(); }
 
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
         return Optionals.flip(acceptor.apply(serviceRequest).map(request -> fn.apply(request).thenApply(makeServiceResponse(serviceRequest))));

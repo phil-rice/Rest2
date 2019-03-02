@@ -30,33 +30,33 @@ class MediaTypeResourceEndpoints<Entity extends IXingYiResource> implements IRes
 
     @Override public EndPoint put(BiFunction<ServiceRequest, String, IdAndValue<Entity>> fromFn, Function<IdAndValue<Entity>, CompletableFuture<Entity>> fn) {
         return new EntityMediaTypeEndpoint<IdAndValue<Entity>, Entity>(
-                IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", bookmarkCodeAndUrlPattern.urlPattern, fromFn),
+                IResourceEndpointAcceptor.<IdAndValue<Entity>>apply("put", bookmarkCodeAndUrlPattern.urlPattern, fromFn, MediaTypeResourceEndpoints.class.getSimpleName() +"/put"),
                 fn, protocol, 200, mediaTypeServerDefn, stateFn);
     }
     @Override public EndPoint getOptional(Function<String, CompletableFuture<Optional<Entity>>> fn) {
-        return new OptionalEntityMediaTypeEndpoint<>(IResourceEndpointAcceptor.<String>apply("get", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s),
+        return new OptionalEntityMediaTypeEndpoint<>(IResourceEndpointAcceptor.<String>apply("get", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s, MediaTypeResourceEndpoints.class.getSimpleName() +"/getOptional"),
                 fn, protocol, 200, mediaTypeServerDefn, stateFn);
     }
     @Override public EndPoint get(Function<String, CompletableFuture<Entity>> fn) {
-        return new EntityMediaTypeEndpoint<>(IResourceEndpointAcceptor.<String>apply("get", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s),
+        return new EntityMediaTypeEndpoint<>(IResourceEndpointAcceptor.<String>apply("get", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s, MediaTypeResourceEndpoints.class.getSimpleName() +"/get"),
                 fn, protocol, 200, mediaTypeServerDefn, stateFn);
     }
     @Override public EndPoint delete(Function<String, CompletableFuture<Boolean>> fn) {
-        return IResourceEndPoint.create(IResourceEndpointAcceptor.<String>apply("delete", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s),
+        return IResourceEndPoint.create(IResourceEndpointAcceptor.<String>apply("delete", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s, MediaTypeResourceEndpoints.class.getSimpleName() +"/delete"),
                 fn, EndpointResult.<Boolean>createForNonEntity(200, r -> r.toString()));
     }
     @Override public EndPoint createWithId(Function<String, CompletableFuture<Entity>> fn) {
-        return new EntityMediaTypeEndpoint<>(IResourceEndpointAcceptor.<String>apply("post", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s),
+        return new EntityMediaTypeEndpoint<>(IResourceEndpointAcceptor.<String>apply("post", bookmarkCodeAndUrlPattern.urlPattern, (sr, s) -> s, MediaTypeResourceEndpoints.class.getSimpleName() +"/createWithId"),
                 fn, protocol, 200, mediaTypeServerDefn, stateFn);
 
     }
     @Override public EndPoint createWithoutId(String path, Function<ServiceRequest, Entity> fromFn, Function<Entity, CompletableFuture<IdAndValue<Entity>>> createFn) {
-        return new IdAndEntityMediaTypeEndpoint<Entity, Entity>(IResourceEndpointAcceptor.<Entity>create("post", path, fromFn),
+        return new IdAndEntityMediaTypeEndpoint<Entity, Entity>(IResourceEndpointAcceptor.<Entity>create("post", path, fromFn, MediaTypeResourceEndpoints.class.getSimpleName() +"/createWithoutId"),
                 createFn, protocol, 201, mediaTypeServerDefn, stateFn);
     }
     @Override public EndPoint post(String path, List<String> validStates, Function<String, CompletableFuture<Entity>> postFn) {
         return new EntityMediaTypeEndpoint<String, Entity>(
-                IResourceEndpointAcceptor.<String>apply("post", path, (sr, s) -> s),
+                IResourceEndpointAcceptor.<String>apply("post", path, (sr, s) -> s, MediaTypeResourceEndpoints.class.getSimpleName() +"/post"),
                 postFn, protocol, 200, mediaTypeServerDefn, stateFn);
     }
 }

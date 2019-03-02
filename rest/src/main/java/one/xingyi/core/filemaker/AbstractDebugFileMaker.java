@@ -53,6 +53,7 @@ public class AbstractDebugFileMaker {
     List<String> actionsDomInfo(ActionsDom actionsDom) {
         return List.of(
                 "Get            " + actionsDom.getDom,
+                "optionalGet    " + actionsDom.optionalGetDom,
                 "Put            " + actionsDom.putDom,
                 "Create         " + actionsDom.createDom,
                 "CreateNoId     " + actionsDom.createWithoutIdDom,

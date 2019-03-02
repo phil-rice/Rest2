@@ -22,7 +22,8 @@ public class ServerControllerFileMaker implements IFileMaker<ResourceDom> {
     List<String> addFromActionsDom(String result, ActionsDom actionsDom) {
         return Lists.append(
                 Optionals.toList(actionsDom.putDom, dom -> "" + monadDefn.simpleClassName() + "<" + result + "> put(IdAndValue<" + result + "> idAnd" + result + ");"),
-                Optionals.toList(actionsDom.getDom, dom -> dom.mustExist ? "" + monadDefn.simpleClassName() + "<" + result + "> get(String id);" : "" + monadDefn.simpleClassName() + "<Optional<" + result + ">> getOptional(String id);"),
+                Optionals.toList(actionsDom.getDom, dom -> monadDefn.simpleClassName() + "<" + result + "> get(String id);"),
+                Optionals.toList(actionsDom.optionalGetDom, dom -> monadDefn.simpleClassName() + "<Optional<" + result + ">> getOptional(String id);"),
                 Optionals.toList(actionsDom.deleteDom, dom -> "" + monadDefn.simpleClassName() + "<Boolean> delete(String id);"),
                 Optionals.toList(actionsDom.createDom, dom -> "" + monadDefn.simpleClassName() + "<" + result + "> createWithId(String id);"),
                 Optionals.toList(actionsDom.createWithoutIdDom, dom -> "" + monadDefn.simpleClassName() + "<IdAndValue<" + result + ">> createWithoutId(" + result + " value);"),

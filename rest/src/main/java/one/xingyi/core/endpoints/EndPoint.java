@@ -4,13 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.http.ServiceRequest;
 import one.xingyi.core.http.ServiceResponse;
-import one.xingyi.core.javascript.JavascriptDetailsToString;
-import one.xingyi.core.javascript.JavascriptStore;
-import one.xingyi.core.marshelling.ContextForJson;
-import one.xingyi.core.marshelling.HasJsonWithLinks;
 import one.xingyi.core.marshelling.IXingYiResponseSplitter;
-import one.xingyi.core.marshelling.MakesFromJson;
-import one.xingyi.core.sdk.IXingYiResource;
 import one.xingyi.core.utils.*;
 
 import java.util.List;
@@ -18,10 +12,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Optional<ServiceResponse>>>, MethodAndPathDescription {
-    List<MethodAndPath> description();
+    List<MethodPathAndDescription> description();
 
 
     static Function<ServiceRequest, String> defaultNotFound(EndPoint endPoint) {
@@ -58,7 +51,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
     static <J> EndPoint javascript(EndpointContext<J> context, String prefix) {
         String javascript = context.javascriptDetailsToString.apply(context.javascriptStore.find(List.of()));
         DigestAndString digestAndString = Digestor.digestor().apply(javascript);
-        return new StaticEndpoint(EndpointAcceptor0.exact("get", prefix + "/" + digestAndString.digest),
+        return new StaticEndpoint(EndpointAcceptor0.exact("get", prefix + "/" + digestAndString.digest, "javascript endpoint"),
                 new ServiceResponse(200, digestAndString.string, List.of()));
     }
 
@@ -79,7 +72,7 @@ public interface EndPoint extends Function<ServiceRequest, CompletableFuture<Opt
 @ToString
 class PrintlnEndpoint implements EndPoint {
     final EndPoint endPoint;
-    @Override public List<MethodAndPath> description() {
+    @Override public List<MethodPathAndDescription> description() {
         return endPoint.description();
     }
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest sr) {
@@ -101,7 +94,7 @@ class PrintlnEndpoint implements EndPoint {
 @ToString
 class PrintlnDetailsEndpoint implements EndPoint {
     final EndPoint endPoint;
-    @Override public List<MethodAndPath> description() {
+    @Override public List<MethodPathAndDescription> description() {
         return endPoint.description();
     }
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest sr) {
@@ -120,7 +113,7 @@ class PrintlnDetailsEndpoint implements EndPoint {
 class StaticEndpoint implements EndPoint {
     final EndpointAcceptor0 acceptor;
     final ServiceResponse serviceResponse;
-    @Override public List<MethodAndPath> description() { return acceptor.description(); }
+    @Override public List<MethodPathAndDescription> description() { return acceptor.description(); }
     @Override public CompletableFuture<Optional<ServiceResponse>> apply(ServiceRequest serviceRequest) {
 
         return CompletableFuture.completedFuture(Optionals.from(acceptor.apply(serviceRequest), () -> serviceResponse));

@@ -5,11 +5,8 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference1.telephone.ITelephoneNumberDefn;
 
 @Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
-@Get(mustExist = false)
-@Delete
-@Put
+@Get @OptionalGet @Delete @Put @Create
 @CreateWithoutId(url = "{host}/person")
-@Create
 @Prototype("prototype")
 public interface IPersonDefn extends IXingYiResourceDefn {
     String name();
