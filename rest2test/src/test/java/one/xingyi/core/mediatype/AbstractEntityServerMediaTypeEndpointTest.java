@@ -28,7 +28,7 @@ public abstract class AbstractEntityServerMediaTypeEndpointTest<M extends IXingY
     private EndpointContext<Object> context = EndpointConfig.defaultConfig(new Json()).from(List.of(PersonCompanion.companion));
 //    private IResourceEndpointAcceptor<String> acceptor = IResourceEndpointAcceptor.apply("get", "/person/{id}", (sr, s) -> sr.path + ":" + s);
 
-//    protected EndPoint endPoint(Function<String, CompletableFuture<Person>> fn) {return serverMediaType().<Object, String>entityEndpoint(context, acceptor, 202, fn, p -> "");}
+//    protected EndPoint endPoint(Function<String, CompletableFuture<Person>> viewToViewNames) {return serverMediaType().<Object, String>entityEndpoint(context, acceptor, 202, viewToViewNames, p -> "");}
 
     protected IResourceEndpoints<Person> endpoints = serverMediaType().endpoints("http", PersonCompanion.companion.bookmarkAndUrl(), p -> "");
 

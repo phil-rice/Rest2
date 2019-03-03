@@ -3,9 +3,8 @@ package one.xingyi.reference4.person;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
-import one.xingyi.reference4.address.IAddressDefn;
 import one.xingyi.reference4.address.IAddressLine12ViewDefn;
-import one.xingyi.reference4.telephone.ITelephoneNumberDefn;
+import one.xingyi.reference4.telephone.ITelephoneNumberViewDefn;
 
 @Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
 @OptionalGet
@@ -17,7 +16,7 @@ import one.xingyi.reference4.telephone.ITelephoneNumberDefn;
 public interface IPersonDefn extends IXingYiResourceDefn {
     @Field(readOnly = true)
     String name();
-    ITelephoneNumberDefn telephone();
+    ITelephoneNumberViewDefn telephone();
     Integer age();
 
     //Basically gone back to model 1 but need to support the legacy
@@ -33,5 +32,5 @@ public interface IPersonDefn extends IXingYiResourceDefn {
 
     @Deprecated
     @Field(javascript = "return itemAsListLens();", lensPath = "<itemAsList>")
-    IResourceList<IAddressDefn> addresses();
+    IResourceList<IAddressLine12ViewDefn> addresses();
 }

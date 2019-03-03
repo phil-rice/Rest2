@@ -12,9 +12,11 @@ import one.xingyi.core.validation.Result;
 
 import javax.lang.model.element.Element;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-public interface IElementToFieldDom extends Function<Element, Result<ElementFail, FieldDom>> {
+public interface IElementToFieldDom extends BiFunction<Element, IViewDefnNameToViewName, Result<ElementFail, FieldDom>> {
     static IElementToFieldDom forEntity(LoggerAdapter loggerAdapter, ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToFieldDomForEntity(loggerAdapter, bundle.serverNames(), entityNames);}
     static IElementToFieldDom forView(LoggerAdapter loggerAdapter, ElementToBundle bundle, ViewNames viewNames) {return new SimpleElementToFieldDomForViews(loggerAdapter, bundle.serverNames(), viewNames);}
 
@@ -26,10 +28,10 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
     final IServerNames serverNames;
     abstract String findLensName(String fieldName, String annotationField);
     abstract Result<String, String> findLensPath(String fieldName, String annotationField);
-    @Override public Result<ElementFail, FieldDom> apply(Element element) {
+    @Override public Result<ElementFail, FieldDom> apply(Element element, IViewDefnNameToViewName viewNamesMap) {
         String fieldType = element.asType().toString();
         String fieldName = element.getSimpleName().toString();
-        Result<String, TypeDom> typeDom = TypeDom.create(serverNames, fieldType);
+        Result<String, TypeDom> typeDom = TypeDom.create(serverNames, fieldType, viewNamesMap);
         return ElementFail.lift(element, typeDom.flatMap(td -> {
             Field annotation = element.getAnnotation(Field.class);
 

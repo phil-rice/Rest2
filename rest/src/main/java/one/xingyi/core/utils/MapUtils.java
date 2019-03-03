@@ -1,5 +1,9 @@
 package one.xingyi.core.utils;
+import one.xingyi.core.names.ViewNames;
+
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 public class MapUtils {
     @SafeVarargs
     public static <K, V> Map<K, V> append(Map<K, V>... maps) {
@@ -24,4 +28,9 @@ public class MapUtils {
         list.add(v);
     }
 
+    public static <K,V> void addNotAllowingDuplicates(HashMap<K,V> map, K k, V v, BiFunction<K,V,String> error) {
+     if (map.containsKey(k))
+         throw new IllegalArgumentException(error.apply(k,map.get(k)));
+     map.put(k, v);
+    }
 }

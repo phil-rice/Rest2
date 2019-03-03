@@ -3,9 +3,8 @@ package one.xingyi.reference3.person;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
-import one.xingyi.reference3.address.IAddressDefn;
 import one.xingyi.reference3.address.IAddressLine12ViewDefn;
-import one.xingyi.reference3.telephone.ITelephoneNumberDefn;
+import one.xingyi.reference3.telephone.ITelephoneNumberViewDefn;
 
 @Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
 @OptionalGet
@@ -19,8 +18,8 @@ public interface IPersonDefn extends IXingYiResourceDefn {
     String name();
     Integer age();
 
-    IResourceList<IAddressDefn> addresses();
-    ITelephoneNumberDefn telephone();
+    IResourceList<IAddressLine12ViewDefn> addresses();
+    ITelephoneNumberViewDefn telephone();
 
     //==========
 

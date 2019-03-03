@@ -95,7 +95,7 @@ public class TrafficLightTest {
         setup((controller, server, service) -> {
 //            System.out.println(Lists.join(server.endpoint().description(),"\n"));
             Function<ColourView, String> fn = c -> c.id() + c.color();
-//            assertEquals("1red", ColourView.create(service, "1").thenApply(fn).get());
+//            assertEquals("1red", ColourView.create(service, "1").thenApply(viewToViewNames).get());
             assertEquals("3red", ColourView.create(service, "3").thenApply(fn).get());
             assertEquals("2red", ColourView.create(service, "2").thenApply(fn).get());
 

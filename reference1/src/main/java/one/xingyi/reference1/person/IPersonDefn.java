@@ -3,6 +3,7 @@ package one.xingyi.reference1.person;
 import one.xingyi.core.annotations.*;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference1.telephone.ITelephoneNumberDefn;
+import one.xingyi.reference1.telephone.ITelephoneNumberViewDefn;
 
 @Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
 @Get @OptionalGet @Delete @Put @Create
@@ -13,5 +14,5 @@ public interface IPersonDefn extends IXingYiResourceDefn {
     Integer age();
     String line1();
     String line2();
-    ITelephoneNumberDefn telephone();
+    ITelephoneNumberViewDefn telephone();
 }

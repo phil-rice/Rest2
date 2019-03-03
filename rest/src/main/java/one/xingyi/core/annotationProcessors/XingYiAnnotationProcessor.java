@@ -35,6 +35,7 @@ import one.xingyi.core.validation.Valid;
 @RequiredArgsConstructor
 public class XingYiAnnotationProcessor extends AbstractProcessor {
     final IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
+    final IElementsToMapOfViewDefnToView elementsToMapOfViewDefnToView = IElementsToMapOfViewDefnToView.simple(names);
 
     private Types typeUtils;
     private Elements elementUtils;
@@ -77,15 +78,15 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         return elements;
     }
 
-    private List<ResourceDom> makeResourceDomResults(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle) {
+    private List<ResourceDom> makeResourceDomResults(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle, IViewDefnNameToViewName viewNamesMap) {
         List<TypeElement> elements = getCheckedElements(Resource.class, env, log, initialResourceElementChecks);
-        return log.logFailuresAndReturnSuccesses(Lists.map(elements, e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply((TypeElement) e)));
+        return log.logFailuresAndReturnSuccesses(Lists.map(elements, e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply(e, viewNamesMap)));
     }
 
-    private List<ViewDom> makeViewDoms(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle) {
+    private List<ViewDom> makeViewDoms(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle, IViewDefnNameToViewName viewNamesMap) {
         List<TypeElement> viewElements = getCheckedElements(View.class, env, log, initialViewElementChecks);
         return log.logFailuresAndReturnSuccesses(Lists.map(viewElements,
-                v -> bundle.elementToViewNames().apply((TypeElement) v).flatMap(vn -> bundle.elementToViewDom(vn).apply((TypeElement) v))));
+                v -> bundle.elementToViewNames().apply(v).flatMap(vn -> bundle.elementToViewDom(vn).apply(v,viewNamesMap))));
     }
     Result<String, FileDefn> makeServer(ServerDom serverDom) {
         return new ServerFileMaker().apply(serverDom);
@@ -100,7 +101,9 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         ElementToBundle bundle = ElementToBundle.simple(log);
         log.info("Processing XingYi Annotations");
         try {
-            CodeDom codeDom = new CodeDom(monadDefn, makeResourceDomResults(env, log, bundle), makeViewDoms(env, log, bundle));
+            IViewDefnNameToViewName viewNamesMap = elementsToMapOfViewDefnToView.apply(Sets.sortedList((Set<TypeElement>) env.getElementsAnnotatedWith(View.class), comparator()));
+
+            CodeDom codeDom = new CodeDom(monadDefn, makeResourceDomResults(env, log, bundle,viewNamesMap), makeViewDoms(env, log, bundle,viewNamesMap));
             log.info("Made codeDom: " + codeDom);
             List<ServerDom> serverDoms = log.logFailuresAndReturnSuccesses(Lists.map(Sets.toList(env.getElementsAnnotatedWith(Server.class)), e1 -> ServerDom.create(names, e1, codeDom)));
 

@@ -1,10 +1,9 @@
 package one.xingyi.core.annotationProcessors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import one.xingyi.core.names.*;
 import one.xingyi.core.utils.LoggerAdapter;
 
-import java.lang.annotation.Repeatable;
+import java.util.Map;
 public interface ElementToBundle {
     public static ElementToBundle simple(LoggerAdapter loggerAdapter) {return new SimpleElementToBundle(loggerAdapter);}
     IServerNames serverNames();
