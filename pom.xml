@@ -113,7 +113,7 @@
     <scm>
         <url>https://github.com/phil-rice/Rest2</url>
         <connection>scm:git:git//github.com:phil-rice/Rest2.git</connection>
-      <tag>HEAD</tag>
+      <tag>rest2-1.0</tag>
   </scm>
     <profiles>
         <profile>
