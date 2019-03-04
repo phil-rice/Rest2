@@ -1,1 +1,1 @@
-mvn clean -Prelease deploy
+mvn deploy -Prelease -Darguments=-Dgpg.passphrase=thephrase
