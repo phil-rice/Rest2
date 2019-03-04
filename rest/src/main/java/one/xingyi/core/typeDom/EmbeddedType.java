@@ -3,6 +3,8 @@ package one.xingyi.core.typeDom;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.core.codeDom.FieldDom;
+import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Strings;
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class EmbeddedType implements NonPrimitiveTypeDom {
     @Override public TypeDom nested() { return nested; }
     @Override public boolean primitive() { return false; }
     @Override public String entityNameForLens() { return nested.entityNameForLens(); }
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) { return "Cannot handle Embedded yet"; }
     @Override public String forFromJson(String fieldName) {
         return null; //TODO
     }

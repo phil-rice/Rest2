@@ -4,6 +4,7 @@ package one.xingyi.core.typeDom;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Strings;
 @EqualsAndHashCode
@@ -17,6 +18,9 @@ public class PrimitiveType implements TypeDom {
     @Override public TypeDom nested() { return this; }
     @Override public boolean primitive() { return true; }
     @Override public String entityNameForLens() { return typeName.className; }
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
+        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name + "Lens(){ return xingYi().stringLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
+    }
     @Override public String forToJson(String fieldName, boolean templated) {
         if (templated && typeName.className.equalsIgnoreCase("String"))
             return "context.template(" + fieldName + ")";

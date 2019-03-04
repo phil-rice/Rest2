@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.client.IResourceList;
+import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Strings;
 
@@ -22,6 +23,10 @@ public class ListType implements NonPrimitiveTypeDom {
     @Override public String fullTypeName() { return fullTypeName; }
     @Override public boolean primitive() { return false; }
     @Override public String entityNameForLens() { return nested.entityNameForLens(); }
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
+        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
+                viewDom.name + "Lens(){return xingYi().listLens(" + companion.asString() + ".companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}";
+    }
     @Override public String forFromJson(String fieldName) {
         return "IResourceList.fromList(Lists.map(jsonParser.asList(j, " + Strings.quote(fieldName) + "), child ->" + companionName.asString() + ".companion.fromJson(jsonParser, child)))";
     }

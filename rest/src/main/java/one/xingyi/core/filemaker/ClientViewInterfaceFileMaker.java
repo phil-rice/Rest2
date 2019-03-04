@@ -26,7 +26,8 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
     final MonadDefn monadDefn;
 
     @Override public Result<String, FileDefn> apply(ViewDomAndItsResourceDom viewDomAndItsResourceDom) {
-        if (viewDomAndItsResourceDom.entityDom.isEmpty()) return Result.failwith("could not create client view interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
+        if (viewDomAndItsResourceDom.entityDom.isEmpty())
+            return Result.failwith("could not create client view interface. Perhaps this is an incremental compilation issue and you need to do a full compile");
         ViewDom viewDom = viewDomAndItsResourceDom.viewDom;
         ResourceDom resourceDom = viewDomAndItsResourceDom.entityDom.get();
         String companionName = viewDom.viewNames.clientCompanion.asString() + ".companion";
@@ -58,28 +59,14 @@ public class ClientViewInterfaceFileMaker implements IFileMaker<ViewDomAndItsRes
         List<String> result = new ArrayList<>();
         result.add("//View" + viewDomAndResourceDomField.viewDomField);
         result.add("//Entity" + viewDomAndResourceDomField.entityDomField);
+
         String lensName = entityDom.map(fd -> fd.lensName).orElse("not defined. Is this because of incremental compilation?");
-
-        //TODO wow... really ugly
-        if (viewDom.typeDom.primitive()) {
-            result.add("default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name +
-                    "Lens(){ return xingYi().stringLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}");
-        } else if (viewDom.typeDom instanceof ListType) {
-            result.add("//" + viewDom.typeDom);
-            result.add("default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){return xingYi().listLens(" + companion.asString() + ".companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
-
-        } else {
-            result.add("default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                    viewDom.name + "Lens(){return xingYi().objectLens(" + companion.asString() + ".companion, " + viewDom.typeDom.nested().viewCompanion() + ".companion," + Strings.quote(lensName) + ");}");
-
-        }
+        result.add(viewDom.typeDom.makeLens(companion, interfaceName, viewDom, lensName));
         result.add("default public " + viewDom.typeDom.forView() + " " + viewDom.name + "(){ return " + viewDom.name + "Lens().get(this);};");
         if (!viewDom.readOnly && entityDom.map(f -> !f.readOnly).orElse(true)) {
             result.add("default public " + interfaceName + " with" + viewDom.name + "(" +
                     viewDom.typeDom.forView() + " " + viewDom.name + "){ return " + viewDom.name + "Lens().set(this," + viewDom.name + ");}");
-        }
-        return result;
+        } return result;
     }
 
     List<String> allFieldAccessorsForView(PackageAndClassName companion, String interfaceName, List<ViewDomAndResourceDomField> fields) {

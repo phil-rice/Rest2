@@ -2,6 +2,7 @@ package one.xingyi.core.typeDom;
 import one.xingyi.core.annotationProcessors.IViewDefnNameToViewName;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.client.ISimpleList;
+import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.embedded.Embedded;
 import one.xingyi.core.names.EntityNames;
@@ -41,6 +42,7 @@ public interface TypeDom {
     TypeDom nested();
     boolean primitive();
     String entityNameForLens();
+    String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName);
 
     default String forToJson(String fieldName, boolean templated) {return fieldName;}
     String forFromJson(String fieldName);
