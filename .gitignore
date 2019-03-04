@@ -1,6 +1,7 @@
 target/
 logs/
 !.mvn/wrapper/maven-wrapper.jar
+pom.xml.releaseBackup
 
 ### STS ###
 .apt_generated
