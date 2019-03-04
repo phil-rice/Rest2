@@ -36,6 +36,12 @@ public class LensStore<J> {
     public Lens<J, Integer> integerLens(String lensName) {
         return (Lens) Optional.ofNullable(map.get(lensName)).orElseThrow(illegallens(lensName));
     }
+    public Lens<J, Double> doubleLens(String lensName) {
+        return (Lens) Optional.ofNullable(map.get(lensName)).orElseThrow(illegallens(lensName));
+    }
+    public Lens<J, Boolean> booleanLens(String lensName) {
+        return (Lens) Optional.ofNullable(map.get(lensName)).orElseThrow(illegallens(lensName));
+    }
     public Lens<J, IResourceList<J>> listLens(String lensName) {
         return (Lens) Optional.ofNullable(map.get(lensName)).orElseThrow(illegallens(lensName));
     }

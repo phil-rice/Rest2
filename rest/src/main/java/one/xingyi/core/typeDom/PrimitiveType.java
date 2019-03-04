@@ -7,38 +7,85 @@ import lombok.ToString;
 import one.xingyi.core.codeDom.FieldDom;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Strings;
+
+@EqualsAndHashCode
+@ToString
+class StringPrimitiveType extends PrimitiveType {
+    public StringPrimitiveType() {
+        super(new PackageAndClassName(String.class.getName()));
+    }
+    @Override public String forToJson(String fieldName, boolean templated) {
+        if (templated)
+            return "context.template(" + fieldName + ")";
+        else
+            return fieldName;
+
+    }
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
+        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name + "Lens(){ return xingYi().stringLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
+    }
+    @Override public String forFromJson(String fieldName) {
+        return "jsonParser.asString(j, " + Strings.quote(fieldName) + ")";
+    }
+}
+@EqualsAndHashCode
+@ToString
+class DoublePrimitiveType extends PrimitiveType {
+    public DoublePrimitiveType() {
+        super(new PackageAndClassName(Double.class.getName()));
+    }
+    @Override public String forToJson(String fieldName, boolean templated) { return fieldName; }
+
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
+        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name + "Lens(){ return xingYi().doubleLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
+    }
+    @Override public String forFromJson(String fieldName) {
+        return "jsonParser.asDouble(j, " + Strings.quote(fieldName) + ")";
+    }
+}
+@EqualsAndHashCode
+@ToString
+class BooleanPrimitiveType extends PrimitiveType {
+    public BooleanPrimitiveType() {
+        super(new PackageAndClassName(Boolean.class.getName()));
+    }
+    @Override public String forToJson(String fieldName, boolean templated) { return fieldName; }
+
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
+        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name + "Lens(){ return xingYi().booleanLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
+    }
+    @Override public String forFromJson(String fieldName) {
+        return "jsonParser.asBoolean(j, " + Strings.quote(fieldName) + ")";
+    }
+}
+@EqualsAndHashCode
+@ToString
+class IntegerPrimitiveType extends PrimitiveType {
+    public IntegerPrimitiveType() {
+        super(new PackageAndClassName(Integer.class.getName()));
+    }
+    @Override public String forToJson(String fieldName, boolean templated) { return fieldName; }
+
+    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
+        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name + "Lens(){ return xingYi().integerLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
+    }
+    @Override public String forFromJson(String fieldName) {
+        return "jsonParser.asInt(j, " + Strings.quote(fieldName) + ")";
+    }
+}
+
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @ToString
-
-public class PrimitiveType implements TypeDom {
+abstract public class PrimitiveType implements TypeDom {
     final PackageAndClassName typeName;
 
     @Override public String fullTypeName() { return typeName.asString(); }
     @Override public TypeDom nested() { return this; }
     @Override public boolean primitive() { return true; }
     @Override public String entityNameForLens() { return typeName.className; }
-    @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
-        return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + "> " + viewDom.name + "Lens(){ return xingYi().stringLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
-    }
-    @Override public String forToJson(String fieldName, boolean templated) {
-        if (templated && typeName.className.equalsIgnoreCase("String"))
-            return "context.template(" + fieldName + ")";
-        else
-            return fieldName;
 
-    }
-    //TODO look at this and the above method. Need to move strings to their own type
-    @Override public String forFromJson(String fieldName) {
-        if (typeName.className.equalsIgnoreCase("String"))
-            return "jsonParser.asString(j, " + Strings.quote(fieldName) + ")";
-        if (typeName.className.equalsIgnoreCase("Integer"))
-            return "jsonParser.asInt(j, " + Strings.quote(fieldName) + ")";
-        else
-            throw new RuntimeException("Don't know how to parse primitive field " + fieldName + " of type" + typeName.asString());
-    }
     @Override public String lensDefn(String fieldName) { return fieldName + "/" + entityNameForLens(); }
     @Override public boolean isAssignableFrom(TypeDom other) { return other instanceof PrimitiveType && typeName.equals(((PrimitiveType) other).typeName); }
 
-    //TODO Split PrimitiveType
 }

@@ -1,10 +1,7 @@
 package one.xingyi.json;
 import lombok.val;
 import one.xingyi.core.client.IResourceList;
-import one.xingyi.core.marshelling.JsonObject;
-import one.xingyi.core.marshelling.JsonParser;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
-import one.xingyi.core.marshelling.JsonWriter;
 import one.xingyi.core.optics.Getter;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.core.optics.Setter;
@@ -32,6 +29,8 @@ public class Json implements JsonParserAndWriter<Object> {
         return o.toString();
     }
     @Override public int asInt(Object o) { return (Integer) o; }
+    @Override public boolean asBoolean(Object o) { return (Boolean) o; }
+    @Override public Double asDouble(Object o) { return (Double) o; }
     @Override public Object child(Object o, String name) {
         if (o instanceof Map) return (((Map) o).get(name));
         else return ((JSONObject) o).get(name);

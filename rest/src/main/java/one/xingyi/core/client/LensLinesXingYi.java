@@ -21,6 +21,18 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
         Lens<J, String> lens = lensStore.stringLens(name);
         return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
     }
+    @Override public Lens<View, Double> doubleLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        Lens<J, Double> lens = lensStore.doubleLens(name);
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
+    }
+    @Override public Lens<View, Integer> integerLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        Lens<J, Integer> lens = lensStore.integerLens(name);
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
+    }
+    @Override public Lens<View, Boolean> booleanLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        Lens<J, Boolean> lens = lensStore.booleanLens(name);
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
+    }
 
     @Override
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {

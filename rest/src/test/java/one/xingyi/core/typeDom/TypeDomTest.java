@@ -20,7 +20,7 @@ public class TypeDomTest implements ViewDefnNameToViewNamesFixture {
     PackageAndClassName pn(String s) {return new PackageAndClassName(s);}
 
     PackageAndClassName stringPn = pn(String.class.getName());
-    PrimitiveType stringPt = new PrimitiveType(stringPn);
+    PrimitiveType stringPt = new StringPrimitiveType();
 
 //    PackageAndClassName listStringPn = pn(lift(ISimpleList.class.getName(), String.class.getName()));
 //    ListType listStringPt = new ListType(listStringPn.asString(), stringPt,new PackageAndClassName("stringCompanion name... doesn't work"));
@@ -30,19 +30,19 @@ public class TypeDomTest implements ViewDefnNameToViewNamesFixture {
 
     PackageAndClassName intPn = pn(Integer.class.getName());
     PackageAndClassName listIntPn = pn(lift(IResourceList.class.getName(), Integer.class.getName()));
-    PrimitiveType intPt = new PrimitiveType(intPn);
+    PrimitiveType intPt = new IntegerPrimitiveType();
     //    ListType listIntPt = new ListType(listIntPn.asString(), intPt);
     PackageAndClassName embeddedIntPn = pn(lift(Embedded.class.getName(), Integer.class.getName()));
     EmbeddedType embeededIntPt = new EmbeddedType(embeddedIntPn.asString(), intPt);
 
     PackageAndClassName doublePn = pn(Double.class.getName());
     PackageAndClassName listDoublePn = pn(lift(IResourceList.class.getName(), Double.class.getName()));
-    PrimitiveType doublePt = new PrimitiveType(doublePn);
+    PrimitiveType doublePt = new DoublePrimitiveType();
 //    ListType listDoublePt = new ListType(listDoublePn.asString(), doublePt);
 
     PackageAndClassName booleanPn = pn(Boolean.class.getName());
     PackageAndClassName listBooleanPn = pn(lift(IResourceList.class.getName(), Boolean.class.getName()));
-    PrimitiveType booleanPt = new PrimitiveType(booleanPn);
+    PrimitiveType booleanPt = new BooleanPrimitiveType();
 //    ListType listBooleanPt = new ListType(listBooleanPn.asString(), booleanPt);
 
     @Test public void testPrimitives() {

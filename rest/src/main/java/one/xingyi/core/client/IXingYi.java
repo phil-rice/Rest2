@@ -17,15 +17,14 @@ import java.util.concurrent.Callable;
 //I tried to make the object a generic 'parser' but the impact was enormous, and there seemed to be little win
 public interface IXingYi<Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> {
     Object parse(String s);
-    Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name);
     IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker); //TODO Dog food this in the same way that we did with UrlPattern
 
-    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView>
-    objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
-
-    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>>
-    Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
-
+    Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name);
+    Lens<View, Double> doubleLens(IXingYiClientFactory<Entity, View> maker, String name);
+    Lens<View, Integer> integerLens(IXingYiClientFactory<Entity, View> maker, String name);
+    Lens<View, Boolean> booleanLens(IXingYiClientFactory<Entity, View> maker, String name);
+    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
+    <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
 }
 
@@ -65,8 +64,20 @@ class DefaultXingYi<Entity extends IXingYiClientResource, View extends IXingYiVi
     @Override public Object parse(String s) { return XingYiExecutionException.wrap("parse. Strings was \n" + s, javaScript, () -> inv.invokeFunction("parse", s)); }
 
     @Override public Lens<View, String> stringLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        Getter<View, String> getter = t -> XingYiExecutionException.wrap("stringLens.getEntity " + name, javaScript, () -> (String) inv.invokeFunction("getL", name, t.mirror()));
-        Setter<View, String> setter = (t, s) -> XingYiExecutionException.wrap("stringLens.set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
+        return primitiveLens(maker, name, "stringLens");
+    }
+    @Override public Lens<View, Integer> integerLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "integerLens");
+    }
+    @Override public Lens<View, Boolean> booleanLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "booleanLens");
+    }
+    @Override public Lens<View, Double> doubleLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "doubleLens");
+    }
+    public<T> Lens<View, T> primitiveLens(IXingYiClientFactory<Entity, View> maker, String name, String lensName) {
+        Getter<View, T> getter = t -> XingYiExecutionException.wrap(lensName + ".getEntity " + name, javaScript, () -> (T) inv.invokeFunction("getL", name, t.mirror()));
+        Setter<View, T> setter = (t, s) -> XingYiExecutionException.wrap(lensName + ".set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
     }
     @Override public IdAndValue getIdAndValue(Object mirror, IXingYiClientFactory<Entity, View> maker) {

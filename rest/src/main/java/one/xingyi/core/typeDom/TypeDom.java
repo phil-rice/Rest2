@@ -48,10 +48,10 @@ public interface TypeDom {
     String forFromJson(String fieldName);
     String lensDefn(String fieldName);
 
-    PartialFunction<String, Result<String, TypeDom>> fromPrimitive =
-            pf(fullTypeName -> primitives().contains(new PackageAndClassName(fullTypeName)), fullTypeName -> {
-                return Result.succeed(new PrimitiveType(new PackageAndClassName(fullTypeName)));
-            });
+    PartialFunction<String, Result<String, TypeDom>> fromString = pf(fullTypeName -> fullTypeName.equals(String.class.getName()), fullTypeName -> Result.succeed(new StringPrimitiveType()));
+    PartialFunction<String, Result<String, TypeDom>> fromInteger = pf(fullTypeName -> fullTypeName.equals(Integer.class.getName()) || fullTypeName.equals(int.class.getName()), fullTypeName -> Result.succeed(new IntegerPrimitiveType()));
+    PartialFunction<String, Result<String, TypeDom>> fromDouble = pf(fullTypeName -> fullTypeName.equals(Double.class.getName()) || fullTypeName.equals(double.class.getName()), fullTypeName -> Result.succeed(new DoublePrimitiveType()));
+    PartialFunction<String, Result<String, TypeDom>> fromBoolean = pf(fullTypeName -> fullTypeName.equals(Boolean.class.getName()) || fullTypeName.equals(boolean.class.getName()), fullTypeName -> Result.succeed(new BooleanPrimitiveType()));
 
 //    PartialFunction<String, Result<String, TypeDom>> fromSimpleList =
 //            pf(fullTypeName -> fullTypeName.startsWith(ISimpleList.class.getName()), fullTypeName -> {
@@ -96,7 +96,7 @@ public interface TypeDom {
 
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName, IViewDefnNameToViewName viewNamesMap) {
         String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);
-        PartialFunction<String, Result<String, TypeDom>> pf = chain(fromPrimitive, fromEmbedded(names, viewNamesMap), fromResourceList(names, viewNamesMap), fromView(viewNamesMap));
+        PartialFunction<String, Result<String, TypeDom>> pf = chain(fromString, fromInteger, fromBoolean, fromDouble, fromEmbedded(names, viewNamesMap), fromResourceList(names, viewNamesMap), fromView(viewNamesMap));
         return pf.orDefault(fullTypeName, () -> Result.failwith("Could not work out what type " + fullTypeName + " was. Known views are\n" + viewNamesMap.legalValues()));
     }
 
