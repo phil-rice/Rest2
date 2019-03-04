@@ -114,7 +114,7 @@
     </licenses>
     <scm>
         <url>https://github.com/phil-rice/Rest2</url>
-        <connection>scm:git@github.com:phil-rice/Rest2.git</connection>
+        <connection>scm:git:git//github.com:phil-rice/Rest2.git</connection>
     </scm>
     <profiles>
         <profile>
