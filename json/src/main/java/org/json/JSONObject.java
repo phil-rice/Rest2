@@ -2255,20 +2255,11 @@ public class JSONObject {
     /**
      * Make a pretty-printed JSON text of this JSONObject.
      *
-     * <p>If <code>indentFactor > 0</code> and the {@link JSONObject}
+     * <p>If <code>indentFactor> 0</code> and the {@link JSONObject}
      * has only one key, then the object will be output on a single line:
      * <pre>{@code {"key": 1}}</pre>
      *
-     * <p>If an object has 2 or more keys, then it will be output across
-     * multiple lines: <code><pre>{
-     *  "key1": 1,
-     *  "key2": "value 2",
-     *  "key3": 3
-     * }</pre></code>
-     * <p><b>
-     * Warning: This method assumes that the data structure is acyclical.
-     * </b>
-     *
+       *
      * @param indentFactor
      *            The number of spaces to add to each level of indentation.
      * @return a printable, displayable, portable, transmittable representation
@@ -2434,33 +2425,7 @@ public class JSONObject {
         }
     }
 
-    /**
-     * Write the contents of the JSONObject as JSON text to a writer.
-     *
-     * <p>If <code>indentFactor > 0</code> and the {@link JSONObject}
-     * has only one key, then the object will be output on a single line:
-     * <pre>{@code {"key": 1}}</pre>
-     *
-     * <p>If an object has 2 or more keys, then it will be output across
-     * multiple lines: <code><pre>{
-     *  "key1": 1,
-     *  "key2": "value 2",
-     *  "key3": 3
-     * }</pre></code>
-     * <p><b>
-     * Warning: This method assumes that the data structure is acyclical.
-     * </b>
-     *
-     * @param writer
-     *            Writes the serialized JSON
-     * @param indentFactor
-     *            The number of spaces to add to each level of indentation.
-     * @param indent
-     *            The indentation of the top level.
-     * @return The writer.
-     * @throws JSONException
-     */
-    public Writer write(Writer writer, int indentFactor, int indent)
+      public Writer write(Writer writer, int indentFactor, int indent)
             throws JSONException {
         try {
             boolean commanate = false;
