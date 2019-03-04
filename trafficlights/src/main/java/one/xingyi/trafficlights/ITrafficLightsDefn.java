@@ -3,16 +3,16 @@ import one.xingyi.core.annotations.*;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 
 
-@Resource(bookmark = "/lights", urlWithId = "{host}/lights/{id}")
+@Resource(bookmark = "/lights", rootUrl = "{host}/lights", urlWithId = "{host}/lights/{id}")
 @Delete
 @Get
 @OptionalGet
 @Put
-@CreateWithoutId(url = "{host}/lights")
+@CreateWithoutId
 @Create
-@PrototypeNoId(prototypeId = "prototype",url="{host}/lights")
+@PrototypeNoId(prototypeId = "prototype")
 public interface ITrafficLightsDefn extends IXingYiResourceDefn {
-//    @Field(readOnly = true)
+    //    @Field(readOnly = true)
     String id();
     String color();
     String location();

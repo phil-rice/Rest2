@@ -8,5 +8,4 @@ import java.lang.annotation.Target;
 // Need to keep them around for testing
 public @interface PrototypeNoId {
     String prototypeId();
-    String url();
 }

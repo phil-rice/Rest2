@@ -5,11 +5,11 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference2.address.IAddressLine12ViewDefn;
 import one.xingyi.reference2.telephone.ITelephoneNumberViewDefn;
 
-@Resource(bookmark = "/person", urlWithId = "{host}/person/{id}")
-@Get@OptionalGet
+@Resource(bookmark = "/person", rootUrl = "{host}/person", urlWithId = "{host}/person/{id}")
+@Get @OptionalGet
 @Delete
 @Put
-@CreateWithoutId(url = "{host}/person")
+@CreateWithoutId
 @Create
 public interface IPersonDefn extends IXingYiResourceDefn {
     @Field(readOnly = true)
