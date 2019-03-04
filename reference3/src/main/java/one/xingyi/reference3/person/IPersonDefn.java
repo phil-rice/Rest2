@@ -24,14 +24,14 @@ public interface IPersonDefn extends IXingYiResourceDefn {
     //==========
 
     @Deprecated
-    @Field(javascript = "return compose(lens_Person_addresses(), lensForFirstItemInList());", lensPath = "addresses/*address,<firstitem>")
+    @Field(javascript = "return compose(lens_Person_addresses(), lensForFirstItemInList());", lensPath = "addresses/*address,{firstItem}")
     IAddressLine12ViewDefn address();
 
     @Deprecated
-    @Field(javascript = "return compose(lens_Person_address(), lens('line1'));", lensPath = "addresses/*address,<firstitem>,line1/string")
+    @Field(javascript = "return compose(lens_Person_address(), lens('line1'));", lensPath = "addresses/*address,{firstItem},line1/string")
     String line1();
 
     @Deprecated
-    @Field(javascript = "return compose(lens_Person_address(), lens('line2'));", lensPath = "addresses/*address,<firstitem>,line2/string")
+    @Field(javascript = "return compose(lens_Person_address(), lens('line2'));", lensPath = "addresses/*address,{firstItem},line2/string")
     String line2();
 }

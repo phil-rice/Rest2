@@ -9,7 +9,7 @@ import one.xingyi.core.optics.Setter;
 
 @EqualsAndHashCode @ToString
 public class IdentityDefn<T> implements LensDefn<T> {
-    @Override public String name() { return "<identity>"; }
+    @Override public String name() { return "{identity}"; }
     @Override public String asString() { return name(); }
 
     @Override public <J> Lens<J, T> asLens(JsonParserAndWriter<J> json) {

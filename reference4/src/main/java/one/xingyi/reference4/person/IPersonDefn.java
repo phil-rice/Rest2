@@ -27,10 +27,10 @@ public interface IPersonDefn extends IXingYiResourceDefn {
     //==========
 
     @Deprecated
-    @Field(javascript = "return identityLens();", lensPath = "<identity>")
+    @Field(javascript = "return identityLens();", lensPath = "{identity}")
     IResourceList<IAddressLine12ViewDefn> address();
 
     @Deprecated
-    @Field(javascript = "return itemAsListLens();", lensPath = "<itemAsList>")
+    @Field(javascript = "return itemAsListLens();", lensPath = "{itemAsList}")
     IResourceList<IAddressLine12ViewDefn> addresses();
 }

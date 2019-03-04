@@ -14,7 +14,7 @@ import java.util.Map;
 import static one.xingyi.core.codeDom.PackageAndClassName.*;
 public interface TypeDom {
     /**
-     * For example if the type if List<T> this is List<T>
+     * For example if the type if List of T this is List of T
      */
     String fullTypeName();
     /**
@@ -32,7 +32,7 @@ public interface TypeDom {
      */
     default String viewCompanion() {return "";}
     /**
-     * For example if the type if List<T> this is T, but if the types is T this is also T
+     * For example if the type if List of T this is T, but if the types is T this is also T
      */
     TypeDom nested();
     boolean primitive();

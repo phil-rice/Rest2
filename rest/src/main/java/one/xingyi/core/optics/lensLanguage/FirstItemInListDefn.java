@@ -10,7 +10,7 @@ import one.xingyi.core.optics.Setter;
 
 @EqualsAndHashCode @ToString
 public class FirstItemInListDefn<T> implements LensDefn<T> {
-    @Override public String name() { return "<firstItem>"; }
+    @Override public String name() { return "{firstItem}"; }
     @Override public String asString() { return name(); }
 
     //OK the types are a mess here. J isn't a Json thing it's a IResourceList

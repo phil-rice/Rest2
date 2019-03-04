@@ -67,7 +67,7 @@ abstract public class LenStoreWithJsonTest<J> {
     @Test public void testCanAccessFirstItemInListThenString() {
         String json = Strings.changeQuotes("{'name':'phil','age':23,'addresses':[{'line1':'someLine1a'},{'line1':'someLine1b'}]}");
         J j = parser().parse(json);
-        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/*address,<firstItem>,line1/string\naddress_line1=line1/string");
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/*address,{firstItem},line1/string\naddress_line1=line1/string");
         LensStore<J> store = lensDefnStore.makeStore(parser());
         Lens<J, String> stringLens = store.stringLens("person_address");
         assertEquals("someLine1a", stringLens.get(j));
@@ -80,7 +80,7 @@ abstract public class LenStoreWithJsonTest<J> {
     @Test public void testCanUseIdentity() {
         String json = Strings.changeQuotes("{'name':'phil','age':23, 'line1':'someLine1a', 'line2':'someLine2'}");
         J j = parser().parse(json);
-        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_line1=<identity>,line1/String");
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_line1={identity},line1/String");
         LensStore<J> store = lensDefnStore.makeStore(parser());
         Lens<J, String> stringLens = store.stringLens("person_line1");
         assertEquals("someLine1a", stringLens.get(j));
@@ -94,7 +94,7 @@ abstract public class LenStoreWithJsonTest<J> {
     @Test public void testCanUseItemAsList() {
         String json = Strings.changeQuotes("{'name':'phil','age':23,'addresses':{'line1':'someLine1a'}}}");
         J j = parser().parse(json);
-        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/address,<itemAsList>\naddress_line1=line1/string");
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("person_address=addresses/address,{itemAsList}\naddress_line1=line1/string");
         LensStore<J> store = lensDefnStore.makeStore(parser());
         Lens<J, IResourceList<J>> listLens = store.listLens("person_address");
         IResourceList<J> addresses = listLens.get(j);
