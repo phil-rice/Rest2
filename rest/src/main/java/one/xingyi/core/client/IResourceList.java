@@ -12,8 +12,6 @@ import java.util.List;
 
 
 public interface IResourceList<T> extends ISimpleList<T> {
-    int size();
-    T get(int n);
     IResourceList<T> withItem(int n, T t);
     IResourceList<T> append(T t);
     @SafeVarargs static <T> IResourceList<T> create(T... ts) {return new ResourceList<>(Arrays.asList(ts));}

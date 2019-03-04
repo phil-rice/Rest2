@@ -49,7 +49,18 @@ public interface TypeDom {
     String lensDefn(String fieldName);
 
     PartialFunction<String, Result<String, TypeDom>> fromPrimitive =
-            pf(fullTypeName -> primitives().contains(new PackageAndClassName(fullTypeName)), fullTypeName -> Result.succeed(new PrimitiveType(new PackageAndClassName(fullTypeName))));
+            pf(fullTypeName -> primitives().contains(new PackageAndClassName(fullTypeName)), fullTypeName -> {
+                return Result.succeed(new PrimitiveType(new PackageAndClassName(fullTypeName)));
+            });
+
+//    PartialFunction<String, Result<String, TypeDom>> fromSimpleList =
+//            pf(fullTypeName -> fullTypeName.startsWith(ISimpleList.class.getName()), fullTypeName -> {
+//                String nested = Strings.extractFromOptionalEnvelope(ISimpleList.class.getName() + "<", ">", fullTypeName);
+//                if (primitives().contains(nested)) {
+//                    return Result.succeed(new SimpleListType(fullTypeName, new PrimitiveType(new PackageAndClassName(nested))));
+//                } else
+//                    return Result.failwith("Could not make a " + fullTypeName + " simple lists must hold primitives. Legal values: " + primitives());
+//            });
 
     static PartialFunction<String, Result<String, TypeDom>> fromEmbedded(IServerNames names, IViewDefnNameToViewName viewNamesMap) {
         return pf(fullTypeName -> fullTypeName.startsWith(Embedded.class.getName()),
@@ -57,7 +68,7 @@ public interface TypeDom {
                         map(nested -> new EmbeddedType(fullTypeName, nested)));
     }
 
-    static PartialFunction<String, Result<String, TypeDom>> fromResourceList(IServerNames names, String rawTypeName, IViewDefnNameToViewName viewNamesMap) {
+    static PartialFunction<String, Result<String, TypeDom>> fromResourceList(IServerNames names, IViewDefnNameToViewName viewNamesMap) {
         return pf(fullTypeName -> fullTypeName.startsWith(IResourceList.class.getName()),
                 fullTypeName -> {
                     String nestedName = Strings.extractFromOptionalEnvelope(IResourceList.class.getName() + "<", ">", fullTypeName);
@@ -67,7 +78,7 @@ public interface TypeDom {
                             EntityNames entityNames = vn.entityNames;
                             return Result.succeed(new ListType(fullTypeName, nested, entityNames.serverCompanion, entityNames.entityNameForLens));
                         } else
-                            return Result.failwith("Could not work out which type " + rawTypeName + "was. Known views are\n" + viewNamesMap.legalValues());
+                            return Result.failwith("Could not work out which type " + fullTypeName + "was. Known views are\n" + viewNamesMap.legalValues());
                     });
                 });
     }
@@ -85,7 +96,7 @@ public interface TypeDom {
 
     static Result<String, TypeDom> create(IServerNames names, String rawTypeName, IViewDefnNameToViewName viewNamesMap) {
         String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);
-        PartialFunction<String, Result<String, TypeDom>> pf = chain(fromPrimitive, fromEmbedded(names, viewNamesMap), fromResourceList(names, fullTypeName, viewNamesMap), fromView(viewNamesMap));
+        PartialFunction<String, Result<String, TypeDom>> pf = chain(fromPrimitive, fromEmbedded(names, viewNamesMap), fromResourceList(names, viewNamesMap), fromView(viewNamesMap));
         return pf.orDefault(fullTypeName, () -> Result.failwith("Could not work out what type " + fullTypeName + " was. Known views are\n" + viewNamesMap.legalValues()));
     }
 
