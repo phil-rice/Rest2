@@ -3,7 +3,7 @@ package one.xingyi.reference4.address;
 import one.xingyi.core.annotations.Resource;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 
-//@Entity(bookmark = "/address", rootUrl = "{host}/address/{id}")
+//@Entity(bookmark = "/address", urlWithId = "{host}/address/{id}")
 @Resource
 @Deprecated
 public interface IAddressDefn extends IXingYiResourceDefn {

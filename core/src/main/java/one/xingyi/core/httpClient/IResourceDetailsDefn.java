@@ -5,7 +5,7 @@ import one.xingyi.core.annotations.OptionalGet;
 import one.xingyi.core.annotations.Resource;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 @OptionalGet @Get
-@Resource(bookmark = "/resource", rootUrl = "{host}/{id}")
+@Resource(bookmark = "/resource", urlWithId = "{host}/{id}")
 public interface IResourceDetailsDefn extends IXingYiResourceDefn {
     @Field(templated = true)
     String urlPattern();

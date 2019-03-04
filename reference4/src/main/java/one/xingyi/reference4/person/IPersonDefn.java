@@ -6,7 +6,7 @@ import one.xingyi.core.sdk.IXingYiResourceDefn;
 import one.xingyi.reference4.address.IAddressLine12ViewDefn;
 import one.xingyi.reference4.telephone.ITelephoneNumberViewDefn;
 
-@Resource(bookmark = "/person", rootUrl = "{host}/person/{id}")
+@Resource(bookmark = "/person", urlWithId = "{host}/person/{id}")
 @OptionalGet
 @Get
 @Delete

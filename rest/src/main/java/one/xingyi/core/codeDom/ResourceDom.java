@@ -22,6 +22,6 @@ public class ResourceDom {
 //    static public Result<String, EntityDom> apply(IServerNames name, String interfaceDefnName, Entity entity, FieldListDom fields) {
 //
 //        return name.entityNames(interfaceDefnName).map(entityNames ->
-//                new EntityDom(entityNames, name.bookmarkAndUrl(entityNames, entity.bookmark(), entity.rootUrl()), fields));
+//                new EntityDom(entityNames, name.bookmarkAndUrl(entityNames, entity.bookmark(), entity.urlWithId()), fields));
 //    }
 }

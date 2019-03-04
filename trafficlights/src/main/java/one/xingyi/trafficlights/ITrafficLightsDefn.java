@@ -3,7 +3,7 @@ import one.xingyi.core.annotations.*;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 
 
-@Resource(bookmark = "/lights", rootUrl = "{host}/lights/{id}")
+@Resource(bookmark = "/lights", urlWithId = "{host}/lights/{id}")
 @Delete
 @Get
 @OptionalGet

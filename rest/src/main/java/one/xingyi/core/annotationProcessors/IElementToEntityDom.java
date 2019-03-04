@@ -5,16 +5,13 @@ import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.endpoints.BookmarkCodeAndUrlPattern;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
-import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.utils.Lists;
 import one.xingyi.core.validation.Result;
 
 import javax.lang.model.element.TypeElement;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 public interface IElementToEntityDom extends BiFunction<TypeElement, IViewDefnNameToViewName, Result<ElementFail, ResourceDom>> {
     static IElementToEntityDom simple(ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToEntityDom(bundle.serverNames(), entityNames, bundle.elementToFieldListDomForEntity(entityNames));}
 }
@@ -26,7 +23,7 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
     @Override public Result<ElementFail, ResourceDom> apply(TypeElement element, IViewDefnNameToViewName viewNamesMap) {
         Resource annotation = element.getAnnotation(Resource.class);
         String bookmark = annotation.bookmark();
-        String url = annotation.rootUrl();
+        String url = annotation.urlWithId();
         Optional<BookmarkCodeAndUrlPattern> bookmarkAndUrlPattern = serverNames.bookmarkAndUrl(entityNames, bookmark, url, annotation.codeUrl());
         List<PostDom> pathDoms = Lists.collect(element.getEnclosedElements(), e -> e.getAnnotation(Post.class) != null, e -> PostDom.create(e.getSimpleName().toString(), e.getAnnotation(Post.class), url));
         ActionsDom actionsDom = new ActionsDom(//TODO Move into own mini interface

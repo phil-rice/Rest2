@@ -54,8 +54,8 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     static <T extends Element> Comparator<T> comparator() {return (a, b) -> a.asType().toString().compareTo(b.asType().toString());}
 
     boolean emptyOr(String s, Function<String, Boolean> fn) {return s.isEmpty() || fn.apply(s);}
-    Valid<ElementFail, TypeElement> checkRootUrlStartsWithHost = check(e -> emptyOr(e.getAnnotation(Resource.class).rootUrl(), url -> url.startsWith("{host}")), e -> "Root Url needs to start with {host}");
-    Valid<ElementFail, TypeElement> checkRootUrlHasId = check(e -> emptyOr(e.getAnnotation(Resource.class).rootUrl(), url -> url.contains("{id}")), e -> "Root Url needs to contain {id}");
+    Valid<ElementFail, TypeElement> checkRootUrlStartsWithHost = check(e -> emptyOr(e.getAnnotation(Resource.class).urlWithId(), url -> url.startsWith("{host}")), e -> "Root Url needs to start with {host}");
+    Valid<ElementFail, TypeElement> checkRootUrlHasId = check(e -> emptyOr(e.getAnnotation(Resource.class).urlWithId(), url -> url.contains("{id}")), e -> "Root Url needs to contain {id}");
 
     Valid<ElementFail, TypeElement> check(Function<TypeElement, Boolean> checkFn, Function<TypeElement, String> message) {return Valid.<String, ElementFail, TypeElement>check(checkFn, message, (e, s) -> new ElementFail(s, e));}
 

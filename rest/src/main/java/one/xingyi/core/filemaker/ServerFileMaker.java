@@ -32,7 +32,7 @@ public class ServerFileMaker implements IFileMaker<ServerDom> {
     List<String> createConstructor(ServerDom serverDom) {
         return Lists.<String>append(
                 List.of("public " + serverDom.serverName.className + "(EndpointConfig<J> config," +
-                                Lists.collectJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){// A compilation error here is often caused by incremental compilation. It might also be because there are no bookmarked/rootUrl resouces (see the @Resource annotation)",
+                                Lists.collectJoin(serverDom.codeDom.resourceDoms, ",", ed -> ed.bookmark.isPresent(), ed -> ed.entityNames.serverController.asVariableDeclaration()) + "){// A compilation error here is often caused by incremental compilation. It might also be because there are no bookmarked/urlWithId resouces (see the @Resource annotation)",
                         Formating.indent + "this.context = config.from(companions());"),
                 Formating.indent(Lists.collect(serverDom.codeDom.resourceDoms, ed -> ed.bookmark.isPresent(), ed -> "this." + ed.entityNames.serverController.className + " = " + ed.entityNames.serverController.className + ";")),
                 List.of("}")

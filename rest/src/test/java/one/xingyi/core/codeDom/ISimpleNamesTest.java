@@ -8,5 +8,5 @@ public class ISimpleNamesTest {
 //    String entityLensName(EntityNames entityElementName, String fieldName, String annotationLensName);
 //    String entityLensPath(EntityNames entityElementName, String fieldName, String annotationLensPath);
 //    Optional<String> bookmarkAndUrl(EntityNames entityElementName, String annotationBookmark);
-//    Optional<String>rootUrl(EntityNames entityElementName, String annotationGetUrl);
+//    Optional<String>urlWithId(EntityNames entityElementName, String annotationGetUrl);
 }

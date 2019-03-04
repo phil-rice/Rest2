@@ -6,6 +6,10 @@
 * Validate fields in a views match fields in an entity
 * 'thinking' problem: how do we filter down the view on a child object? - done
 
+# Resource
+
+Have the two Urls here. Instead of smeared across here / create and prototype
+
 
 # Javascript
 
@@ -20,6 +24,7 @@
 # View annotation 
 
 * Error reporting when name wrong - done
+* Error reporting when type wrong - done
 * Consider allowing name to be set
 
 
@@ -39,17 +44,15 @@
 
 * Parse JSON for puts/posts - done by second point
 * Nice library instead of quick JSON - done
-* Lists  - in progress
+* Lists  - done
 
 # View stuff
 
-* Have  a field that returns the optional json (only relevant if this was the main entity)
+* Have a field that returns the optional json (only relevant if this was the main entity)
 * Have a field that returns a map of links (empty unless this is the main entity)
 
-#Optionals
+#Optionals & Lists
 * Of primitives and views
-
-#Lists
 * Need to be able to have lists of views -- done
 * Need lists of primitives
 
