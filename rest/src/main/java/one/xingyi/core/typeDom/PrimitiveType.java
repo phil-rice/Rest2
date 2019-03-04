@@ -30,9 +30,11 @@ public class PrimitiveType implements TypeDom {
             return "jsonParser.asString(j, " + Strings.quote(fieldName) + ")";
         if (typeName.className.equalsIgnoreCase("Integer"))
             return "jsonParser.asInt(j, " + Strings.quote(fieldName) + ")";
-        else throw new RuntimeException("Don't know how to parse primitive field " + fieldName + " of type" + typeName.asString());
+        else
+            throw new RuntimeException("Don't know how to parse primitive field " + fieldName + " of type" + typeName.asString());
     }
     @Override public String lensDefn(String fieldName) { return fieldName + "/" + entityNameForLens(); }
+    @Override public boolean isAssignableFrom(TypeDom other) { return other instanceof PrimitiveType && typeName.equals(((PrimitiveType) other).typeName); }
 
     //TODO Split PrimitiveType
 }

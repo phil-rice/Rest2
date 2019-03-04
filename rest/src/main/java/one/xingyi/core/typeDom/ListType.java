@@ -6,6 +6,8 @@ import lombok.ToString;
 import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.codeDom.PackageAndClassName;
 import one.xingyi.core.utils.Strings;
+
+import java.util.List;
 @EqualsAndHashCode
 @RequiredArgsConstructor
 @ToString
@@ -24,6 +26,9 @@ public class ListType implements NonPrimitiveTypeDom {
         return "IResourceList.fromList(Lists.map(jsonParser.asList(j, " + Strings.quote(fieldName) + "), child ->" + companionName.asString() + ".companion.fromJson(jsonParser, child)))";
     }
     @Override public String lensDefn(String fieldName) { return fieldName + "/*" + entityNameForLens; }
+    @Override public boolean isAssignableFrom(TypeDom other) {
+        return other.getClass().equals(getClass()) && nested().isAssignableFrom(other.nested());
+    }
     @Override public String forToJson(String fieldName, boolean templated) { return "jsonWriter.makeList(Lists.map(" + fieldName + ".toList(), a -> a.toJson(jsonWriter,context)))"; }
 
 

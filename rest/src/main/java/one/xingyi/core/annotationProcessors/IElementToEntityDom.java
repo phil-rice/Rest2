@@ -40,6 +40,6 @@ class SimpleElementToEntityDom implements IElementToEntityDom {
                 Optional.ofNullable(element.getAnnotation(PrototypeNoId.class)).map(dom -> new PrototypeNoIdDom(dom.prototypeId(), dom.url())),
                 pathDoms
         );
-        return elementToFieldListDom.apply(element,viewNamesMap).map(fieldListDom -> new ResourceDom(element.getAnnotation(Deprecated.class) != null, entityNames, bookmarkAndUrlPattern, fieldListDom, actionsDom));
+        return elementToFieldListDom.apply(element, viewNamesMap, Optional.empty()).map(fieldListDom -> new ResourceDom(element.getAnnotation(Deprecated.class) != null, entityNames, bookmarkAndUrlPattern, fieldListDom, actionsDom));
     }
 }

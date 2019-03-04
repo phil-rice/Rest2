@@ -3,6 +3,8 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import one.xingyi.core.annotations.*;
+import one.xingyi.core.codeDom.FieldDom;
+import one.xingyi.core.codeDom.ResourceDom;
 import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.utils.Lists;
@@ -16,7 +18,7 @@ import java.util.Optional;
 public interface IElementToViewDom {
     static IElementToViewDom forView(ElementToBundle bundle, ViewNames viewNames) { return new SimpleElementToViewDom(viewNames, bundle.elementToFieldListDomForView(viewNames));}
 
-    Result<ElementFail, ViewDom> apply(TypeElement viewElement, IViewDefnNameToViewName viewNamesMap);
+    Result<ElementFail, ViewDom> apply(TypeElement viewElement, IViewDefnNameToViewName viewNamesMap, List<ResourceDom> resourceDoms);
 }
 @RequiredArgsConstructor
 class SimpleElementToViewDom implements IElementToViewDom {
@@ -24,8 +26,10 @@ class SimpleElementToViewDom implements IElementToViewDom {
     final IElementToFieldListDom elementToFieldListDom;
 
 
-    @Override public Result<ElementFail, ViewDom> apply(TypeElement viewElement, IViewDefnNameToViewName viewNamesMap) {
-        return elementToFieldListDom.apply(viewElement, viewNamesMap).map(fieldListDom -> new ViewDom(viewElement.getAnnotation(Deprecated.class) != null, viewNames, fieldListDom));
+    @Override public Result<ElementFail, ViewDom> apply(TypeElement viewElement, IViewDefnNameToViewName viewNamesMap, List<ResourceDom> resourceDoms) {
+        Optional<ResourceDom> optResourceDom = Lists.find(resourceDoms, rd -> rd.entityNames.originalDefn.asString().equals(viewNames.entityNames.originalDefn.asString()));
+
+        return elementToFieldListDom.apply(viewElement, viewNamesMap, optResourceDom).map(fieldListDom -> new ViewDom(viewElement.getAnnotation(Deprecated.class) != null, viewNames, fieldListDom));
     }
 }
 

@@ -83,10 +83,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         return log.logFailuresAndReturnSuccesses(Lists.map(elements, e -> bundle.elementToEntityDom(bundle.elementToEntityNames().apply(e)).apply(e, viewNamesMap)));
     }
 
-    private List<ViewDom> makeViewDoms(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle, IViewDefnNameToViewName viewNamesMap) {
+    private List<ViewDom> makeViewDoms(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle, List<ResourceDom> resourceDoms, IViewDefnNameToViewName viewNamesMap) {
         List<TypeElement> viewElements = getCheckedElements(View.class, env, log, initialViewElementChecks);
         return log.logFailuresAndReturnSuccesses(Lists.map(viewElements,
-                v -> bundle.elementToViewNames().apply(v).flatMap(vn -> bundle.elementToViewDom(vn).apply(v,viewNamesMap))));
+                v -> bundle.elementToViewNames().apply(v).flatMap(vn -> bundle.elementToViewDom(vn).apply(v,viewNamesMap, resourceDoms))));
     }
     Result<String, FileDefn> makeServer(ServerDom serverDom) {
         return new ServerFileMaker().apply(serverDom);
@@ -103,7 +103,10 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
         try {
             IViewDefnNameToViewName viewNamesMap = elementsToMapOfViewDefnToView.apply(Sets.sortedList((Set<TypeElement>) env.getElementsAnnotatedWith(View.class), comparator()));
 
-            CodeDom codeDom = new CodeDom(monadDefn, makeResourceDomResults(env, log, bundle,viewNamesMap), makeViewDoms(env, log, bundle,viewNamesMap));
+            List<ResourceDom> resourceDoms = makeResourceDomResults(env, log, bundle, viewNamesMap);
+            List<ViewDom> viewDoms = makeViewDoms(env, log, bundle, resourceDoms, viewNamesMap);
+            CodeDom codeDom = new CodeDom(monadDefn, resourceDoms, viewDoms);
+
             log.info("Made codeDom: " + codeDom);
             List<ServerDom> serverDoms = log.logFailuresAndReturnSuccesses(Lists.map(Sets.toList(env.getElementsAnnotatedWith(Server.class)), e1 -> ServerDom.create(names, e1, codeDom)));
 

@@ -25,5 +25,8 @@ public class ViewType implements NonPrimitiveTypeDom {
         return serverCompanion + ".companion.fromJson(jsonParser, jsonParser.child(j, " + Strings.quote(fieldName) + "))";
     }
     @Override public String lensDefn(String fieldName) { return fieldName + "/" + entityNameForLens(); }
+    @Override public boolean isAssignableFrom(TypeDom other) {
+        return other instanceof ViewType ; //TODO work out how to work out if the type is correct
+    }
     @Override public String viewCompanion() { return viewCompanion; }
 }

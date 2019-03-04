@@ -1,18 +1,16 @@
 # Immediate tasks
 
 * Rename Entity to Resource - done
-* Rewrite the horrible bits of code!
-* Multiple interfaces on client 
+* Rewrite the horrible bits of code - lots done. 
+* Multiple interfaces on client - done
 * Validate fields in a views match fields in an entity
-* 'thinking' problem: how do we filter down the view on a child object?
+* 'thinking' problem: how do we filter down the view on a child object? - done
 
 
 # Javascript
-* Kill it!
-* Currently it is being generated but we need to 'manage it'. 
-* Short term just aggregate and store
-* We would like strategies that allow the javascript to be included (piecemeal) or sent with the data
 
+* Kill it! - mostly done. 
+* Still need to generate javascript from lens descriptions
 
 # Resource annotation
 
@@ -21,7 +19,7 @@
 
 # View annotation 
 
-* Error reporting when name wrong
+* Error reporting when name wrong - done
 * Consider allowing name to be set
 
 

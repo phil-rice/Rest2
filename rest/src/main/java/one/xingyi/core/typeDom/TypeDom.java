@@ -9,6 +9,7 @@ import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
 
+import java.util.List;
 import java.util.Map;
 
 import static one.xingyi.core.codeDom.PackageAndClassName.*;
@@ -73,4 +74,5 @@ public interface TypeDom {
         return Result.failwith("Could not work out what type " + rawTypeName + " was. Known views are\n" + viewNamesMap.legalValues());
     }
 
+     boolean isAssignableFrom(TypeDom other) ;
 }

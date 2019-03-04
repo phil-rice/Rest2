@@ -2,10 +2,14 @@ package one.xingyi.core.annotationProcessors;
 import lombok.RequiredArgsConstructor;
 import one.xingyi.core.annotations.Field;
 import one.xingyi.core.codeDom.FieldDom;
+import one.xingyi.core.codeDom.ResourceDom;
+import one.xingyi.core.codeDom.ViewDom;
 import one.xingyi.core.names.EntityNames;
 import one.xingyi.core.names.IServerNames;
 import one.xingyi.core.names.ViewNames;
 import one.xingyi.core.typeDom.TypeDom;
+import one.xingyi.core.utils.Function3;
+import one.xingyi.core.utils.Lists;
 import one.xingyi.core.utils.LoggerAdapter;
 import one.xingyi.core.utils.Strings;
 import one.xingyi.core.validation.Result;
@@ -16,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-public interface IElementToFieldDom extends BiFunction<Element, IViewDefnNameToViewName, Result<ElementFail, FieldDom>> {
+public interface IElementToFieldDom extends Function3<Element, IViewDefnNameToViewName, Optional<ResourceDom>, Result<ElementFail, FieldDom>> {
     static IElementToFieldDom forEntity(LoggerAdapter loggerAdapter, ElementToBundle bundle, EntityNames entityNames) {return new SimpleElementToFieldDomForEntity(loggerAdapter, bundle.serverNames(), entityNames);}
     static IElementToFieldDom forView(LoggerAdapter loggerAdapter, ElementToBundle bundle, ViewNames viewNames) {return new SimpleElementToFieldDomForViews(loggerAdapter, bundle.serverNames(), viewNames);}
 
@@ -28,7 +32,21 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
     final IServerNames serverNames;
     abstract String findLensName(String fieldName, String annotationField);
     abstract Result<String, String> findLensPath(String fieldName, String annotationField);
-    @Override public Result<ElementFail, FieldDom> apply(Element element, IViewDefnNameToViewName viewNamesMap) {
+
+    private List<String> validateViewField(Optional<ResourceDom> optResourceDom, FieldDom viewField) {
+        if (optResourceDom.isEmpty()) return List.of();// very often an incremental compilation issue
+        ResourceDom resourceDom = optResourceDom.get();
+        Optional<FieldDom> optResourceField = Lists.find(resourceDom.fields.allFields, resourceField -> resourceField.name.equals(viewField.name));
+        if (optResourceField.isEmpty())
+            return List.of("Cannot find matching field in " + resourceDom.entityNames.originalDefn.asString() + " for " + viewField.name);
+        FieldDom resourceField = optResourceField.get();
+        if (!resourceField.typeDom.isAssignableFrom(viewField.typeDom))
+            return List.of("Field " + viewField.name + " has type " + viewField.typeDom.fullTypeName() + " but in resource " + resourceDom.entityNames.originalDefn.asString() + " has type " + resourceField.typeDom.fullTypeName());
+        return List.of();
+    }
+
+
+    @Override public Result<ElementFail, FieldDom> apply(Element element, IViewDefnNameToViewName viewNamesMap, Optional<ResourceDom> resourceDoms) {
         String fieldType = element.asType().toString();
         String fieldName = element.getSimpleName().toString();
         Result<String, TypeDom> typeDom = TypeDom.create(serverNames, fieldType, viewNamesMap);
@@ -46,7 +64,11 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
 //            loggerAdapter.info(element, fieldName + ": " + javascriptBody + "/" + defn);
                 Boolean templated = Optional.ofNullable(annotation).map(a -> a.templated()).orElse(false);
                 Boolean deprecated = element.getAnnotation(Deprecated.class) != null;
-                return Result.<String, FieldDom>succeed(new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript, templated, deprecated));
+                FieldDom fieldDom = new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript, templated, deprecated);
+                List<String> errors = validateViewField(resourceDoms, fieldDom);
+//                loggerAdapter.info(element, getClass().getSimpleName() + ": Checking against " + resourceDoms + " errors " + errors);
+                if (errors.size() > 0) return Result.failwith(errors.toString());
+                return Result.<String, FieldDom>succeed(fieldDom);
             });
         }));
     }

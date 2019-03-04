@@ -22,5 +22,6 @@ public class EmbeddedType implements NonPrimitiveTypeDom {
         return null; //TODO
     }
     @Override public String lensDefn(String fieldName) { return "fieldName/embedded-" + entityNameForLens(); }
+    @Override public boolean isAssignableFrom(TypeDom other) { return other.getClass().equals(getClass()) && nested().isAssignableFrom(other.nested()); }
 
 }

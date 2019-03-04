@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static junit.framework.TestCase.fail;
 import static one.xingyi.core.utils.Strings.lift;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class TypeDomTest implements ViewDefnNameToViewNamesFixture {
     IServerNames names = IServerNames.simple(IPackageNameStrategy.simple, IClassNameStrategy.simple);
@@ -91,6 +91,19 @@ public class TypeDomTest implements ViewDefnNameToViewNamesFixture {
         TypeDom listType = result1.result().get();
         assertEquals("one.xingyi.core.client.IResourceList<a.b.server.domain.IPerson>", listType.forEntity());
         assertEquals("one.xingyi.core.client.IResourceList<a.b.client.view.PersonView>", listType.forView());
+    }
+
+    @Test public void testCanBeAssignedToForPrimitives() {
+        assertTrue(intPt.isAssignableFrom(intPt));
+        assertFalse(intPt.isAssignableFrom(doublePt));
+
+        assertTrue(doublePt.isAssignableFrom(doublePt));
+        assertFalse(doublePt.isAssignableFrom(intPt));
+
+        assertTrue(stringPt.isAssignableFrom(stringPt));
+        Result<String, TypeDom> result = TypeDom.create(names, "a.b.IPersonViewDefn", viewToViewNames);
+        TypeDom viewType = result.result().get();
+        assertFalse(stringPt.isAssignableFrom(viewType));
 
     }
 
