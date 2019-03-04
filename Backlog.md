@@ -8,8 +8,12 @@
 
 # Resource
 
-Have the two Urls here. Instead of smeared across here / create and prototype
+Have the two Urls here. Instead of smeared across here / create and prototype - done
 
+# Headers
+* Send the correct accept header
+* Actually use the correct accept header
+* Allow multiple representations dependant on header???
 
 # Javascript
 
@@ -54,8 +58,7 @@ Have the two Urls here. Instead of smeared across here / create and prototype
 #Optionals & Lists
 * Of primitives and views
 * Need to be able to have lists of views -- done
-* Need lists of primitives
-
+* Need lists of primitives, optionals of primitives and optionals of views
 
 #Embedded/Link
 Pretty cool, but let's do that when everything else is done... place holders are nice
@@ -67,7 +70,6 @@ The state based approach demoed in Trafficlights looks really simple to use and 
 # Demo
 
 * Make the same demo as for Scala rest
-
 
 # Validations
 

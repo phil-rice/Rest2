@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public interface IResourceList<T> extends Iterable<T> {
+public interface IResourceList<T> extends ISimpleList<T> {
     int size();
     T get(int n);
     IResourceList<T> withItem(int n, T t);
