@@ -2252,23 +2252,6 @@ public class JSONObject {
         }
     }
 
-    /**
-     * Make a pretty-printed JSON text of this JSONObject.
-     *
-     * <p>If <code>indentFactor> 0</code> and the {@link JSONObject}
-     * has only one key, then the object will be output on a single line:
-     * <pre>{@code {"key": 1}}</pre>
-     *
-       *
-     * @param indentFactor
-     *            The number of spaces to add to each level of indentation.
-     * @return a printable, displayable, portable, transmittable representation
-     *         of the object, beginning with <code>{</code>&nbsp;<small>(left
-     *         brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-     *         brace)</small>.
-     * @throws JSONException
-     *             If the object contains an invalid number.
-     */
     public String toString(int indentFactor) throws JSONException {
         StringWriter w = new StringWriter();
         synchronized (w.getBuffer()) {
