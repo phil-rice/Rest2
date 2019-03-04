@@ -3,7 +3,7 @@
     <parent>
         <artifactId>rest2</artifactId>
         <groupId>one.xingyi</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -12,19 +12,19 @@
         <dependency>
             <groupId>one.xingyi</groupId>
             <artifactId>reference3</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>one.xingyi</groupId>
             <artifactId>democlient</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>one.xingyi</groupId>
             <artifactId>reference3</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
