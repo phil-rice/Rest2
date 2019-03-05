@@ -5,7 +5,7 @@
     <groupId>one.xingyi</groupId>
     <artifactId>rest2</artifactId>
     <packaging>pom</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <modules>
         <module>rest</module>
         <module>core</module>
@@ -113,7 +113,7 @@
     <scm>
         <url>https://github.com/phil-rice/Rest2</url>
         <connection>scm:git:git//github.com:phil-rice/Rest2.git</connection>
-        <tag>rest2-1.0</tag>
+        <tag>rest2-1.1</tag>
     </scm>
     <profiles>
         <profile>
