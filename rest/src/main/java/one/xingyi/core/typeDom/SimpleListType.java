@@ -23,7 +23,7 @@ public class SimpleListType implements TypeDom {
     @Override public String forFromJson(String fieldName) { return "jsonParser." + nested.fromJsonString() + "(j," + Strings.quote(fieldName) + ")"; }
 
 
-    @Override public String lensDefn(String fieldName) { return fieldName + "/" + entityNameForLens(); }
+    @Override public String lensDefn(String fieldName) { return fieldName + "/**" + entityNameForLens(); }
     @Override public boolean isAssignableFrom(TypeDom other) { return other instanceof SimpleListType && nested.fullTypeName().equals(other.nested().fullTypeName()); }
 
 }

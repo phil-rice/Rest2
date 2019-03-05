@@ -7,8 +7,6 @@ import one.xingyi.core.client.IResourceList;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.Lens;
 
-import java.util.List;
-
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
@@ -19,5 +17,5 @@ public class ListLensDefn <T>implements LensDefn<IResourceList<T>> {
     @Override public String asString() {
         return name + "/*" + childClassName;
     }
-    @Override public <J> Lens<J, IResourceList<T>> asLens(JsonParserAndWriter<J> json) { return json.<T>lensToResourceList(name); }
+    @Override public <J> Lens<J, IResourceList<T>> asLens(JsonParserAndWriter<J> json) { return json.<T>lensToSimpleList(name); }
 }

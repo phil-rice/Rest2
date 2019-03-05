@@ -36,8 +36,7 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
         return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
     }
     @Override public Lens<View, Boolean> booleanLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        Lens<J, Boolean> lens = lensStore.booleanLens(name);
-        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lens);
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lensStore.booleanLens(name));
     }
 
     @Override

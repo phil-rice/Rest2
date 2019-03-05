@@ -5,7 +5,6 @@ import one.xingyi.core.marshelling.ContextForJson;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.Lens;
 import one.xingyi.reference3.person.server.companion.PersonCompanion;
-import one.xingyi.rest2test.client.viewcompanion.PrimitiveViewCompanion;
 import one.xingyi.rest2test.server.companion.PrimitivesCompanion;
 import one.xingyi.rest2test.server.domain.Primitives;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public abstract class AbstractJsonParserWriterTests<J> extends AbstractJsonWrite
     @Test public void testList() {
         Lens<J, String> line1 = parserWriter().lensToString("line1");
         J json = parserWriter().parse(jsonString);
-        Lens<J, IResourceList<J>> lens = parserWriter().lensToResourceList("addresses");
+        Lens<J, IResourceList<J>> lens = parserWriter().lensToSimpleList("addresses");
         IResourceList<J> addresses = lens.get(json);
         J firstChildJson = addresses.get(0);
         J secondChildJson = addresses.get(1);

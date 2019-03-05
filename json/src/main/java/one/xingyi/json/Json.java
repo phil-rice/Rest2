@@ -85,7 +85,26 @@ public class Json implements JsonParserAndWriter<Object> {
         Setter<Object, Integer> setter = (j, t) -> copyOf(j).put(name, t);
         return Lens.create(getter, setter);
     }
-    @Override public Lens<Object, IResourceList<Object>> lensToResourceList(String name) {
+
+    <T> ISimpleList<T> simpleList(Object j, String name, String primitiveClassName) {
+        switch (primitiveClassName.toLowerCase()) {
+            case "string":
+                return (ISimpleList<T>) asSimpleStringList(j, name);
+            case "integer":
+                return (ISimpleList<T>) asSimpleBooleanList(j, name);
+            case "double":
+                return (ISimpleList<T>) asSimpleDoubleList(j, name);
+            case "boolean":
+                return (ISimpleList<T>) asSimpleBooleanList(j, name);
+        }
+        throw new IllegalArgumentException("Don't know how to make a simple list of " + primitiveClassName + " legal values are string,integer,boolean,double");
+    }
+    @Override public <T> Lens<Object, ISimpleList<T>> lensToSimpleList(String name, String primitiveClassName) {
+        Getter<Object, ISimpleList<T>> getter = j -> simpleList(j, name, primitiveClassName);
+        Setter<Object, ISimpleList<T>> setter = (j, rl) -> copyOf(j).put(name, rl.toList());
+        return Lens.create(getter, setter);
+    }
+    @Override public Lens<Object, IResourceList<Object>> lensToSimpleList(String name) {
         Getter<Object, IResourceList<Object>> getter = j -> asResourceList(j, name);
         Setter<Object, IResourceList<Object>> setter = (j, rl) -> copyOf(j).put(name, rl.toList());
         return Lens.create(getter, setter);
