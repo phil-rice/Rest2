@@ -26,6 +26,7 @@ public interface IXingYi<Entity extends IXingYiClientResource, View extends IXin
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
+    <T>Lens<View,ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker,  String name);
 }
 
 
@@ -74,6 +75,9 @@ class DefaultXingYi<Entity extends IXingYiClientResource, View extends IXingYiVi
     }
     @Override public Lens<View, Double> doubleLens(IXingYiClientFactory<Entity, View> maker, String name) {
         return primitiveLens(maker, name, "doubleLens");
+    }
+    @Override public <T> Lens<View,ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return null;
     }
     public<T> Lens<View, T> primitiveLens(IXingYiClientFactory<Entity, View> maker, String name, String lensName) {
         Getter<View, T> getter = t -> XingYiExecutionException.wrap(lensName + ".getEntity " + name, javaScript, () -> (T) inv.invokeFunction("getL", name, t.mirror()));

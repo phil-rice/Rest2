@@ -1,5 +1,6 @@
 package one.xingyi.rest2test;
 import one.xingyi.core.annotations.View;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.sdk.IXingYiViewDefn;
 import one.xingyi.rest2test.IPrimitivesDefn;
 
@@ -12,4 +13,7 @@ public interface IPrimitiveViewDefn extends IXingYiViewDefn<IPrimitivesDefn> {
     boolean bool();
     Double doubleBoxed();
     double doub();
+    ISimpleList<Integer> integerList();
+    ISimpleList<Double> doubleList();
+    ISimpleList<Boolean> booleanList();
 }

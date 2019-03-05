@@ -49,7 +49,9 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
         if (renderName.equalsIgnoreCase("json")) return parser.fromJ((J) view.mirror());
         throw new RuntimeException("Unrecognised renderName" + renderName + " only legal value is 'parserAndWriter'");
     }
-
+    @Override public <T> Lens<View, ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return null;
+    }
     static <Entity extends IXingYiClientResource, View extends IXingYiView<Entity>> Lens<View, Object> viewToMirrorL(IXingYiClientFactory<Entity, View> maker) {
         return Lens.create(View::mirror, (v, m) -> maker.make(v.xingYi(), m));
     }

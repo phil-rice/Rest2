@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 public interface ISimpleList<T> extends Iterable<T> {
+    ISimpleList<Object> empty = ISimpleList.fromList(List.of());
+    static <T>ISimpleList<T> empty() { return (ISimpleList) empty;}
     int size();
     T get(int n);
     ISimpleList<T> withItem(int n, T t);

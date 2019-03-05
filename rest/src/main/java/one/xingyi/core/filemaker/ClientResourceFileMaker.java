@@ -33,3 +33,4 @@ public class ClientResourceFileMaker implements IFileMaker<ResourceDom> {
         return List.of("final String prototypeId=" + Strings.quote(resourceDom.actionsDom.prototypeDom.get().prototypeId) + ";");
     }
 }
+

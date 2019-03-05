@@ -1,6 +1,7 @@
 package one.xingyi.json;
 import lombok.val;
 import one.xingyi.core.client.IResourceList;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.Getter;
 import one.xingyi.core.optics.Lens;
@@ -39,6 +40,7 @@ public class Json implements JsonParserAndWriter<Object> {
     @Override public IResourceList<Object> asResourceList(Object o) {
         return new JsonResourceList1((JSONArray) o);
     }
+    @Override public <T> ISimpleList<T> asSimpleList(Object o) { throw new RuntimeException("not implemented"); }
 
     JSONObject copyOf(Object j) { return new JSONObject(new HashMap<>(((JSONObject) j).map)); }
 

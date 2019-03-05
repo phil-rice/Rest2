@@ -84,7 +84,7 @@ public class XingYiAnnotationProcessor extends AbstractProcessor {
     }
 
     private List<ViewDom> makeViewDoms(RoundEnvironment env, LoggerAdapter log, ElementToBundle bundle, List<ResourceDom> resourceDoms, IViewDefnNameToViewName viewNamesMap) {
-        List<TypeElement> viewElements = getCheckedElements(View.class, env, log, initialViewElementChecks);
+        List<TypeElement> viewElements = getCheckedElements(View.class, env, log, initialViewElementChecks);;
         return log.logFailuresAndReturnSuccesses(Lists.map(viewElements,
                 v -> bundle.elementToViewNames().apply(v).flatMap(vn -> bundle.elementToViewDom(vn).apply(v,viewNamesMap, resourceDoms))));
     }

@@ -1,5 +1,6 @@
 package one.xingyi.rest2test;
 import one.xingyi.core.annotations.*;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.sdk.IXingYiResourceDefn;
 
 @OptionalGet
@@ -18,6 +19,10 @@ public interface IPrimitivesDefn extends IXingYiResourceDefn {
     boolean bool();
     Double doubleBoxed();
     double doub();
+    ISimpleList<Integer> integerList();
+    ISimpleList<Double> doubleList();
+    ISimpleList<Boolean> booleanList();
+
 }
 
 

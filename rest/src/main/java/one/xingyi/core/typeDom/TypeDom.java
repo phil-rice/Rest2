@@ -53,22 +53,22 @@ public interface TypeDom {
     PartialFunction<String, Result<String, TypeDom>> fromDouble = pf(fullTypeName -> fullTypeName.equals(Double.class.getName()) || fullTypeName.equals(double.class.getName()), fullTypeName -> Result.succeed(new DoublePrimitiveType()));
     PartialFunction<String, Result<String, TypeDom>> fromBoolean = pf(fullTypeName -> fullTypeName.equals(Boolean.class.getName()) || fullTypeName.equals(boolean.class.getName()), fullTypeName -> Result.succeed(new BooleanPrimitiveType()));
 
-//    PartialFunction<String, Result<String, TypeDom>> fromSimpleList =
-//            pf(fullTypeName -> fullTypeName.startsWith(ISimpleList.class.getName()), fullTypeName -> {
-//                String nested = Strings.extractFromOptionalEnvelope(ISimpleList.class.getName() + "<", ">", fullTypeName);
-//                if (primitives().contains(nested)) {
-//                    return Result.succeed(new SimpleListType(fullTypeName, new PrimitiveType(new PackageAndClassName(nested))));
-//                } else
-//                    return Result.failwith("Could not make a " + fullTypeName + " simple lists must hold primitives. Legal values: " + primitives());
-//            });
+    static PartialFunction<String, Result<String, TypeDom>> fromSimpleList(IServerNames names, IViewDefnNameToViewName viewNamesMap) {
+        return pf(fullTypeName -> fullTypeName.startsWith(ISimpleList.class.getName()), fullTypeName -> {
+            String nested = Strings.extractFromOptionalEnvelope(ISimpleList.class.getName() + "<", ">", fullTypeName);
+            return create(names, nested, viewNamesMap).map(td -> new SimpleListType(fullTypeName, td));
+        });
+    }
 
-    static PartialFunction<String, Result<String, TypeDom>> fromEmbedded(IServerNames names, IViewDefnNameToViewName viewNamesMap) {
+    static PartialFunction<String, Result<String, TypeDom>> fromEmbedded(IServerNames
+                                                                                 names, IViewDefnNameToViewName viewNamesMap) {
         return pf(fullTypeName -> fullTypeName.startsWith(Embedded.class.getName()),
                 fullTypeName -> create(names, Strings.extractFromOptionalEnvelope(Embedded.class.getName() + "<", ">", fullTypeName), viewNamesMap).
                         map(nested -> new EmbeddedType(fullTypeName, nested)));
     }
 
-    static PartialFunction<String, Result<String, TypeDom>> fromResourceList(IServerNames names, IViewDefnNameToViewName viewNamesMap) {
+    static PartialFunction<String, Result<String, TypeDom>> fromResourceList(IServerNames
+                                                                                     names, IViewDefnNameToViewName viewNamesMap) {
         return pf(fullTypeName -> fullTypeName.startsWith(IResourceList.class.getName()),
                 fullTypeName -> {
                     String nestedName = Strings.extractFromOptionalEnvelope(IResourceList.class.getName() + "<", ">", fullTypeName);
@@ -94,9 +94,10 @@ public interface TypeDom {
     }
 
 
-    static Result<String, TypeDom> create(IServerNames names, String rawTypeName, IViewDefnNameToViewName viewNamesMap) {
+    static Result<String, TypeDom> create(IServerNames names, String rawTypeName, IViewDefnNameToViewName
+            viewNamesMap) {
         String fullTypeName = Strings.removeOptionalFirst("()", rawTypeName);
-        PartialFunction<String, Result<String, TypeDom>> pf = chain(fromString, fromInteger, fromBoolean, fromDouble, fromEmbedded(names, viewNamesMap), fromResourceList(names, viewNamesMap), fromView(viewNamesMap));
+        PartialFunction<String, Result<String, TypeDom>> pf = chain(fromString, fromInteger, fromBoolean, fromDouble, fromEmbedded(names, viewNamesMap), fromResourceList(names, viewNamesMap), fromView(viewNamesMap), fromSimpleList(names, viewNamesMap));
         return pf.orDefault(fullTypeName, () -> Result.failwith("Could not work out what type " + fullTypeName + " was. Known views are\n" + viewNamesMap.legalValues()));
     }
 

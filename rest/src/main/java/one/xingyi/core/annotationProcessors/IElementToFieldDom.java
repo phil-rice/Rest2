@@ -50,13 +50,16 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
         String fieldType = element.asType().toString();
         String fieldName = element.getSimpleName().toString();
         Result<String, TypeDom> typeDom = TypeDom.create(serverNames, fieldType, viewNamesMap);
+        loggerAdapter.info("creating " + fieldName + " " + resourceDoms.isPresent());
         return ElementFail.lift(element, typeDom.flatMap(td -> {
             Field annotation = element.getAnnotation(Field.class);
 
 //            String defaultLensName = findLensName(fieldName, annotation.)
             String lensName = findLensName(fieldName, Optional.ofNullable(annotation).map(Field::lensName).orElse(""));
             String rawLensPath = Optional.ofNullable(annotation).map(Field::lensPath).orElse("");
+            loggerAdapter.info("rawlenspath  " + rawLensPath + " " + resourceDoms.isPresent());
             return findLensPath(td.lensDefn(fieldName), rawLensPath).flatMap(lensPath -> {
+                loggerAdapter.info("madelenspath  " + lensPath + " " + resourceDoms.isPresent());
 //            String lensPath = findLensPath(fieldName, Optional.ofNullable(annotation.lensPath()).orElse(""));
                 Boolean readOnly = Optional.ofNullable(annotation).map(Field::readOnly).orElse(false);
                 String javascriptBody = Strings.from(Optional.ofNullable(annotation).map(Field::javascript).orElse(""), "return lens('" + fieldName + "');");
@@ -65,8 +68,10 @@ abstract class AbstractElementToFieldDom implements IElementToFieldDom {
                 Boolean templated = Optional.ofNullable(annotation).map(a -> a.templated()).orElse(false);
                 Boolean deprecated = element.getAnnotation(Deprecated.class) != null;
                 FieldDom fieldDom = new FieldDom(td, fieldName, readOnly, lensName, lensPath, javascript, templated, deprecated);
+                loggerAdapter.info("made fieldDom  " + fieldDom + " " + resourceDoms.isPresent());
                 List<String> errors = validateViewField(resourceDoms, fieldDom);
 //                loggerAdapter.info(element, getClass().getSimpleName() + ": Checking against " + resourceDoms + " errors " + errors);
+                loggerAdapter.info("made errors for " + fieldName + " " + errors);
                 if (errors.size() > 0) return Result.failwith(errors.toString());
                 return Result.<String, FieldDom>succeed(fieldDom);
             });
