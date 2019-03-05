@@ -1,11 +1,14 @@
 package one.xingyi.core.optics;
 import one.xingyi.core.client.IResourceList;
+import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.marshelling.JsonParserAndWriter;
 import one.xingyi.core.optics.lensLanguage.LensDefnStore;
 import one.xingyi.core.optics.lensLanguage.LensStore;
 import one.xingyi.core.optics.lensLanguage.LensStoreParser;
 import one.xingyi.core.utils.Strings;
 import org.junit.Test;
+
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 abstract public class LenStoreWithJsonTest<J> {
@@ -99,7 +102,37 @@ abstract public class LenStoreWithJsonTest<J> {
         Lens<J, IResourceList<J>> listLens = store.listLens("person_address");
         IResourceList<J> addresses = listLens.get(j);
         assertEquals("someLine1a", store.stringLens("address_line1").get(addresses.get(0)));
+    }
 
+    @Test public void testCanUseSimpleStringLists() {
+        String json = Strings.changeQuotes("{'items':['a','b']}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("list_Stringlist=items/**string");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        assertEquals(ISimpleList.fromList(List.of("a", "b")), store.simpleListLens("list_Stringlist").get(j));
+    }
+
+    @Test public void testCanUseSimpleIntegerLists() {
+        String json = Strings.changeQuotes("{'items':[1,2]}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("list_Stringlist=items/**integer");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        assertEquals(ISimpleList.fromList(List.of(1, 2)), store.simpleListLens("list_Stringlist").get(j));
+    }
+
+    @Test public void testCanUseSimpleBooleanLists() {
+        String json = Strings.changeQuotes("{'items':[false,true]}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("list_Stringlist=items/**boolean");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        assertEquals(ISimpleList.fromList(List.of(false, true)), store.simpleListLens("list_Stringlist").get(j));
+    }
+    @Test public void testCanUseSimpleDoubleLists() {
+        String json = Strings.changeQuotes("{'items':[1,2.1]}");
+        J j = parser().parse(json);
+        LensDefnStore lensDefnStore = LensStoreParser.simple().apply("list_Stringlist=items/**double");
+        LensStore<J> store = lensDefnStore.makeStore(parser());
+        assertEquals(ISimpleList.fromList(List.of(1.0, 2.1)), store.simpleListLens("list_Stringlist").get(j));
     }
 
 

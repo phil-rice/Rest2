@@ -91,7 +91,7 @@ public class Json implements JsonParserAndWriter<Object> {
             case "string":
                 return (ISimpleList<T>) asSimpleStringList(j, name);
             case "integer":
-                return (ISimpleList<T>) asSimpleBooleanList(j, name);
+                return (ISimpleList<T>) asSimpleIntegerList(j, name);
             case "double":
                 return (ISimpleList<T>) asSimpleDoubleList(j, name);
             case "boolean":

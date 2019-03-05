@@ -26,7 +26,7 @@ class StringPrimitiveType extends PrimitiveType {
     }
     @Override public String forFromJson(String fieldName) { return "jsonParser.asString(j, " + Strings.quote(fieldName) + ")"; }
     @Override public String fromJsonString() { return "asSimpleStringList"; }
-    @Override public String fromJsonStringForSimpleList() { return "simpleStringListLens"; }
+//    @Override public String fromJsonStringForSimpleList() { return "simpleStringListLens"; }
 
 }
 @EqualsAndHashCode
@@ -42,7 +42,7 @@ class DoublePrimitiveType extends PrimitiveType {
     }
     @Override public String forFromJson(String fieldName) { return "jsonParser.asDouble(j, " + Strings.quote(fieldName) + ")"; }
     @Override public String fromJsonString() { return "asSimpleDoubleList"; }
-    @Override public String fromJsonStringForSimpleList() { return "simpleDoubleListLens"; }
+//    @Override public String fromJsonStringForSimpleList() { return "simpleDoubleListLens"; }
 
 }
 @EqualsAndHashCode
@@ -58,7 +58,7 @@ class BooleanPrimitiveType extends PrimitiveType {
     }
     @Override public String forFromJson(String fieldName) { return "jsonParser.asBoolean(j, " + Strings.quote(fieldName) + ")"; }
     @Override public String fromJsonString() { return "asSimpleBooleanList"; }
-    @Override public String fromJsonStringForSimpleList() { return "simpleBooleanListLens"; }
+//    @Override public String fromJsonStringForSimpleList() { return "simpleBooleanListLens"; }
 }
 @EqualsAndHashCode
 @ToString
@@ -73,7 +73,7 @@ class IntegerPrimitiveType extends PrimitiveType {
     }
     @Override public String forFromJson(String fieldName) { return "jsonParser.asInt(j, " + Strings.quote(fieldName) + ")"; }
     @Override public String fromJsonString() { return "asSimpleIntegerList"; }
-    @Override public String fromJsonStringForSimpleList() { return "simpleIntegerListLens"; }
+//    @Override public String fromJsonStringForSimpleList() { return "simpleIntegerListLens"; }
 }
 
 @EqualsAndHashCode
@@ -83,7 +83,7 @@ abstract public class PrimitiveType implements TypeDom {
     final PackageAndClassName typeName;
 
     public abstract String fromJsonString();
-    public abstract String fromJsonStringForSimpleList();
+//    public abstract String fromJsonStringForSimpleList();
 
     @Override public String fullTypeName() { return typeName.asString(); }
     @Override public TypeDom nested() { return this; }

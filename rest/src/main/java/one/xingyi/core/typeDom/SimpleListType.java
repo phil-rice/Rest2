@@ -16,7 +16,7 @@ public class SimpleListType implements TypeDom {
     @Override public String entityNameForLens() { return nested.entityNameForLens(); }
     @Override public String makeLens(PackageAndClassName companion, String interfaceName, FieldDom viewDom, String lensName) {
         return "default public Lens<" + interfaceName + "," + viewDom.typeDom.forView() + ">" +
-                viewDom.name + "Lens(){return xingYi()." +nested.fromJsonStringForSimpleList() +"(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
+                viewDom.name + "Lens(){return xingYi().simpleListLens(" + companion.asString() + ".companion, " + Strings.quote(lensName) + ");}";
     }
 
     @Override public String forToJson(String fieldName, boolean templated) { return "jsonWriter.makeSimpleList(" + fieldName + ")"; }

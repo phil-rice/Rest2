@@ -1,4 +1,4 @@
-package one.xingyi.core;
+package one.xingyi.core.primitives;
 import one.xingyi.core.client.ISimpleList;
 import one.xingyi.core.endpoints.EndPoint;
 import one.xingyi.core.endpoints.EndpointConfig;
@@ -45,16 +45,16 @@ public abstract class AbstractSimpleListTest<Resource extends IXingYiResource, C
     @Test public void testGet() throws Exception {
         setup((service, server) -> {
             assertEquals(ISimpleList.fromList(List.of(item1())), service.get(accessDetails(), id(), this::getItem).get());
-            assertEquals(item1(), service.get(accessDetails(), id(), i -> getItem(i).get(0)));
-            assertEquals(1, service.get(accessDetails(), id(), i -> getItem(i).size()));
+            assertEquals(item1(), service.get(accessDetails(), id(), i -> getItem(i).get(0)).get());
+            assertEquals(1, service.get(accessDetails(), id(), i -> getItem(i).size()).get().intValue());
         });
     }
     @Test public void testGetOptional() throws Exception {
         setup((service, server) -> {
             assertEquals(Optional.of(ISimpleList.fromList(List.of(item1()))), service.getOptional(accessDetails(), id(), this::getItem).get());
             assertEquals(Optional.empty(), service.getOptional(accessDetails(), newId(), this::getItem).get());
-            assertEquals(item1(), service.getOptional(accessDetails(), id(), i -> getItem(i).get(0)).get());
-            assertEquals(1, service.getOptional(accessDetails(), id(), i -> getItem(i).size()).get());
+            assertEquals(Optional.of(item1()), service.getOptional(accessDetails(), id(), i -> getItem(i).get(0)).get());
+            assertEquals(1, service.getOptional(accessDetails(), id(), i -> getItem(i).size()).get().get().intValue());
         });
     }
 

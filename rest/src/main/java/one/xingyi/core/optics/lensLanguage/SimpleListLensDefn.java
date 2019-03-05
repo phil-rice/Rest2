@@ -21,7 +21,7 @@ public class SimpleListLensDefn<T> implements LensDefn<ISimpleList<T>> {
     public SimpleListLensDefn(String name, String primitiveClassName) {
         this.name = name;
         this.primitiveClassName = primitiveClassName;
-        if (!primitives.contains(primitiveClassName))
+        if (!primitives.contains(primitiveClassName.toLowerCase()))
             throw new IllegalArgumentException("Cannot make a " + getClass().getSimpleName() + " for " + primitiveClassName + " legal values are " + primitives);
     }
     @Override public String name() { return name; }

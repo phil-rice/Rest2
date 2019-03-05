@@ -1,5 +1,4 @@
 package one.xingyi.core.primitives;
-import one.xingyi.core.AbstractSimpleListTest;
 import one.xingyi.core.sdk.IXingYiRemoteAccessDetails;
 import one.xingyi.rest2test.PrimitiveController;
 import one.xingyi.rest2test.PrimitiveServer;

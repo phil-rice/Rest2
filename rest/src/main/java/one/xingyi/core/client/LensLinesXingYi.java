@@ -50,25 +50,16 @@ public class LensLinesXingYi<J, Entity extends IXingYiClientResource, View exten
     public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name) {
         throw new RuntimeException("don't do lists yet");
     }
+    @Override public <T> Lens<View, ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return viewToMirrorL(maker).andThen(Lens.<Object, J>cast()).andThen(lensStore.simpleListLens(name));
+    }
     @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
         if (renderName.equalsIgnoreCase("json")) return parser.fromJ((J) view.mirror());
         throw new RuntimeException("Unrecognised renderName" + renderName + " only legal value is 'json'");
     }
 
-    @Override public Lens<View, ISimpleList<String>> simpleStringListLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return simpleListLens(maker, name, (p, j, n) -> p.asSimpleStringList(j, n));
-    }
-    @Override public Lens<View, ISimpleList<Integer>> simpleIntegerListLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return simpleListLens(maker, name, (p, j, n) -> p.asSimpleIntegerList(j, n));
-    }
-    @Override public Lens<View, ISimpleList<Double>> simpleDoubleListLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return simpleListLens(maker, name, (p, j, n) -> p.asSimpleDoubleList(j, n));
-    }
-    @Override public Lens<View, ISimpleList<Boolean>> simpleBooleanListLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return simpleListLens(maker, name, (p, j, n) -> p.asSimpleBooleanList(j, n));
-    }
     <T> Lens<View, ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker, String name, Function3<JsonParserAndWriter<J>, J, String, ISimpleList<T>> fn) {
-        Getter<View, ISimpleList<T>> getter = v -> fn.apply(parser, (J) v.mirror(), name);
+                Getter<View, ISimpleList<T>> getter = v -> fn.apply(parser, (J) v.mirror(), name);
         Setter<View, ISimpleList<T>> setter = (v, l) -> maker.make(this, parser.makeSimpleList(l));
         return Lens.<View, ISimpleList<T>>create(getter, setter);
     }
