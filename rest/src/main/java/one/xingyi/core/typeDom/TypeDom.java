@@ -14,6 +14,7 @@ import one.xingyi.core.validation.Result;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import static one.xingyi.core.codeDom.PackageAndClassName.*;
 import static one.xingyi.core.utils.PartialFunction.*;
@@ -56,7 +57,12 @@ public interface TypeDom {
     static PartialFunction<String, Result<String, TypeDom>> fromSimpleList(IServerNames names, IViewDefnNameToViewName viewNamesMap) {
         return pf(fullTypeName -> fullTypeName.startsWith(ISimpleList.class.getName()), fullTypeName -> {
             String nested = Strings.extractFromOptionalEnvelope(ISimpleList.class.getName() + "<", ">", fullTypeName);
-            return create(names, nested, viewNamesMap).map(td -> new SimpleListType(fullTypeName, td));
+            return create(names, nested, viewNamesMap).flatMap(td -> {
+                if (td instanceof PrimitiveType)
+                    return Result.succeed(new SimpleListType(fullTypeName, (PrimitiveType) td));
+                else
+                    return Result.failwith("Can only have a ISimpleList of a primitive type. Was " + td.getClass().getSimpleName());
+            });
         });
     }
 

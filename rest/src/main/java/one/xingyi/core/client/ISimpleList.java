@@ -14,6 +14,7 @@ public interface ISimpleList<T> extends Iterable<T> {
     T get(int n);
     ISimpleList<T> withItem(int n, T t);
     ISimpleList<T> append(T t);
+    default List<T> toList() {List<T> result = new ArrayList<>(); for (T t : this) result.add(t); return result;}
 
     @SafeVarargs static <T> ISimpleList<T> create(T... ts) {return new SimpleList<>(Arrays.asList(ts));}
     static <T> ISimpleList<T> fromList(List<T> ts) {return new SimpleList<>(ts);}

@@ -44,7 +44,7 @@ public abstract class AbstractSimpleListTest<Resource extends IXingYiResource, C
 
     @Test public void testGet() throws Exception {
         setup((service, server) -> {
-            assertEquals(ISimpleList.fromList(List.of(item1())), service.get(accessDetails(), id(), this::getItem));
+            assertEquals(ISimpleList.fromList(List.of(item1())), service.get(accessDetails(), id(), this::getItem).get());
             assertEquals(item1(), service.get(accessDetails(), id(), i -> getItem(i).get(0)));
             assertEquals(1, service.get(accessDetails(), id(), i -> getItem(i).size()));
         });

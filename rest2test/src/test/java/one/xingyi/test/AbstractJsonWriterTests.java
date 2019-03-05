@@ -7,12 +7,20 @@ import one.xingyi.reference3.person.server.companion.PersonCompanion;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
-public abstract class AbstractJsonWriterTests<J>  implements IReferenceFixture3 {
+public abstract class AbstractJsonWriterTests<J> implements IReferenceFixture3 {
 
-    String jsonString = Strings.changeQuotes("{'name':'someName','age':23,'addresses':[{'line1':'someLine1a','line2':'someLine2a','postcode':'somePostcode1'},{'line1':'someLine1b','line2':'someLine2b','postcode':'somePostcode2'}],'telephone':{'number':'someNumber'}}");
+    String jsonString = Strings.changeQuotes("{'name':'someName','age':23," +
+            "'addresses':[{'line1':'someLine1a','line2':'someLine2a','postcode':'somePostcode1'},{'line1':'someLine1b','line2':'someLine2b','postcode':'somePostcode2'}]," +
+            "'telephone':{'number':'someNumber'}}");
+    String jsonStringWithLists = Strings.changeQuotes(
+            "{'listOfStrings':['one','two','three']," +
+            "'listOfInts':[1,2,3]," +
+            "'listOfDoubles':[1.0,2.0,3.0]," +
+            "'listOfBooleans':[false, true, false]" +
+            "}");
     abstract protected JsonWriter<J> jsonWriter();
 
-    @Test public void testCanMakeJson(){
+    @Test public void testCanMakeJson() {
         assertEquals(jsonString, jsonWriter().fromJ(person.toJson(jsonWriter(), ContextForJson.nullContext)));
     }
 

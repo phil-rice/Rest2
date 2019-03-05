@@ -21,8 +21,18 @@ public interface JsonParser<J> {
     List<J> asList(J j);
     default List<J> asList(J j, String name) {return asList(child(j, name));}
     IResourceList<J> asResourceList(J j);
-    <T> ISimpleList<T> asSimpleList(J j);
-    default <T>ISimpleList<T> asSimpleList(J j, String name) {return asSimpleList(child(j, name));}
+
+    ISimpleList<String> asSimpleStringList(J j);
+    default ISimpleList<String> asSimpleStringList(J j, String name) {return asSimpleStringList(child(j, name));}
+
+    ISimpleList<Integer> asSimpleIntegerList(J j);
+    default ISimpleList<Integer> asSimpleIntegerList(J j, String name) {return asSimpleIntegerList(child(j, name));}
+
+    ISimpleList<Double> asSimpleDoubleList(J j);
+    default ISimpleList<Double> asSimpleDoubleList(J j, String name) {return asSimpleDoubleList(child(j, name));}
+
+    ISimpleList<Boolean> asSimpleBooleanList(J j);
+    default ISimpleList<Boolean> asSimpleBooleanList(J j, String name) {return asSimpleBooleanList(child(j, name));}
 
     default IResourceList<J> asResourceList(J j, String name) {return asResourceList(child(j, name));}
 }
@@ -36,5 +46,9 @@ class NullParser<J> implements JsonParser<J> {
     @Override public J child(J j, String name) { throw new RuntimeException("The Null Parser cannot be used");}
     @Override public List<J> asList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
     @Override public IResourceList<J> asResourceList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
-    @Override public <T> ISimpleList<T> asSimpleList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
+    @Override public ISimpleList<String> asSimpleStringList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
+    @Override public ISimpleList<Integer> asSimpleIntegerList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
+    @Override public ISimpleList<Double> asSimpleDoubleList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
+    @Override public ISimpleList<Boolean> asSimpleBooleanList(J j) { throw new RuntimeException("The Null Parser cannot be used"); }
+
 }

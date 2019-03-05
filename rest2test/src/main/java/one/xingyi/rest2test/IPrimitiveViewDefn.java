@@ -13,6 +13,7 @@ public interface IPrimitiveViewDefn extends IXingYiViewDefn<IPrimitivesDefn> {
     boolean bool();
     Double doubleBoxed();
     double doub();
+    ISimpleList<String> stringList();
     ISimpleList<Integer> integerList();
     ISimpleList<Double> doubleList();
     ISimpleList<Boolean> booleanList();

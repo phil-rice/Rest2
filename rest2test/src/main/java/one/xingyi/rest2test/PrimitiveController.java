@@ -11,6 +11,6 @@ public class PrimitiveController extends ControllerUsingMap<Primitives> implemen
         store.put("someId", prototype("someId"));
         store.put("prototype", prototype("prototype"));
     }
-    @Override protected Primitives prototype(String id) { return new Primitives("name", 1, 2, false, true, 1.2, 2.2, ISimpleList.fromList(List.of(1)), ISimpleList.empty(), ISimpleList.empty()); }
+    @Override protected Primitives prototype(String id) { return new Primitives("name", 1, 2, false, true, 1.2, 2.2, ISimpleList.fromList(List.of("one")),ISimpleList.fromList(List.of(1)), ISimpleList.empty(), ISimpleList.empty()); }
     @Override public String stateFn(Primitives entity) { return null; }
 }

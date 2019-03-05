@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.function.BiFunction;
 public class Json implements JsonParserAndWriter<Object> {
     public static Json simple = new Json();
     @Override public Object makeObject(Object... namesAndValues) {
@@ -19,6 +20,7 @@ public class Json implements JsonParserAndWriter<Object> {
         return result;
     }
     @Override public <T> Object makeList(IResourceList<T> items) { return items.toList(); }
+    @Override public <T> Object makeSimpleList(ISimpleList<T> items) { return items.toList(); }
     @Override public Object liftString(String string) {
         return new JSONObject(string);
     }
@@ -31,7 +33,13 @@ public class Json implements JsonParserAndWriter<Object> {
     }
     @Override public int asInt(Object o) { return (Integer) o; }
     @Override public boolean asBoolean(Object o) { return (Boolean) o; }
+
     @Override public Double asDouble(Object o) { return (Double) o; }
+
+    @Override public Double asDouble(Object o, String childName) {
+        if (o instanceof Map) return (Double) ((Map) o).get(childName);
+        else return ((JSONObject) o).getDouble(childName);
+    }
     @Override public Object child(Object o, String name) {
         if (o instanceof Map) return (((Map) o).get(name));
         else return ((JSONObject) o).get(name);
@@ -40,7 +48,20 @@ public class Json implements JsonParserAndWriter<Object> {
     @Override public IResourceList<Object> asResourceList(Object o) {
         return new JsonResourceList1((JSONArray) o);
     }
-    @Override public <T> ISimpleList<T> asSimpleList(Object o) { throw new RuntimeException("not implemented"); }
+
+
+    public static <T> ISimpleList<T> mapFromJsonArray(Object o, BiFunction<JSONArray, Integer, T> fn) {
+        List<T> result = new ArrayList<>();
+        JSONArray array = (JSONArray) o;
+        for (int i = 0; i < array.length(); i++)
+            result.add(fn.apply(array, i));
+        return ISimpleList.fromList(result);
+    }
+
+    @Override public ISimpleList<String> asSimpleStringList(Object o) { return mapFromJsonArray(o, JSONArray::getString); }
+    @Override public ISimpleList<Integer> asSimpleIntegerList(Object o) { return mapFromJsonArray(o, JSONArray::getInt); }
+    @Override public ISimpleList<Double> asSimpleDoubleList(Object o) { return mapFromJsonArray(o, JSONArray::getDouble); }
+    @Override public ISimpleList<Boolean> asSimpleBooleanList(Object o) { return mapFromJsonArray(o, JSONArray::getBoolean); }
 
     JSONObject copyOf(Object j) { return new JSONObject(new HashMap<>(((JSONObject) j).map)); }
 

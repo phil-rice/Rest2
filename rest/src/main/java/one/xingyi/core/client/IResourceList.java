@@ -16,7 +16,6 @@ public interface IResourceList<T> extends ISimpleList<T> {
     IResourceList<T> append(T t);
     @SafeVarargs static <T> IResourceList<T> create(T... ts) {return new ResourceList<>(Arrays.asList(ts));}
     static <T> IResourceList<T> fromList(List<T> ts) {return new ResourceList<>(ts);}
-    default List<T> toList() {List<T> result = new ArrayList<>(); for (T t : this) result.add(t); return result;}
     static <J> Lens<List<J>, IResourceList<J>> listlens() { return Lens.create(IResourceList::fromList, (ignore, list) -> list.toList()); }
 
 }

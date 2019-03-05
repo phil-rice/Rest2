@@ -19,6 +19,7 @@ public interface IPrimitivesDefn extends IXingYiResourceDefn {
     boolean bool();
     Double doubleBoxed();
     double doub();
+    ISimpleList<String> stringList();
     ISimpleList<Integer> integerList();
     ISimpleList<Double> doubleList();
     ISimpleList<Boolean> booleanList();

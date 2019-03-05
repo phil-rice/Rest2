@@ -26,7 +26,10 @@ public interface IXingYi<Entity extends IXingYiClientResource, View extends IXin
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, ChildView> objectLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> Lens<View, IResourceList<ChildView>> listLens(IXingYiClientFactory<Entity, View> maker, IXingYiClientFactory<ChildEntity, ChildView> childMaker, String name);
     <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view);
-    <T>Lens<View,ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker,  String name);
+    Lens<View, ISimpleList<String>> simpleStringListLens(IXingYiClientFactory<Entity, View> maker, String name);
+    Lens<View, ISimpleList<Integer>> simpleIntegerListLens(IXingYiClientFactory<Entity, View> maker, String name);
+    Lens<View, ISimpleList<Double>> simpleDoubleListLens(IXingYiClientFactory<Entity, View> maker, String name);
+    Lens<View, ISimpleList<Boolean>> simpleBooleanListLens(IXingYiClientFactory<Entity, View> maker, String name);
 }
 
 
@@ -59,6 +62,18 @@ class DefaultXingYi<Entity extends IXingYiClientResource, View extends IXingYiVi
     @Override public <ChildEntity extends IXingYiClientResource, ChildView extends IXingYiView<ChildEntity>> String render(String renderName, View view) {
         return rawRender(renderName, view.mirror());
     }
+    @Override public Lens<View, ISimpleList<String>> simpleStringListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "stringSimpleListLens");
+    }
+    @Override public Lens<View, ISimpleList<Integer>> simpleIntegerListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "integerSimpleListLens");
+    }
+    @Override public Lens<View, ISimpleList<Double>> simpleDoubleListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "doubleSimpleListLens");
+    }
+    @Override public Lens<View, ISimpleList<Boolean>> simpleBooleanListLens(IXingYiClientFactory<Entity, View> maker, String name) {
+        return primitiveLens(maker, name, "booleanSimpleListLens");
+    }
     String rawRender(String name, Object mirror) {
         return XingYiExecutionException.wrap("render", javaScript, () -> inv.invokeFunction("render_" + name, mirror).toString());
     }
@@ -76,10 +91,9 @@ class DefaultXingYi<Entity extends IXingYiClientResource, View extends IXingYiVi
     @Override public Lens<View, Double> doubleLens(IXingYiClientFactory<Entity, View> maker, String name) {
         return primitiveLens(maker, name, "doubleLens");
     }
-    @Override public <T> Lens<View,ISimpleList<T>> simpleListLens(IXingYiClientFactory<Entity, View> maker, String name) {
-        return null;
-    }
-    public<T> Lens<View, T> primitiveLens(IXingYiClientFactory<Entity, View> maker, String name, String lensName) {
+
+
+    public <T> Lens<View, T> primitiveLens(IXingYiClientFactory<Entity, View> maker, String name, String lensName) {
         Getter<View, T> getter = t -> XingYiExecutionException.wrap(lensName + ".getEntity " + name, javaScript, () -> (T) inv.invokeFunction("getL", name, t.mirror()));
         Setter<View, T> setter = (t, s) -> XingYiExecutionException.wrap(lensName + ".set" + name, javaScript, () -> maker.make(this, inv.invokeFunction("setL", name, t.mirror(), s)));
         return Lens.create(getter, setter);
