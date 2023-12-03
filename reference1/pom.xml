@@ -6,7 +6,9 @@
     <version>1.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
+  <properties>
+    <backstage.kind>API</backstage.kind>
+  </properties>
   <artifactId>reference1</artifactId>
   <description>This initial server has name and address as fields in person</description>
   <dependencies>
