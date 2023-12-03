@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: rest2.reference3
+  description: "The third implementation: person has multiple addresses"
+spec:
+  type: service
+  owner: phil.rice@validoc.org
+  lifecycle: experimental

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: rest2.reference1
+  description: "The first implementation: person has the fields line1 and line 2 of the address"
+spec:
+  type: service
+  owner: phil.rice@validoc.org
+  lifecycle: experimental

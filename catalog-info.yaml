@@ -19,3 +19,7 @@ spec:
    -  ./rest2test/catalog-info.yaml
    -  ./democlient/catalog-info.yaml
    -  ./performance/catalog-info.yaml
+   -  ./reference1/backstage.service.yaml
+   -  ./reference2/backstage.service.yaml
+   -  ./reference3/backstage.service.yaml
+   -  ./reference4/backstage.service.yaml

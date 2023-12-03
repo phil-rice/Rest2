@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: rest2.reference2
+  description: "The second implementation: person has the fields line1 and line 2 in a child address object"
+spec:
+  type: service
+  owner: phil.rice@validoc.org
+  lifecycle: experimental
