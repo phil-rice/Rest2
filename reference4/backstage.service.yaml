@@ -7,3 +7,5 @@ spec:
   type: service
   owner: phil-rice
   lifecycle: experimental
+  implementsApi:
+    - api:one.xingyi.reference4
