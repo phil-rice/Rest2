@@ -8,4 +8,4 @@ spec:
   owner: phil-rice
   lifecycle: experimental
   providesApis:
-    - api: component:one.xingyi.reference1
+    - one.xingyi.reference1
