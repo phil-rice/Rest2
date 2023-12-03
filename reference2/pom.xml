@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>reference2</artifactId>
+    <description>This server has moved the fields line1 and line2 from person to address</description>
 
     <dependencies>
         <dependency>

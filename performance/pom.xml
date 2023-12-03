@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>performance</artifactId>
+    <description>A quick and dirty performance test</description>
     <dependencies>
         <dependency>
             <groupId>one.xingyi</groupId>

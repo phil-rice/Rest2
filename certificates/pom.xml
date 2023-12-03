@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>certificates</artifactId>
+  <description>A demonstration for the rest 2 code</description>
     <dependencies>
         <dependency>
             <groupId>one.xingyi</groupId>

@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>democlient</artifactId>
+    <description>A demonstration for the rest 2 code. This client can be deployed. The backend changed and it keeps working</description>
     <dependencies>
         <dependency>
             <groupId>one.xingyi</groupId>

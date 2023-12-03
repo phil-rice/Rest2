@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>rest2</artifactId>
-        <groupId>one.xingyi</groupId>
-        <version>1.2-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>rest2</artifactId>
+    <groupId>one.xingyi</groupId>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>reference3</artifactId>
+  <artifactId>reference3</artifactId>
+  <description>This server has more than one address per person</description>
+  <dependencies>
+    <dependency>
+      <groupId>one.xingyi</groupId>
+      <artifactId>core</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>one.xingyi</groupId>
+      <artifactId>json</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
 
-    <dependencies>
-        <dependency>
-            <groupId>one.xingyi</groupId>
-            <artifactId>core</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>one.xingyi</groupId>
-            <artifactId>json</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
-
-    </dependencies>
+  </dependencies>
 </project>

@@ -8,6 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>rest2test</artifactId>
+    <description>A test class</description>
     <dependencies>
         <dependency>
             <groupId>one.xingyi</groupId>
