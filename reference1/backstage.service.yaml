@@ -5,5 +5,5 @@ metadata:
   description: "The first implementation: person has the fields line1 and line 2 of the address"
 spec:
   type: service
-  owner: phil.rice@validoc.org
+  owner: phil-rice
   lifecycle: experimental

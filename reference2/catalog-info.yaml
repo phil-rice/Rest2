@@ -13,7 +13,7 @@ metadata:
     backstage.io/maven-artifact-id: reference2
 spec:
   type: library
-  owner: phil.rice@validoc.org
+  owner: phil-rice
   lifecycle: production
   dependsOn: 
    -  component:one.xingyi.core

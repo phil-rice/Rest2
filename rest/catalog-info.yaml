@@ -13,6 +13,6 @@ metadata:
     backstage.io/maven-artifact-id: rest
 spec:
   type: library
-  owner: phil.rice@validoc.org
+  owner: phil-rice
   lifecycle: production
   

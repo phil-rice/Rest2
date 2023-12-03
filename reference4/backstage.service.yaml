@@ -5,5 +5,5 @@ metadata:
   description: "The fourth implementation: person has reverted to having line1 and line2 in the address"
 spec:
   type: service
-  owner: phil.rice@validoc.org
+  owner: phil-rice
   lifecycle: experimental
