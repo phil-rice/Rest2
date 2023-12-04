@@ -8,7 +8,7 @@ metadata:
     - java
     - maven
   annotations:
-    backstage.io/source-location: git@github.com:phil-rice/Rest2.git
+    backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
     backstage.io/maven-artifact-id: reference4
 spec:
