@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>rest2</artifactId>
-        <groupId>one.xingyi</groupId>
-        <version>1.2-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <properties>
-        <backstage.kind>Service</backstage.kind>
-    </properties>
-    <artifactId>reference4</artifactId>
-    <description>This server has gone full circle and now has line1 and line2 as fields of person again.</description>
-    <dependencies>
-        <dependency>
-            <groupId>one.xingyi</groupId>
-            <artifactId>core</artifactId>
-            <version>1.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>one.xingyi</groupId>
-            <artifactId>json</artifactId>
-            <version>1.2-SNAPSHOT</version>
-        </dependency>
+  <parent>
+    <artifactId>rest2</artifactId>
+    <groupId>one.xingyi</groupId>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <properties>
+    <backstage.spec>
+      <type>service</type>
+    </backstage.spec>
+  </properties>
+  <artifactId>reference4</artifactId>
+  <description>This server has gone full circle and now has line1 and line2 as fields of person again.</description>
+  <dependencies>
+    <dependency>
+      <groupId>one.xingyi</groupId>
+      <artifactId>core</artifactId>
+      <version>1.2-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>one.xingyi</groupId>
+      <artifactId>json</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
 
-    </dependencies>
+  </dependencies>
 
 
 </project>
