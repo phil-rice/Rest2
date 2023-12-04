@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <properties>
-    <backstage.kind>API</backstage.kind>
+    <backstage.kind>Service</backstage.kind>
   </properties>
   <artifactId>reference3</artifactId>
   <description>This server has more than one address per person</description>
