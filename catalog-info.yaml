@@ -6,7 +6,7 @@ metadata:
 spec:
   type: url
   targets:
-     -  ./rest/catalog-info.yaml
+   -  ./rest/catalog-info.yaml
    -  ./core/catalog-info.yaml
    -  ./client/catalog-info.yaml
    -  ./json/catalog-info.yaml
