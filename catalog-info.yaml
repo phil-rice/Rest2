@@ -16,6 +16,5 @@ spec:
    -  ./reference4/catalog-info.yaml
    -  ./trafficlights/catalog-info.yaml
    -  ./certificates/catalog-info.yaml
-   -  ./rest2test/catalog-info.yaml
    -  ./democlient/catalog-info.yaml
    -  ./performance/catalog-info.yaml

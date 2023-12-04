@@ -7,6 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties><backstage.ignore>true</backstage.ignore></properties>
     <artifactId>rest2test</artifactId>
     <description>A test class</description>
     <dependencies>
