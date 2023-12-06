@@ -2,19 +2,20 @@
 apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
-  name: Rest2
+  name: location.one.xingyi.rest2
 spec:
   type: url
   targets:
-   -  ./rest/catalog-info.yaml
-   -  ./core/catalog-info.yaml
-   -  ./client/catalog-info.yaml
-   -  ./json/catalog-info.yaml
-   -  ./reference1/catalog-info.yaml
-   -  ./reference2/catalog-info.yaml
-   -  ./reference3/catalog-info.yaml
-   -  ./reference4/catalog-info.yaml
-   -  ./trafficlights/catalog-info.yaml
-   -  ./certificates/catalog-info.yaml
-   -  ./democlient/catalog-info.yaml
-   -  ./performance/catalog-info.yaml
+    - ./catalog-info.maven.yaml
+    - ./certificates/catalog-info.maven.yaml
+    - ./client/catalog-info.maven.yaml
+    - ./core/catalog-info.maven.yaml
+    - ./democlient/catalog-info.maven.yaml
+    - ./json/catalog-info.maven.yaml
+    - ./performance/catalog-info.maven.yaml
+    - ./reference1/catalog-info.maven.yaml
+    - ./reference2/catalog-info.maven.yaml
+    - ./reference3/catalog-info.maven.yaml
+    - ./reference4/catalog-info.maven.yaml
+    - ./rest/catalog-info.maven.yaml
+    - ./trafficlights/catalog-info.maven.yaml

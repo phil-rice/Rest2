@@ -2,18 +2,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.performance
-  description: A quick and dirty performance test
+  name: one.xingyi.reference2
+  description: This server has moved the fields line1 and line2 from person to address
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: performance
+    backstage.io/maven-artifact-id: reference2
 spec:
-  type: library
+  type: service
   owner: phil-rice
-  lifecycle: production
+  lifecycle: experimental
   dependsOn: 
-   -  component:one.xingyi.reference1
+   -  component:one.xingyi.core
+   -  component:one.xingyi.json

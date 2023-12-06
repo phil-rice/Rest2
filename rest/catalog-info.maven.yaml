@@ -2,19 +2,17 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.reference1
-  description: This initial server has name and address as fields in person
+  name: one.xingyi.rest
+  description: Annotation processors for quick server creation
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: reference1
+    backstage.io/maven-artifact-id: rest
 spec:
-  type: service
+  type: library
   owner: phil-rice
-  lifecycle: production
-  dependsOn: 
-   -  component:one.xingyi.core
-   -  component:one.xingyi.json
+  lifecycle: experimental
+  

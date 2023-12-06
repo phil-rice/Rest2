@@ -2,19 +2,17 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.reference2
-  description: This server has moved the fields line1 and line2 from person to address
+  name: one.xingyi.rest2
+  description: A library to allow Restful APIs to be easily written
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: reference2
+    backstage.io/maven-artifact-id: rest2
 spec:
-  type: service
+  type: library
   owner: phil-rice
-  lifecycle: production
-  dependsOn: 
-   -  component:one.xingyi.core
-   -  component:one.xingyi.json
+  lifecycle: experimental
+  

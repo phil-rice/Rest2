@@ -2,19 +2,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.reference4
-  description: This server has gone full circle and now has line1 and line2 as fields of person again.
+  name: one.xingyi.trafficlights
+  description: Simple example of a rest2 showing traffic lights
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: reference4
+    backstage.io/maven-artifact-id: trafficlights
 spec:
-  type: service
+  type: library
   owner: phil-rice
-  lifecycle: production
+  lifecycle: experimental
   dependsOn: 
    -  component:one.xingyi.core
    -  component:one.xingyi.json

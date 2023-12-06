@@ -2,19 +2,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.reference3
-  description: This server has more than one address per person
+  name: one.xingyi.json
+  description: A json library for the Rest2 libraries.
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: reference3
+    backstage.io/maven-artifact-id: json
 spec:
-  type: service
+  type: library
   owner: phil-rice
-  lifecycle: production
+  lifecycle: experimental
   dependsOn: 
-   -  component:one.xingyi.core
-   -  component:one.xingyi.json
+   -  component:one.xingyi.rest
+   -  component:one.xingyi.rest

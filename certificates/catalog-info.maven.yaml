@@ -2,18 +2,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.core
-  description: Core code for Rest2
+  name: one.xingyi.certificates
+  description: A demonstration for the rest 2 code
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: core
+    backstage.io/maven-artifact-id: certificates
 spec:
   type: library
   owner: phil-rice
-  lifecycle: production
+  lifecycle: experimental
   dependsOn: 
-   -  component:one.xingyi.rest
+   -  component:one.xingyi.core
+   -  component:one.xingyi.json

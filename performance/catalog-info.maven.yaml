@@ -2,17 +2,18 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.rest
-  description: Annotation processors for quick server creation
+  name: one.xingyi.performance
+  description: A quick and dirty performance test
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: rest
+    backstage.io/maven-artifact-id: performance
 spec:
   type: library
   owner: phil-rice
-  lifecycle: production
-  
+  lifecycle: experimental
+  dependsOn: 
+   -  component:one.xingyi.reference1

@@ -2,20 +2,19 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: one.xingyi.democlient
-  description: A demonstration for the rest 2 code. This client can be deployed. The backend changed and it keeps working
+  name: one.xingyi.reference3
+  description: This server has more than one address per person
   tags:
     - java
     - maven
   annotations:
     backstage.io/source-location: https://github.com/phil-rice/Rest2
     backstage.io/maven-group-id: one.xingyi
-    backstage.io/maven-artifact-id: democlient
+    backstage.io/maven-artifact-id: reference3
 spec:
-  type: library
+  type: service
   owner: phil-rice
-  lifecycle: production
+  lifecycle: experimental
   dependsOn: 
    -  component:one.xingyi.core
-   -  component:one.xingyi.certificates
-   -  component:one.xingyi.reference1
+   -  component:one.xingyi.json
